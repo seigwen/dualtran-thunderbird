@@ -42,6 +42,18 @@ The real-Thunderbird smoke (`xvfb` + a sideloaded profile + a Spanish `.eml`)
 is documented in the plan-72 record; the extension has been verified end-to-end
 against Thunderbird 158 with the Google engine.
 
+## Reproducing the submitted build (for reviewers)
+
+The step-by-step build instructions for the listed version live in
+[BUILD-src.md](./BUILD-src.md) (environment requirements, exact commands,
+file map and artifact hashes). In short:
+
+```bash
+npm ci          # exact dependency graph from package-lock.json (Node >= 22)
+npm run verify  # tests + build (esbuild, scripts/build.mjs) + dist guards
+cd dist && zip -r ../dualtran-thunderbird-0.1.0.zip .   # package = contents of dist/
+```
+
 ## License
 
 MPL-2.0 (same as the DualTran core and browser extension; TWP lineage noted in
