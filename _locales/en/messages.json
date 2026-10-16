@@ -1,0 +1,20 @@
+{
+  "extName": { "message": "DualTran - Email Translation" },
+  "extDescription": { "message": "Bilingual email translation (original + translation, side by side). Google engine free by default; bring your own AI model (BYOK)." },
+  "btnTranslate": { "message": "Translate" },
+  "btnShowOriginal": { "message": "Show original only" },
+  "btnComposeTranslate": { "message": "Translate this email" },
+  "btnTranslating": { "message": "Translating..." },
+  "optionsTitle": { "message": "DualTran Options" },
+  "optionTargetLang": { "message": "Translate into" },
+  "optionEngine": { "message": "Engine" },
+  "optionEngineGoogle": { "message": "Google (free, no account needed)" },
+  "optionEngineAi": { "message": "Your own AI model (BYOK)" },
+  "optionProvider": { "message": "Provider" },
+  "optionApiKey": { "message": "API key (stored locally only)" },
+  "optionModel": { "message": "Model" },
+  "optionBaseUrl": { "message": "Custom base URL (optional)" },
+  "optionSave": { "message": "Save" },
+  "optionSaved": { "message": "Saved." },
+  "errorTranslate": { "message": "Translation failed: $DETAIL$", "placeholders": { "detail": { "content": "$1" } } }
+}

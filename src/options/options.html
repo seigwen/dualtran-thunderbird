@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title data-i18n="optionsTitle">DualTran Options</title>
+  <style>
+    body { font: 14px/1.6 system-ui, sans-serif; margin: 16px; min-width: 340px; }
+    h1 { font-size: 16px; margin: 0 0 12px; }
+    label { display: block; margin: 10px 0 2px; font-weight: 600; }
+    input[type="text"], select { width: 100%; box-sizing: border-box; padding: 4px 6px; }
+    fieldset { border: 1px solid #ccc; border-radius: 6px; margin: 12px 0; padding: 4px 12px 12px; }
+    #ai-fields[hidden] { display: none; }
+    button { margin-top: 12px; padding: 6px 16px; }
+    .muted { color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1 data-i18n="optionsTitle">DualTran Options</h1>
+
+  <label data-i18n="optionTargetLang" for="targetLang">Translate into</label>
+  <select id="targetLang">
+    <option value="en">English</option>
+    <option value="zh-CN">简体中文</option>
+    <option value="ja">日本語</option>
+    <option value="ko">한국어</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <option value="es">Español</option>
+    <option value="pt">Português</option>
+    <option value="ru">Русский</option>
+    <option value="it">Italiano</option>
+  </select>
+
+  <label data-i18n="optionEngine" for="engine">Engine</label>
+  <select id="engine">
+    <option value="google" data-i18n="optionEngineGoogle">Google</option>
+    <option value="ai" data-i18n="optionEngineAi">AI (BYOK)</option>
+  </select>
+
+  <fieldset id="ai-fields" hidden>
+    <label data-i18n="optionProvider" for="provider">Provider</label>
+    <input type="text" id="provider" placeholder="openai" />
+    <label data-i18n="optionApiKey" for="apiKey">API key</label>
+    <input type="text" id="apiKey" autocomplete="off" />
+    <label data-i18n="optionModel" for="model">Model</label>
+    <input type="text" id="model" placeholder="gpt-4o-mini" />
+    <label data-i18n="optionBaseUrl" for="baseURL">Custom base URL</label>
+    <input type="text" id="baseURL" placeholder="" />
+    <p class="muted" data-i18n="optionApiKeyHint">Stored locally in Thunderbird only; requests go straight to your provider.</p>
+  </fieldset>
+
+  <button id="save" data-i18n="optionSave">Save</button>
+  <span id="status" class="muted"></span>
+
+  <script src="options.js"></script>
+</body>
+</html>
