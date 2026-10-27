@@ -58,3 +58,7 @@ cd dist && zip -r ../dualtran-thunderbird-0.1.0.zip .   # package = contents of 
 
 MPL-2.0 (same as the DualTran core and browser extension; TWP lineage noted in
 the main repository).
+
+## E2E
+
+`npm run e2e` serves the built `dist/` in headless Chromium with `browser.storage`/`browser.runtime` stubs: options dropdowns (built-ins → divider → models.dev), save + reload, the compose content script inserting dual spans, the busy spinner, an error path, and a locale-leak guard. Artifacts land in `e2e-artifacts/`.

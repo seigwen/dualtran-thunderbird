@@ -3,3 +3,6 @@
 /tools/
 *.xpi
 /vendor/*.map
+e2e-artifacts/
+.cache/
+.vscode-test/

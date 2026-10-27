@@ -1,0 +1,37 @@
+{
+  "openai": {
+    "name": "OpenAI",
+    "models": {
+      "gpt-5": {
+        "name": "GPT-5",
+        "reasoning_options": [{ "type": "effort", "values": ["minimal", "low", "medium", "high"] }]
+      },
+      "gpt-4o-mini": { "name": "GPT-4o mini" }
+    }
+  },
+  "moonshotai": {
+    "name": "Moonshot AI",
+    "api": "https://api.moonshot.ai/v1",
+    "models": { "kimi-k2": { "name": "Kimi K2" } }
+  },
+  "orcarouter": {
+    "name": "OrcaRouter",
+    "api": "https://api.orcarouter.ai/v1",
+    "models": {
+      "orcarouter/fusion-mini": {
+        "name": "Fusion Mini",
+        "reasoning_options": [{ "type": "effort", "values": ["low", "medium", "high"] }]
+      }
+    }
+  },
+  "pad1": { "name": "Pad One", "api": "https://pad1.example/v1", "models": { "m1": { "name": "M1" } } },
+  "pad2": { "name": "Pad Two", "api": "https://pad2.example/v1", "models": { "m2": { "name": "M2" } } },
+  "pad3": { "name": "Pad Three", "api": "https://pad3.example/v1", "models": { "m3": { "name": "M3" } } },
+  "pad4": { "name": "Pad Four", "api": "https://pad4.example/v1", "models": { "m4": { "name": "M4" } } },
+  "pad5": { "name": "Pad Five", "api": "https://pad5.example/v1", "models": { "m5": { "name": "M5" } } },
+  "pad6": { "name": "Pad Six", "api": "https://pad6.example/v1", "models": { "m6": { "name": "M6" } } },
+  "pad7": { "name": "Pad Seven", "api": "https://pad7.example/v1", "models": { "m7": { "name": "M7" } } },
+  "pad8": { "name": "Pad Eight", "api": "https://pad8.example/v1", "models": { "m8": { "name": "M8" } } },
+  "pad9": { "name": "Pad Nine", "api": "https://pad9.example/v1", "models": { "m9": { "name": "M9" } } },
+  "pad10": { "name": "Pad Ten", "api": "https://pad10.example/v1", "models": { "m10": { "name": "M10" } } }
+}
