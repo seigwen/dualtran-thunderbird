@@ -15,7 +15,12 @@ describe("manifest guards", () => {
 
   it("uses an exact, reviewed permission set", () => {
     expect([...manifest.permissions].sort()).toEqual(["compose", "messagesRead", "scripting", "storage"]);
-    expect(manifest.host_permissions).toEqual(["https://translate.googleapis.com/*"]);
+    // models.dev is read once a day by the options page to fill the provider
+    // dropdown; it is a public, keyless JSON endpoint.
+    expect(manifest.host_permissions.sort()).toEqual([
+      "https://models.dev/*",
+      "https://translate.googleapis.com/*",
+    ]);
   });
 
   it("runs a module event page", () => {

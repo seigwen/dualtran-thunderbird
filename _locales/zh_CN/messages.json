@@ -1,20 +1,81 @@
 {
-  "extName": { "message": "DualTran — 邮件翻译" },
-  "extDescription": { "message": "双语对照邮件翻译（原文 + 译文并列）。默认免费谷歌引擎；可自带 AI 模型（BYOK）。" },
-  "btnTranslate": { "message": "翻译" },
-  "btnShowOriginal": { "message": "仅看原文" },
-  "btnComposeTranslate": { "message": "翻译本封邮件" },
-  "btnTranslating": { "message": "翻译中…" },
-  "optionsTitle": { "message": "DualTran 设置" },
-  "optionTargetLang": { "message": "翻译为" },
-  "optionEngine": { "message": "引擎" },
-  "optionEngineGoogle": { "message": "谷歌（免费，无需账号）" },
-  "optionEngineAi": { "message": "自带 AI 模型（BYOK）" },
-  "optionProvider": { "message": "服务商" },
-  "optionApiKey": { "message": "API 密钥（仅存本地）" },
-  "optionModel": { "message": "模型" },
-  "optionBaseUrl": { "message": "自定义 Base URL（可选）" },
-  "optionSave": { "message": "保存" },
-  "optionSaved": { "message": "已保存。" },
-  "errorTranslate": { "message": "翻译失败：$DETAIL$", "placeholders": { "detail": { "content": "$1" } } }
+  "extName": {
+    "message": "DualTran — 邮件翻译"
+  },
+  "extDescription": {
+    "message": "双语对照邮件翻译（原文 + 译文并列）。默认免费谷歌引擎；可自带 AI 模型（BYOK）。"
+  },
+  "btnTranslate": {
+    "message": "翻译"
+  },
+  "btnShowOriginal": {
+    "message": "仅看原文"
+  },
+  "btnComposeTranslate": {
+    "message": "翻译本封邮件"
+  },
+  "btnTranslating": {
+    "message": "翻译中…"
+  },
+  "optionsTitle": {
+    "message": "DualTran 设置"
+  },
+  "optionTargetLang": {
+    "message": "翻译为"
+  },
+  "optionEngine": {
+    "message": "引擎"
+  },
+  "optionEngineGoogle": {
+    "message": "谷歌（免费，无需账号）"
+  },
+  "optionEngineAi": {
+    "message": "自带 AI 模型（BYOK）"
+  },
+  "optionProvider": {
+    "message": "服务商"
+  },
+  "optionApiKey": {
+    "message": "API 密钥（仅存本地）"
+  },
+  "optionModel": {
+    "message": "模型"
+  },
+  "optionBaseUrl": {
+    "message": "自定义 Base URL（可选）"
+  },
+  "optionSave": {
+    "message": "保存"
+  },
+  "optionSaved": {
+    "message": "已保存。"
+  },
+  "errorTranslate": {
+    "message": "翻译失败：$DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "更多",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "自定义模型…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "推理强度",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "最低（默认）",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "服务商默认",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
 }

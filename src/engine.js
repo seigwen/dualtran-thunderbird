@@ -13,14 +13,28 @@
  *          ai: {provider: string, apiKey: string, model: string, baseURL: string}}} args.config
  * @param {Function|null} [args.fetchImpl]
  */
+/** Lowest level a model accepts; nothing declared means "send no parameter". */
+export function resolveReasoning(setting, levels) {
+  if (!setting || setting === "default") return "";
+  if (setting !== "lowest") return setting;
+  const values = Array.isArray(levels) ? levels : [];
+  for (const level of ["none", "minimal", "low"]) {
+    if (values.includes(level)) return level;
+  }
+  return "";
+}
+
 export function createEngine({ core, config, fetchImpl = null }) {
   async function translateAi(texts, targetLang, aiSettings) {
-    const { provider, apiKey, model, baseURL } = aiSettings ?? config.ai;
+    const { provider, apiKey, model, baseURL, reasoning } = aiSettings ?? config.ai;
     if (!apiKey) {
       throw new Error(
         "AI engine selected but no API key configured - open the DualTran options page (or set a provider key) first."
       );
     }
+    const catalog = config.getCatalog ? await config.getCatalog() : null;
+    const declared = (catalog && catalog.reasoning && catalog.reasoning[provider] && catalog.reasoning[provider][model]) || [];
+    const reasoningDepth = resolveReasoning(reasoning, declared);
     const results = [];
     for (const content of texts) {
       const targetLanguageName =
@@ -37,6 +51,7 @@ export function createEngine({ core, config, fetchImpl = null }) {
         apiKey,
         model,
         messages,
+        reasoningDepth,
         extra: baseURL ? { baseURL } : {},
         store: null,
         onChunk: (chunk) => {

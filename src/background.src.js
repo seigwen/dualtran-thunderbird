@@ -28,6 +28,12 @@ const engine = createEngine({
     ai: { provider: "openai", apiKey: "", model: "gpt-4o-mini", baseURL: "" },
   },
   fetchImpl: null, // default fetch: the extension context has host_permissions
+  // Cached models.dev projection written by the options page; the engine reads
+  // it to resolve the "lowest" reasoning sentinel against the chosen model.
+  getCatalog: async () => {
+    const stored = await api.storage.local.get({ dtCatalog: null });
+    return (stored.dtCatalog && stored.dtCatalog.data) || null;
+  },
 });
 
 registerBackground({

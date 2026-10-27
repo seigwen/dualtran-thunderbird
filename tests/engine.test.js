@@ -71,3 +71,51 @@ describe("createEngine", () => {
     expect(JSON.stringify(s)).not.toContain("test-key");
   });
 });
+
+describe("createEngine — reasoning depth", () => {
+  it("resolves the lowest sentinel against the model's declared levels", async () => {
+    let seen;
+    const core = stubCore({
+      streamChat: async ({ reasoningDepth, onChunk }) => {
+        seen = reasoningDepth;
+        onChunk("x");
+        return { totalChunks: 1, streamError: null };
+      },
+    });
+    const engine = createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        ai: { ...baseConfig.ai, reasoning: "lowest" },
+        getCatalog: async () => ({ reasoning: { openai: { "gpt-4o-mini": ["minimal", "low"] } } }),
+      },
+    });
+    await engine.translateBatch(["hola"], { engine: "ai" });
+    expect(seen).toBe("minimal");
+  });
+
+  it("sends nothing when the model declares no levels or the setting is provider default", async () => {
+    const seen = [];
+    const core = stubCore({
+      streamChat: async ({ reasoningDepth, onChunk }) => {
+        seen.push(reasoningDepth);
+        onChunk("x");
+        return { totalChunks: 1, streamError: null };
+      },
+    });
+    const engine = createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        ai: { ...baseConfig.ai, reasoning: "lowest" },
+        getCatalog: async () => ({ reasoning: { openai: { "gpt-4o-mini": [] } } }),
+      },
+    });
+    await engine.translateBatch(["hola"], { engine: "ai" });
+    expect(seen[0]).toBe("");
+
+    const engine2 = createEngine({ core, config: { ...baseConfig, ai: { ...baseConfig.ai, reasoning: "default" } } });
+    await engine2.translateBatch(["hola"], { engine: "ai" });
+    expect(seen[1]).toBe("");
+  });
+});

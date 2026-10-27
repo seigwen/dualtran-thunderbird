@@ -1,20 +1,81 @@
 {
-  "extName": { "message": "DualTran - Email Translation" },
-  "extDescription": { "message": "Bilingual email translation (original + translation, side by side). Google engine free by default; bring your own AI model (BYOK)." },
-  "btnTranslate": { "message": "Translate" },
-  "btnShowOriginal": { "message": "Show original only" },
-  "btnComposeTranslate": { "message": "Translate this email" },
-  "btnTranslating": { "message": "Translating..." },
-  "optionsTitle": { "message": "DualTran Options" },
-  "optionTargetLang": { "message": "Translate into" },
-  "optionEngine": { "message": "Engine" },
-  "optionEngineGoogle": { "message": "Google (free, no account needed)" },
-  "optionEngineAi": { "message": "Your own AI model (BYOK)" },
-  "optionProvider": { "message": "Provider" },
-  "optionApiKey": { "message": "API key (stored locally only)" },
-  "optionModel": { "message": "Model" },
-  "optionBaseUrl": { "message": "Custom base URL (optional)" },
-  "optionSave": { "message": "Save" },
-  "optionSaved": { "message": "Saved." },
-  "errorTranslate": { "message": "Translation failed: $DETAIL$", "placeholders": { "detail": { "content": "$1" } } }
+  "extName": {
+    "message": "DualTran - Email Translation"
+  },
+  "extDescription": {
+    "message": "Bilingual email translation (original + translation, side by side). Google engine free by default; bring your own AI model (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Translate"
+  },
+  "btnShowOriginal": {
+    "message": "Show original only"
+  },
+  "btnComposeTranslate": {
+    "message": "Translate this email"
+  },
+  "btnTranslating": {
+    "message": "Translating..."
+  },
+  "optionsTitle": {
+    "message": "DualTran Options"
+  },
+  "optionTargetLang": {
+    "message": "Translate into"
+  },
+  "optionEngine": {
+    "message": "Engine"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (free, no account needed)"
+  },
+  "optionEngineAi": {
+    "message": "Your own AI model (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Provider"
+  },
+  "optionApiKey": {
+    "message": "API key (stored locally only)"
+  },
+  "optionModel": {
+    "message": "Model"
+  },
+  "optionBaseUrl": {
+    "message": "Custom base URL (optional)"
+  },
+  "optionSave": {
+    "message": "Save"
+  },
+  "optionSaved": {
+    "message": "Saved."
+  },
+  "errorTranslate": {
+    "message": "Translation failed: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "more",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Custom model…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Reasoning effort",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Lowest (default)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Provider default",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
 }

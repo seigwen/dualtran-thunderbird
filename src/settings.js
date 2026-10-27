@@ -15,6 +15,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
     provider: "openai",
     apiKey: "",
     model: "gpt-4o-mini",
+    reasoning: "lowest",
     baseURL: "",
   },
 });

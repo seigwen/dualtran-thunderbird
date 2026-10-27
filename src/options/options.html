@@ -39,11 +39,15 @@
 
   <fieldset id="ai-fields" hidden>
     <label data-i18n="optionProvider" for="provider">Provider</label>
-    <input type="text" id="provider" placeholder="openai" />
+    <select id="provider"></select>
     <label data-i18n="optionApiKey" for="apiKey">API key</label>
     <input type="text" id="apiKey" autocomplete="off" />
     <label data-i18n="optionModel" for="model">Model</label>
-    <input type="text" id="model" placeholder="gpt-4o-mini" />
+    <select id="modelSelect"></select>
+    <label data-i18n="optionCustomModel" for="model" id="customModelLabel" hidden>Custom model</label>
+    <input type="text" id="model" placeholder="gpt-4o-mini" hidden />
+    <label data-i18n="optionReasoning" for="reasoning">Reasoning effort</label>
+    <select id="reasoning"></select>
     <label data-i18n="optionBaseUrl" for="baseURL">Custom base URL</label>
     <input type="text" id="baseURL" placeholder="" />
     <p class="muted" data-i18n="optionApiKeyHint">Stored locally in Thunderbird only; requests go straight to your provider.</p>
@@ -52,6 +56,7 @@
   <button id="save" data-i18n="optionSave">Save</button>
   <span id="status" class="muted"></span>
 
+  <script src="catalog.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

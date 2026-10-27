@@ -37,6 +37,7 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
     if (blocks.length === 0) return;
     busy = true;
     fab.disabled = true;
+    fab.classList.add("busy");
     fab.textContent = t("btnTranslating");
     try {
       const result = await browser.runtime.sendMessage({
@@ -58,6 +59,7 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
     } finally {
       busy = false;
       fab.disabled = false;
+      fab.classList.remove("busy");
     }
   }
 
@@ -75,6 +77,8 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
   const style = document.createElement("style");
   style.textContent =
     ".dt-fab{position:fixed;right:18px;bottom:18px;z-index:2147483000;padding:6px 14px;border:1px solid rgba(64,128,200,.55);border-radius:16px;background:#f6f9ff;color:#1d4e89;font:13px/1.4 system-ui,sans-serif;cursor:pointer;opacity:.92}" +
-    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(64,128,200,.65);white-space:pre-wrap}";
+    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(64,128,200,.65);white-space:pre-wrap}" +
+    ".dt-fab.busy::before{content:'';display:inline-block;width:11px;height:11px;box-sizing:border-box;margin-right:6px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:dt-spin .8s linear infinite;vertical-align:-1px}" +
+    "@keyframes dt-spin{to{transform:rotate(360deg)}}";
   document.documentElement.appendChild(style);
 })();
