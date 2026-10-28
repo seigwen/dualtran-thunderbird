@@ -9,7 +9,7 @@
     "build": "node scripts/build.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify": "npm run test && npm run build && node tests/dist/guards.mjs && npm run i18n:check",
+    "verify": "npm run test && npm run build && node tests/dist/guards.mjs && npm run i18n:check && npm run e2e",
     "e2e": "npm run build && node e2e/run.mjs",
     "i18n:sync": "node scripts/locale-kit.mjs",
     "i18n:check": "node scripts/locale-kit.mjs --check"
