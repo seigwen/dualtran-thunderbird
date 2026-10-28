@@ -45,6 +45,9 @@ npm run i18n:check   # fail on a missing key, an empty value or a lost $DETAIL$
   `dist/` to `<profile>/extensions/dualtran@seigwen.dev/` with
   `xpinstall.signatures.required=false` for testing builds.
 
+The e2e suite swaps the English stub for a real `_locales/<code>` catalogue
+(`i18n-locale` scenario), so a missing or stale translation fails the build.
+
 ## Development
 
 ```bash
