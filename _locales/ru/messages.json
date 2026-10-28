@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - Перевод писем"
+  },
+  "extDescription": {
+    "message": "Двуязычный перевод писем (оригинал и перевод рядом). По умолчанию бесплатный движок Google; можно подключить свою модель ИИ (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Перевести"
+  },
+  "btnShowOriginal": {
+    "message": "Показать только оригинал"
+  },
+  "btnComposeTranslate": {
+    "message": "Перевести это письмо"
+  },
+  "btnTranslating": {
+    "message": "Перевод..."
+  },
+  "optionsTitle": {
+    "message": "Настройки DualTran"
+  },
+  "optionTargetLang": {
+    "message": "Переводить на"
+  },
+  "optionEngine": {
+    "message": "Движок"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (бесплатно, без аккаунта)"
+  },
+  "optionEngineAi": {
+    "message": "Своя модель ИИ (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Провайдер"
+  },
+  "optionApiKey": {
+    "message": "API-ключ (хранится только локально)"
+  },
+  "optionModel": {
+    "message": "Модель"
+  },
+  "optionBaseUrl": {
+    "message": "Свой базовый URL (необязательно)"
+  },
+  "optionSave": {
+    "message": "Сохранить"
+  },
+  "optionSaved": {
+    "message": "Сохранено."
+  },
+  "errorTranslate": {
+    "message": "Ошибка перевода: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "ещё",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Своя модель…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Уровень рассуждений",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Минимальный (по умолчанию)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "По умолчанию у провайдера",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

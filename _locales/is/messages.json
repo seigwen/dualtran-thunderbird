@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - Tölvupóstþýðing"
+  },
+  "extDescription": {
+    "message": "Tvítyngd tölvupóstþýðing (frumtexti + þýðing, hlið við hlið). Google-vélin er ókeypis sjálfgefið; notaðu þitt eigið AI-líkan (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Þýða"
+  },
+  "btnShowOriginal": {
+    "message": "Sýna aðeins frumtexta"
+  },
+  "btnComposeTranslate": {
+    "message": "Þýða þennan tölvupóst"
+  },
+  "btnTranslating": {
+    "message": "Þýði..."
+  },
+  "optionsTitle": {
+    "message": "DualTran valkostir"
+  },
+  "optionTargetLang": {
+    "message": "Þýða á"
+  },
+  "optionEngine": {
+    "message": "Vé"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (ókeypis, enginn reikningur nauðsynlegur)"
+  },
+  "optionEngineAi": {
+    "message": "Þitt eigið AI-líkan (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Þjónustuveitandi"
+  },
+  "optionApiKey": {
+    "message": "API-lykill (aðeins geymdur staðbundið)"
+  },
+  "optionModel": {
+    "message": "Líkan"
+  },
+  "optionBaseUrl": {
+    "message": "Sérsniðin grunnslóð (valfrjálst)"
+  },
+  "optionSave": {
+    "message": "Vista"
+  },
+  "optionSaved": {
+    "message": "Vistað."
+  },
+  "errorTranslate": {
+    "message": "Þýðing mistókst: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "meira",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Sérsniðið líkan…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Rökhugsunarátak",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Lægst (sjálfgefið)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Sjálfgefið hjá veitanda",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

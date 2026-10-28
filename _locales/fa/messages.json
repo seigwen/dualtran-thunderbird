@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - ترجمه ایمیل"
+  },
+  "extDescription": {
+    "message": "ترجمه دوزبانه ایمیل (متن اصلی + ترجمه، کنار هم). موتور Google به‌صورت پیش‌فرض رایگان است؛ مدل هوش مصنوعی خودتان را بیاورید (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "ترجمه"
+  },
+  "btnShowOriginal": {
+    "message": "فقط متن اصلی را نشان بده"
+  },
+  "btnComposeTranslate": {
+    "message": "این ایمیل را ترجمه کن"
+  },
+  "btnTranslating": {
+    "message": "در حال ترجمه..."
+  },
+  "optionsTitle": {
+    "message": "تنظیمات DualTran"
+  },
+  "optionTargetLang": {
+    "message": "ترجمه به"
+  },
+  "optionEngine": {
+    "message": "موتور"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (رایگان، بدون نیاز به حساب)"
+  },
+  "optionEngineAi": {
+    "message": "مدل هوش مصنوعی خودتان (BYOK)"
+  },
+  "optionProvider": {
+    "message": "ارائه‌دهنده"
+  },
+  "optionApiKey": {
+    "message": "کلید API (فقط به‌صورت محلی ذخیره می‌شود)"
+  },
+  "optionModel": {
+    "message": "مدل"
+  },
+  "optionBaseUrl": {
+    "message": "نشانی پایه سفارشی (اختیاری)"
+  },
+  "optionSave": {
+    "message": "ذخیره"
+  },
+  "optionSaved": {
+    "message": "ذخیره شد."
+  },
+  "errorTranslate": {
+    "message": "ترجمه ناموفق بود: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "بیشتر",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "مدل سفارشی…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "میزان استدلال",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "پایین‌ترین (پیش‌فرض)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "پیش‌فرض ارائه‌دهنده",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

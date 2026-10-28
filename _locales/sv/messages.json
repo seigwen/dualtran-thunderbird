@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - E-postöversättning"
+  },
+  "extDescription": {
+    "message": "Tvåspråkig e-postöversättning (original + översättning, sida vid sida). Google-motorn är gratis som standard; använd din egen AI-modell (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Översätt"
+  },
+  "btnShowOriginal": {
+    "message": "Visa endast original"
+  },
+  "btnComposeTranslate": {
+    "message": "Översätt detta e-postmeddelande"
+  },
+  "btnTranslating": {
+    "message": "Översätter..."
+  },
+  "optionsTitle": {
+    "message": "DualTran-inställningar"
+  },
+  "optionTargetLang": {
+    "message": "Översätt till"
+  },
+  "optionEngine": {
+    "message": "Motor"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (gratis, inget konto krävs)"
+  },
+  "optionEngineAi": {
+    "message": "Din egen AI-modell (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Leverantör"
+  },
+  "optionApiKey": {
+    "message": "API-nyckel (lagras endast lokalt)"
+  },
+  "optionModel": {
+    "message": "Modell"
+  },
+  "optionBaseUrl": {
+    "message": "Anpassad bas-URL (valfritt)"
+  },
+  "optionSave": {
+    "message": "Spara"
+  },
+  "optionSaved": {
+    "message": "Sparat."
+  },
+  "errorTranslate": {
+    "message": "Översättning misslyckades: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "mer",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Anpassad modell…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Resonemangsansträngning",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Lägsta (standard)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Leverantörens standard",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

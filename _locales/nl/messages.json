@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - E-mailvertaling"
+  },
+  "extDescription": {
+    "message": "Tweetalige e-mailvertaling (origineel + vertaling, naast elkaar). Google-engine standaard gratis; gebruik je eigen AI-model (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Vertalen"
+  },
+  "btnShowOriginal": {
+    "message": "Alleen origineel tonen"
+  },
+  "btnComposeTranslate": {
+    "message": "Deze e-mail vertalen"
+  },
+  "btnTranslating": {
+    "message": "Vertalen..."
+  },
+  "optionsTitle": {
+    "message": "DualTran-opties"
+  },
+  "optionTargetLang": {
+    "message": "Vertalen naar"
+  },
+  "optionEngine": {
+    "message": "Engine"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (gratis, geen account nodig)"
+  },
+  "optionEngineAi": {
+    "message": "Je eigen AI-model (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Provider"
+  },
+  "optionApiKey": {
+    "message": "API-sleutel (alleen lokaal opgeslagen)"
+  },
+  "optionModel": {
+    "message": "Model"
+  },
+  "optionBaseUrl": {
+    "message": "Aangepaste basis-URL (optioneel)"
+  },
+  "optionSave": {
+    "message": "Opslaan"
+  },
+  "optionSaved": {
+    "message": "Opgeslagen."
+  },
+  "errorTranslate": {
+    "message": "Vertaling mislukt: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "meer",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Aangepast model…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Redeneerinspanning",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Laagste (standaard)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Standaard van provider",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

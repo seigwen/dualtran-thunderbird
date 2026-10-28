@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - Prijevod e-pošte"
+  },
+  "extDescription": {
+    "message": "Dvojezični prijevod e-pošte (izvornik i prijevod, jedan uz drugi). Googleov engine besplatan prema zadanim postavkama; koristite vlastiti AI model (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Prevedi"
+  },
+  "btnShowOriginal": {
+    "message": "Prikaži samo izvornik"
+  },
+  "btnComposeTranslate": {
+    "message": "Prevedi ovu e-poštu"
+  },
+  "btnTranslating": {
+    "message": "Prevođenje..."
+  },
+  "optionsTitle": {
+    "message": "DualTran opcije"
+  },
+  "optionTargetLang": {
+    "message": "Prevedi na"
+  },
+  "optionEngine": {
+    "message": "Engine"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (besplatno, nije potreban račun)"
+  },
+  "optionEngineAi": {
+    "message": "Vlastiti AI model (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Pružatelj"
+  },
+  "optionApiKey": {
+    "message": "API ključ (pohranjen samo lokalno)"
+  },
+  "optionModel": {
+    "message": "Model"
+  },
+  "optionBaseUrl": {
+    "message": "Prilagođeni osnovni URL (neobavezno)"
+  },
+  "optionSave": {
+    "message": "Spremi"
+  },
+  "optionSaved": {
+    "message": "Spremljeno."
+  },
+  "errorTranslate": {
+    "message": "Prijevod nije uspio: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "više",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Prilagođeni model…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Razina zaključivanja",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Najniža (zadano)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Zadano pružatelja",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

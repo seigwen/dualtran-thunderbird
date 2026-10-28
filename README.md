@@ -9,6 +9,23 @@ Part of the [DualTran](https://github.com/seigwen/DualTran-extension) family —
 the same translation core (`dualtran` on npm) that powers the browser extension,
 the MCP server, the n8n node and the workbench hosts.
 
+## Languages
+
+The interface ships in **38 languages** (the same catalogue as the browser
+extension): af ar ca cs da de el en es fa fi fr he hi hr hu is it ja ko lv nl no
+pl pt_BR pt_PT ro ru sl sr sv th tr ug uk vi zh_CN zh_TW. Thunderbird picks the
+UI language automatically; no setting needed.
+
+`_locales/<code>/messages.json` is the source of truth. Run
+
+```bash
+npm run i18n:sync    # fill every locale (reuses the extension's translations, machine-translates the rest)
+npm run i18n:check   # fail on a missing key, an empty value or a lost $DETAIL$
+```
+
+`zh_CN` / `zh_TW` are hand-written and never regenerated. `npm run verify` runs
+`i18n:check`, so a locale that falls behind breaks the build.
+
 ## Features
 
 - **Reading pane**: a floating Translate button injects the bilingual view for

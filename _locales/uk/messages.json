@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - Переклад електронної пошти"
+  },
+  "extDescription": {
+    "message": "Двомовний переклад електронної пошти (оригінал + переклад, пліч-о-пліч). За замовчуванням безкоштовний двигун Google; підключіть власну модель ШІ (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Перекласти"
+  },
+  "btnShowOriginal": {
+    "message": "Показати лише оригінал"
+  },
+  "btnComposeTranslate": {
+    "message": "Перекласти цей лист"
+  },
+  "btnTranslating": {
+    "message": "Переклад..."
+  },
+  "optionsTitle": {
+    "message": "Параметри DualTran"
+  },
+  "optionTargetLang": {
+    "message": "Перекласти на"
+  },
+  "optionEngine": {
+    "message": "Двигун"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (безкоштовно, обліковий запис не потрібен)"
+  },
+  "optionEngineAi": {
+    "message": "Ваша власна модель ШІ (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Постачальник"
+  },
+  "optionApiKey": {
+    "message": "API-ключ (зберігається лише локально)"
+  },
+  "optionModel": {
+    "message": "Модель"
+  },
+  "optionBaseUrl": {
+    "message": "Власна базова URL-адреса (необов'язково)"
+  },
+  "optionSave": {
+    "message": "Зберегти"
+  },
+  "optionSaved": {
+    "message": "Збережено."
+  },
+  "errorTranslate": {
+    "message": "Помилка перекладу: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "більше",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Власна модель…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Глибина міркування",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Найнижчий (за замовчуванням)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "За замовчуванням у постачальника",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

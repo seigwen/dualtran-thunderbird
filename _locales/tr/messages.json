@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - E-posta Çevirisi"
+  },
+  "extDescription": {
+    "message": "İki dilli e-posta çevirisi (orijinal + çeviri, yan yana). Varsayılan olarak Google motoru ücretsizdir; kendi AI modelinizi getirin (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Çevir"
+  },
+  "btnShowOriginal": {
+    "message": "Yalnızca orijinali göster"
+  },
+  "btnComposeTranslate": {
+    "message": "Bu e-postayı çevir"
+  },
+  "btnTranslating": {
+    "message": "Çevriliyor..."
+  },
+  "optionsTitle": {
+    "message": "DualTran Seçenekleri"
+  },
+  "optionTargetLang": {
+    "message": "Şu dile çevir"
+  },
+  "optionEngine": {
+    "message": "Motor"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (ücretsiz, hesap gerekmez)"
+  },
+  "optionEngineAi": {
+    "message": "Kendi AI modeliniz (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Sağlayıcı"
+  },
+  "optionApiKey": {
+    "message": "API anahtarı (yalnızca yerel olarak saklanır)"
+  },
+  "optionModel": {
+    "message": "Model"
+  },
+  "optionBaseUrl": {
+    "message": "Özel temel URL (isteğe bağlı)"
+  },
+  "optionSave": {
+    "message": "Kaydet"
+  },
+  "optionSaved": {
+    "message": "Kaydedildi."
+  },
+  "errorTranslate": {
+    "message": "Çeviri başarısız: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "daha fazla",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Özel model…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Akıl yürütme çabası",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "En düşük (varsayılan)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Sağlayıcı varsayılanı",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

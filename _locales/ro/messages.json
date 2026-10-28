@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - Traducere email"
+  },
+  "extDescription": {
+    "message": "Traducere bilingvă a emailurilor (original + traducere, alăturate). Motorul Google este gratuit implicit; folosește propriul model AI (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Tradu"
+  },
+  "btnShowOriginal": {
+    "message": "Arată doar originalul"
+  },
+  "btnComposeTranslate": {
+    "message": "Tradu acest email"
+  },
+  "btnTranslating": {
+    "message": "Se traduce..."
+  },
+  "optionsTitle": {
+    "message": "Opțiuni DualTran"
+  },
+  "optionTargetLang": {
+    "message": "Tradu în"
+  },
+  "optionEngine": {
+    "message": "Motor"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (gratuit, fără cont)"
+  },
+  "optionEngineAi": {
+    "message": "Propriul model AI (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Furnizor"
+  },
+  "optionApiKey": {
+    "message": "Cheie API (stocată doar local)"
+  },
+  "optionModel": {
+    "message": "Model"
+  },
+  "optionBaseUrl": {
+    "message": "URL de bază personalizat (opțional)"
+  },
+  "optionSave": {
+    "message": "Salvează"
+  },
+  "optionSaved": {
+    "message": "Salvat."
+  },
+  "errorTranslate": {
+    "message": "Traducerea a eșuat: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "mai multe",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Model personalizat…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Efort de raționare",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Cea mai mică (implicit)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Implicit furnizor",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

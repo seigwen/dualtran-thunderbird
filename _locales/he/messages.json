@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - תרגום אימייל"
+  },
+  "extDescription": {
+    "message": "תרגום אימייל דו-לשוני (מקור ותרגום זה לצד זה). מנוע Google בחינם כברירת מחדל; אפשר להשתמש במודל AI משלך (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "תרגם"
+  },
+  "btnShowOriginal": {
+    "message": "הצג מקור בלבד"
+  },
+  "btnComposeTranslate": {
+    "message": "תרגם אימייל זה"
+  },
+  "btnTranslating": {
+    "message": "מתרגם..."
+  },
+  "optionsTitle": {
+    "message": "אפשרויות DualTran"
+  },
+  "optionTargetLang": {
+    "message": "תרגם ל"
+  },
+  "optionEngine": {
+    "message": "מנוע"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (בחינם, ללא צורך בחשבון)"
+  },
+  "optionEngineAi": {
+    "message": "מודל AI משלך (BYOK)"
+  },
+  "optionProvider": {
+    "message": "ספק"
+  },
+  "optionApiKey": {
+    "message": "מפתח API (נשמר מקומית בלבד)"
+  },
+  "optionModel": {
+    "message": "מודל"
+  },
+  "optionBaseUrl": {
+    "message": "כתובת URL בסיסית מותאמת אישית (אופציונלי)"
+  },
+  "optionSave": {
+    "message": "שמור"
+  },
+  "optionSaved": {
+    "message": "נשמר."
+  },
+  "errorTranslate": {
+    "message": "התרגום נכשל: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "עוד",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "מודל מותאם אישית…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "מאמץ חשיבה",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "הנמוך ביותר (ברירת מחדל)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "ברירת מחדל של הספק",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

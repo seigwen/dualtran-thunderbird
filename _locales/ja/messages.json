@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - メール翻訳"
+  },
+  "extDescription": {
+    "message": "バイリンガルメール翻訳（原文と翻訳を並べて表示）。デフォルトではGoogleエンジンを無料で利用。独自のAIモデルも使用可能（BYOK）。"
+  },
+  "btnTranslate": {
+    "message": "翻訳"
+  },
+  "btnShowOriginal": {
+    "message": "原文のみ表示"
+  },
+  "btnComposeTranslate": {
+    "message": "このメールを翻訳"
+  },
+  "btnTranslating": {
+    "message": "翻訳中..."
+  },
+  "optionsTitle": {
+    "message": "DualTran オプション"
+  },
+  "optionTargetLang": {
+    "message": "翻訳先"
+  },
+  "optionEngine": {
+    "message": "エンジン"
+  },
+  "optionEngineGoogle": {
+    "message": "Google（無料、アカウント不要）"
+  },
+  "optionEngineAi": {
+    "message": "独自のAIモデル（BYOK）"
+  },
+  "optionProvider": {
+    "message": "プロバイダー"
+  },
+  "optionApiKey": {
+    "message": "APIキー（ローカルのみに保存）"
+  },
+  "optionModel": {
+    "message": "モデル"
+  },
+  "optionBaseUrl": {
+    "message": "カスタムベースURL（任意）"
+  },
+  "optionSave": {
+    "message": "保存"
+  },
+  "optionSaved": {
+    "message": "保存しました"
+  },
+  "errorTranslate": {
+    "message": "翻訳に失敗しました: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "詳細",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "カスタムモデル…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "推論の強度",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "最低 (デフォルト)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "プロバイダーのデフォルト",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

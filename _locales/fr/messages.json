@@ -1,0 +1,81 @@
+{
+  "extName": {
+    "message": "DualTran - Traduction d'e-mails"
+  },
+  "extDescription": {
+    "message": "Traduction bilingue des e-mails (original + traduction, côte à côte). Moteur Google gratuit par défaut ; utilisez votre propre modèle d'IA (BYOK)."
+  },
+  "btnTranslate": {
+    "message": "Traduire"
+  },
+  "btnShowOriginal": {
+    "message": "Afficher l'original uniquement"
+  },
+  "btnComposeTranslate": {
+    "message": "Traduire cet e-mail"
+  },
+  "btnTranslating": {
+    "message": "Traduction en cours..."
+  },
+  "optionsTitle": {
+    "message": "Options de DualTran"
+  },
+  "optionTargetLang": {
+    "message": "Traduire vers"
+  },
+  "optionEngine": {
+    "message": "Moteur"
+  },
+  "optionEngineGoogle": {
+    "message": "Google (gratuit, aucun compte requis)"
+  },
+  "optionEngineAi": {
+    "message": "Votre propre modèle d'IA (BYOK)"
+  },
+  "optionProvider": {
+    "message": "Fournisseur"
+  },
+  "optionApiKey": {
+    "message": "Clé API (stockée localement uniquement)"
+  },
+  "optionModel": {
+    "message": "Modèle"
+  },
+  "optionBaseUrl": {
+    "message": "URL de base personnalisée (facultatif)"
+  },
+  "optionSave": {
+    "message": "Enregistrer"
+  },
+  "optionSaved": {
+    "message": "Enregistré."
+  },
+  "errorTranslate": {
+    "message": "Échec de la traduction : $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionMore": {
+    "message": "plus",
+    "description": "Divider label before the models.dev providers in the provider dropdown."
+  },
+  "optionCustomModel": {
+    "message": "Modèle personnalisé…",
+    "description": "Dropdown option that reveals a free-text model id field."
+  },
+  "optionReasoning": {
+    "message": "Effort de raisonnement",
+    "description": "How much reasoning effort the AI model should spend on a translation."
+  },
+  "optionReasoningLowest": {
+    "message": "Le plus faible (par défaut)",
+    "description": "Use the lowest reasoning level the selected model accepts."
+  },
+  "optionReasoningDefault": {
+    "message": "Valeur par défaut du fournisseur",
+    "description": "Send no reasoning parameter and let the provider decide."
+  }
+}

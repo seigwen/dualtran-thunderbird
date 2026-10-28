@@ -1,6 +1,6 @@
 {
   "name": "dualtran-thunderbird",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "DualTran for Thunderbird - bilingual (dual-span) email translation with Google or your own AI model (BYOK).",
@@ -9,8 +9,10 @@
     "build": "node scripts/build.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify": "npm run test && npm run build && node tests/dist/guards.mjs",
-    "e2e": "npm run build && node e2e/run.mjs"
+    "verify": "npm run test && npm run build && node tests/dist/guards.mjs && npm run i18n:check",
+    "e2e": "npm run build && node e2e/run.mjs",
+    "i18n:sync": "node scripts/locale-kit.mjs",
+    "i18n:check": "node scripts/locale-kit.mjs --check"
   },
   "dependencies": {
     "dualtran": "^1.0.0"
