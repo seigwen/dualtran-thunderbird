@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "تەمىنلىگۈچىنىڭ كۆڭۈلدىكىسى",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "پەقەت Thunderbird دا يەرلىك ساقلىنىدۇ؛ تەلەپلەر بىۋاسىتە تەمىنلىگۈچىڭىزغا يوللىنىدۇ."
   }
 }

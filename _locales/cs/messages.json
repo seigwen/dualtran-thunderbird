@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Výchozí nastavení poskytovatele",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Uloženo pouze lokálně v Thunderbirdu; požadavky jdou přímo k vašemu poskytovateli."
   }
 }

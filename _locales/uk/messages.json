@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "За замовчуванням у постачальника",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Зберігається лише локально в Thunderbird; запити надсилаються безпосередньо вашому постачальнику."
   }
 }

@@ -95,6 +95,39 @@ const WEBEXT_STUB = (messageScript) => `
   })();
 `;
 
+/**
+ * Replace the English stub catalogue with a real one from `_locales/`, so a
+ * scenario proves the shipped translations render — not a hand-written map.
+ */
+const LOCALE_STUB = (messages, uiLanguage) => `
+  (() => {
+    const table = ${JSON.stringify(messages)};
+    const substitute = (text, subs) => {
+      const list = Array.isArray(subs) ? subs : subs === undefined ? [] : [subs];
+      return String(text).replace(/\\$(?:([A-Z0-9_@]+)|(\\d+))\\$/gi, (whole, name, index) => {
+        if (name) return Object.prototype.hasOwnProperty.call(table, name) ? table[name] : whole;
+        const value = list[Number(index) - 1];
+        return value === undefined ? whole : String(value);
+      });
+    };
+    if (window.browser && window.browser.i18n) {
+      window.browser.i18n.getMessage = (key, subs) =>
+        substitute(Object.prototype.hasOwnProperty.call(table, key) ? table[key] : key, subs);
+      window.browser.i18n.getUILanguage = () => ${JSON.stringify(uiLanguage)};
+    }
+  })();
+`;
+
+/** Flatten `_locales/<code>/messages.json` into {key: message}. */
+function readLocaleMessages(code) {
+  const catalogue = JSON.parse(fs.readFileSync(path.join(ROOT, "_locales", code, "messages.json"), "utf8"));
+  const out = {};
+  for (const [key, entry] of Object.entries(catalogue)) {
+    if (entry && typeof entry.message === "string") out[key] = entry.message;
+  }
+  return out;
+}
+
 const DEFAULT_SEND = `
   await new Promise((resolve) => setTimeout(resolve, 0));
   window.__sent = message;
@@ -126,9 +159,10 @@ async function startServer() {
   return { origin: `http://127.0.0.1:${port}`, close: () => new Promise((r) => server.close(r)) };
 }
 
-async function openOptions(browser, origin, sendScript = DEFAULT_SEND) {
+async function openOptions(browser, origin, sendScript = DEFAULT_SEND, locale = null) {
   const context = await browser.newContext({ viewport: { width: 900, height: 900 } });
   await context.addInitScript(WEBEXT_STUB(sendScript));
+  if (locale) await context.addInitScript(LOCALE_STUB(readLocaleMessages(locale), locale));
   await context.route("https://models.dev/api.json", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: FIXTURE })
   );
@@ -143,9 +177,10 @@ async function openOptions(browser, origin, sendScript = DEFAULT_SEND) {
   return { page, context, logs };
 }
 
-async function openCompose(browser, origin, sendScript = DEFAULT_SEND) {
+async function openCompose(browser, origin, sendScript = DEFAULT_SEND, locale = null) {
   const context = await browser.newContext({ viewport: { width: 900, height: 700 } });
   await context.addInitScript(WEBEXT_STUB(sendScript));
+  if (locale) await context.addInitScript(LOCALE_STUB(readLocaleMessages(locale), locale));
   const page = await context.newPage();
   const logs = [];
   page.on("pageerror", (error) => logs.push(error.message));
@@ -306,6 +341,47 @@ scenario("options-error-free-boot", async ({ browser, origin }) => {
   assert(labels.more && labels.more.includes("more"), `divider text missing: ${labels.more}`);
   await page.screenshot({ path: path.join(ARTIFACTS, "options-error-free-boot", "screenshot.png") });
   await context.close();
+});
+
+scenario("i18n-locale", async ({ browser, origin }) => {
+  // The shipped German catalogue must drive every visible label — no raw keys,
+  // no English leftovers, and the option pages must agree with compose.
+  const de = readLocaleMessages("de");
+  const { page, context, logs } = await openOptions(browser, origin, DEFAULT_SEND, "de");
+  const options = await page.evaluate(() => ({
+    provider: document.querySelector('[data-i18n="optionProvider"]').textContent.trim(),
+    target: document.querySelector('[data-i18n="optionTargetLang"]').textContent.trim(),
+    reasoning: document.querySelector('[data-i18n="optionReasoning"]').textContent.trim(),
+    save: document.getElementById("save").textContent.trim(),
+    divider: Array.from(document.querySelectorAll("#provider option"))
+      .filter((option) => option.disabled)
+      .map((option) => option.textContent.trim())[0],
+    leaks: Array.from(document.querySelectorAll("[data-i18n]"))
+      .filter((node) => {
+        const key = node.getAttribute("data-i18n");
+        const text = (node.textContent || "").trim();
+        return !text || text === key;
+      })
+      .map((node) => node.getAttribute("data-i18n")),
+  }));
+  assert(logs.length === 0, `page errors: ${logs.join(" | ")}`);
+  assert(options.leaks.length === 0, `untranslated labels: ${options.leaks.join(", ")}`);
+  assert(options.provider === de.optionProvider, `provider label must be German, got "${options.provider}"`);
+  assert(options.target === de.optionTargetLang, `target label must be German, got "${options.target}"`);
+  assert(options.reasoning === de.optionReasoning, `reasoning label must be German, got "${options.reasoning}"`);
+  assert(options.save === de.optionSave, `save button must be German, got "${options.save}"`);
+  assert(
+    options.divider && options.divider.includes(de.optionMore) && !/more/.test(options.divider),
+    `catalogue divider must be German, got "${options.divider}"`
+  );
+  await page.screenshot({ path: path.join(ARTIFACTS, "i18n-locale", "options-de.png") });
+  await context.close();
+
+  const compose = await openCompose(browser, origin, DEFAULT_SEND, "de");
+  const fab = await compose.page.evaluate(() => document.getElementById("dt-fab").textContent.trim());
+  assert(fab === de.btnComposeTranslate, `compose button must be German, got "${fab}"`);
+  await compose.page.screenshot({ path: path.join(ARTIFACTS, "i18n-locale", "compose-de.png") });
+  await compose.context.close();
 });
 
 async function main() {

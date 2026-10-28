@@ -39,6 +39,7 @@ const HANDWRITTEN = new Set(["zh_CN", "zh_TW"]);
 
 const args = process.argv.slice(2);
 const checkOnly = args.includes("--check");
+const fillMissing = args.includes("--fill-missing");
 const onlyArg = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 const only = onlyArg ? new Set(onlyArg.split(",").map((s) => s.trim())) : null;
 const force = args.includes("--force");
@@ -146,7 +147,7 @@ async function run() {
   for (const code of codes) {
     const file = path.join(ROOT, "_locales", code, "messages.json");
     const existing = readCatalogue(file);
-    if (existing && !force) {
+    if (existing && !force && !fillMissing) {
       console.log(`- ${code}: exists, skipped (use --force)`);
       continue;
     }
@@ -158,6 +159,11 @@ async function run() {
     const messages = {};
     const missing = [];
     for (const key of enKeys) {
+      // --fill-missing keeps existing translations and only tops up new keys.
+      if (fillMissing && existing && existing[key] && existing[key].message) {
+        messages[key] = existing[key].message;
+        continue;
+      }
       const source = en[key].message;
       if (memory[source]) messages[key] = memory[source];
       else missing.push([key, source]);

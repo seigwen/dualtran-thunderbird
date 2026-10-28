@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "По умолчанию у провайдера",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Хранится только локально в Thunderbird; запросы отправляются напрямую вашему провайдеру."
   }
 }

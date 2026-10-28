@@ -53,6 +53,27 @@ describe("locale catalogues", () => {
     }
   });
 
+  it("only references keys the catalogue actually defines", () => {
+    // A data-i18n key with no entry renders its raw id in every language
+    // (optionApiKeyHint shipped like that until the e2e caught it).
+    const used = new Set();
+    const walk = (dir) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (/\.(html|js)$/.test(entry.name)) {
+          const text = fs.readFileSync(full, "utf8");
+          for (const match of text.matchAll(/data-i18n="([^"]+)"/g)) used.add(match[1]);
+          for (const match of text.matchAll(/\bt\(\s*"([A-Za-z0-9_]+)"/g)) used.add(match[1]);
+          for (const match of text.matchAll(/i18n\.getMessage\(\s*"([A-Za-z0-9_]+)"/g)) used.add(match[1]);
+        }
+      }
+    };
+    walk(path.join(ROOT, "src"));
+    const missing = [...used].filter((key) => !en[key]);
+    expect(missing, `keys used in src but absent from _locales/en: ${missing.join(", ")}`).toEqual([]);
+  });
+
   it("does not leave Chinese in non-Chinese locales", () => {
     for (const code of EXPECTED) {
       // Japanese legitimately uses kanji; Chinese is a source language.

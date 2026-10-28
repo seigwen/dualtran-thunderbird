@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Privzeto pri ponudniku",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Shranjeno samo lokalno v Thunderbirdu; zahteve gredo neposredno k vašemu ponudniku."
   }
 }

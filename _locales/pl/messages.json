@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Domyślne ustawienie dostawcy",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Przechowywany wyłącznie lokalnie w Thunderbirdzie; żądania trafiają bezpośrednio do Twojego dostawcy."
   }
 }

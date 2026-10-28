@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "ברירת מחדל של הספק",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "נשמר מקומית ב-Thunderbird בלבד; הבקשות נשלחות ישירות לספק שלך."
   }
 }

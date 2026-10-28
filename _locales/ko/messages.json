@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "공급자 기본값",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Thunderbird에만 로컬로 저장되며 요청은 공급자에게 바로 전송됩니다"
   }
 }

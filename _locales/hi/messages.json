@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "प्रदाता डिफ़ॉल्ट",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "केवल Thunderbird में स्थानीय रूप से संग्रहीत; अनुरोध सीधे आपके प्रदाता को जाते हैं।"
   }
 }

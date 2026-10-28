@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "الافتراضي من المزود",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "يُخزَّن محليًا في Thunderbird فقط؛ تُرسَل الطلبات مباشرةً إلى مزوّدك."
   }
 }

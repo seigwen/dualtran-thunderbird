@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Podrazumevano od provajdera",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Čuva se lokalno samo u Thunderbirdu; zahtevi idu direktno ka vašem provajderu."
   }
 }

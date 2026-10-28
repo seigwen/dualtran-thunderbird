@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Predefinição do fornecedor",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Guardada apenas localmente no Thunderbird; os pedidos são enviados diretamente para o seu fornecedor."
   }
 }

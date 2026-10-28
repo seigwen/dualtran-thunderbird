@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "服务商默认",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "只保存在本机 Thunderbird 里；请求直接发往你的服务商。"
   }
 }

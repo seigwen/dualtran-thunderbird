@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Pakalpojuma sniedzēja noklusējums",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Glabājas tikai lokāli Thunderbird; pieprasījumi tiek sūtīti tieši jūsu pakalpojumu sniedzējam."
   }
 }

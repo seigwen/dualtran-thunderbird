@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Verskaffer verstek",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Word slegs plaaslik in Thunderbird gestoor; versoeke gaan reguit na jou verskaffer."
   }
 }

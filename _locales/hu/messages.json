@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Szolgáltató alapértelmezése",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Csak helyben, a Thunderbirdben tárolva; a kérések közvetlenül a szolgáltatójához mennek."
   }
 }

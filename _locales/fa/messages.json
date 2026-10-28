@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "پیش‌فرض ارائه‌دهنده",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "فقط به‌صورت محلی در Thunderbird ذخیره می‌شود؛ درخواست‌ها مستقیماً به ارائه‌دهنده شما ارسال می‌شوند."
   }
 }

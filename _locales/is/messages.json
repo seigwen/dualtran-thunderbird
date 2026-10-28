@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Sjálfgefið hjá veitanda",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Geymt staðbundið í Thunderbird eingöngu; beiðnir fara beint til þjónustuveitandans þíns."
   }
 }

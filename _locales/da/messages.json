@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Udbyderens standard",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Gemmes kun lokalt i Thunderbird; forespørgsler sendes direkte til din udbyder."
   }
 }

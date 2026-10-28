@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Mặc định của nhà cung cấp",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Chỉ lưu cục bộ trong Thunderbird; yêu cầu được gửi trực tiếp đến nhà cung cấp của bạn."
   }
 }

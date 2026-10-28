@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Provider default",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Stored locally in Thunderbird only; requests go straight to your provider."
   }
 }

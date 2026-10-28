@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "Implicit furnizor",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Stocat local doar în Thunderbird; cererile merg direct la furnizorul tău."
   }
 }

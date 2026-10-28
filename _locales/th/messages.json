@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "ค่าเริ่มต้นของผู้ให้บริการ",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "จัดเก็บไว้ในเครื่องนี้ใน Thunderbird เท่านั้น คำขอจะส่งตรงไปยังผู้ให้บริการของคุณ"
   }
 }

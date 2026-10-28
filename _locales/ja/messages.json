@@ -77,5 +77,8 @@
   "optionReasoningDefault": {
     "message": "プロバイダーのデフォルト",
     "description": "Send no reasoning parameter and let the provider decide."
+  },
+  "optionApiKeyHint": {
+    "message": "Thunderbird内にのみローカル保存され、リクエストはプロバイダーへ直接送信されます"
   }
 }
