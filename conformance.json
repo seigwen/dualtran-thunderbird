@@ -1,0 +1,11 @@
+{
+  "spec": "2.0.0",
+  "host": "dualtran-thunderbird",
+  "payload": "tests/conformance.test.js",
+  "description": "Payload generator lives in the vitest file: it loads the real options page into jsdom, drives the controls the user drives, and reads the result back. `npm run conformance` runs that single test through the shared validator.",
+  "static": {
+    "files": ["src/options/options.js", "src/options/options.html"],
+    "patterns": ["providerSeparator", "__separator__", "__more__", "MORE_DIVIDER"]
+  },
+  "platformLimits": []
+}
