@@ -171,9 +171,6 @@ async function openOptions(browser, origin, sendScript = DEFAULT_SEND, locale = 
   page.on("pageerror", (error) => logs.push(error.message));
   await page.goto(`${origin}/options/options.html`);
   await page.waitForFunction(() => document.querySelectorAll("#provider option").length > 0);
-  await page.waitForFunction(() =>
-    Array.from(document.querySelectorAll("#provider option")).some((option) => option.disabled)
-  );
   return { page, context, logs };
 }
 
@@ -201,18 +198,28 @@ scenario("options-shape", async ({ browser, origin }) => {
   const shape = await page.evaluate(() => {
     const provider = document.getElementById("provider");
     const options = Array.from(provider.options);
-    const divider = options.findIndex((option) => option.disabled);
+    const labels = options.map((option) => option.textContent.trim());
     return {
-      first: options[0].value,
-      dividerText: divider >= 0 ? options[divider].textContent.trim() : null,
-      after: divider >= 0 ? options.slice(divider + 1).map((option) => option.value) : [],
+      labels,
+      values: options.map((option) => option.value),
+      disabled: options.some((option) => option.disabled),
+      target: Array.from(document.getElementById("targetLang").options).map((option) => option.value),
       models: Array.from(document.getElementById("modelSelect").options).map((option) => option.value),
       reasoning: Array.from(document.getElementById("reasoning").options).map((option) => option.value),
     };
   });
-  assert(shape.first === "openai", `built-ins must lead, got ${shape.first}`);
-  assert(shape.dividerText && shape.dividerText.includes("more"), `bad divider: ${shape.dividerText}`);
-  assert(shape.after.includes("orcarouter"), "catalogue providers must follow the divider");
+  // One flat list: built-ins and catalogue merged, alphabetical by visible label,
+  // no divider row anywhere.
+  assert(!shape.disabled, "provider picker must not contain a disabled entry (divider)");
+  assert(shape.values.includes("orcarouter"), "catalogue providers must be merged into the list");
+  assert(shape.values.includes("openai"), "built-in providers must be in the list");
+  assert(
+    shape.labels.join("|") === [...shape.labels].sort((a, b) => a.localeCompare(b, "en")).join("|"),
+    `provider list must be alphabetical: ${shape.labels.join(", ")}`
+  );
+  // R1: the language table, not ten hardcoded rows.
+  assert(shape.target.length >= 38, `target picker has ${shape.target.length} options`);
+  assert(shape.target.includes("ja") && shape.target.includes("pt-BR"), "target picker is missing languages");
   assert(shape.reasoning[0] === "lowest", `reasoning must start at lowest, got ${shape.reasoning[0]}`);
   assert(shape.reasoning[1] === "", "second option must be provider default");
   await page.screenshot({ path: path.join(ARTIFACTS, "options-shape", "screenshot.png"), fullPage: true });
@@ -240,9 +247,6 @@ scenario("options-save-and-restore", async ({ browser, origin }) => {
 
   await page.reload();
   await page.waitForFunction(() => document.querySelectorAll("#provider option").length > 0);
-  await page.waitForFunction(() =>
-    Array.from(document.querySelectorAll("#provider option")).some((option) => option.disabled)
-  );
   const restored = await page.evaluate(() => ({
     provider: document.getElementById("provider").value,
     model: document.getElementById("modelSelect").value,
@@ -327,18 +331,16 @@ scenario("compose-error", async ({ browser, origin }) => {
 
 scenario("options-error-free-boot", async ({ browser, origin }) => {
   // A regression guard for the options page: no uncaught errors and no missing
-  // locale keys rendered as raw ids (the "optionMore" style leak).
+  // locale keys rendered as raw ids.
   const { page, context, logs } = await openOptions(browser, origin);
   const labels = await page.evaluate(() => ({
     provider: document.querySelector('[data-i18n="optionProvider"]').textContent,
-    more: Array.from(document.querySelectorAll("#provider option"))
-      .filter((option) => option.disabled)
-      .map((option) => option.textContent.trim())[0],
+    disabled: Array.from(document.querySelectorAll("#provider option")).filter((option) => option.disabled).length,
     reasoning: document.querySelector('[data-i18n="optionReasoning"]').textContent,
   }));
   assert(logs.length === 0, `page errors: ${logs.join(" | ")}`);
   assert(!/^[a-z]+\.[a-zA-Z]+$/.test(labels.provider), `i18n leak: ${labels.provider}`);
-  assert(labels.more && labels.more.includes("more"), `divider text missing: ${labels.more}`);
+  assert(labels.disabled === 0, `provider list must have no divider row, found ${labels.disabled}`);
   await page.screenshot({ path: path.join(ARTIFACTS, "options-error-free-boot", "screenshot.png") });
   await context.close();
 });
@@ -353,9 +355,6 @@ scenario("i18n-locale", async ({ browser, origin }) => {
     target: document.querySelector('[data-i18n="optionTargetLang"]').textContent.trim(),
     reasoning: document.querySelector('[data-i18n="optionReasoning"]').textContent.trim(),
     save: document.getElementById("save").textContent.trim(),
-    divider: Array.from(document.querySelectorAll("#provider option"))
-      .filter((option) => option.disabled)
-      .map((option) => option.textContent.trim())[0],
     leaks: Array.from(document.querySelectorAll("[data-i18n]"))
       .filter((node) => {
         const key = node.getAttribute("data-i18n");
@@ -370,10 +369,6 @@ scenario("i18n-locale", async ({ browser, origin }) => {
   assert(options.target === de.optionTargetLang, `target label must be German, got "${options.target}"`);
   assert(options.reasoning === de.optionReasoning, `reasoning label must be German, got "${options.reasoning}"`);
   assert(options.save === de.optionSave, `save button must be German, got "${options.save}"`);
-  assert(
-    options.divider && options.divider.includes(de.optionMore) && !/more/.test(options.divider),
-    `catalogue divider must be German, got "${options.divider}"`
-  );
   await page.screenshot({ path: path.join(ARTIFACTS, "i18n-locale", "options-de.png") });
   await context.close();
 

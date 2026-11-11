@@ -9,19 +9,35 @@
   const $ = (id) => document.getElementById(id);
   const engineSel = $("engine");
   const aiFields = $("ai-fields");
+  const langSel = $("targetLang");
   const providerSel = $("provider");
   const modelSel = $("modelSelect");
   const modelInput = $("model");
   const customLabel = $("customModelLabel");
   const reasoningSel = $("reasoning");
+  const baseInput = $("baseURL");
   const CUSTOM_MODEL = "__custom__";
-  const MORE_DIVIDER = "__separator__";
   const CATALOG_KEY = "dtCatalog";
   const CATALOG_TTL = 24 * 60 * 60 * 1000;
+  const LABEL_ORDER = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
 
   /** Projected models.dev data: { providers, modelsById, reasoning }. */
   let catalog = { providers: [], modelsById: {}, reasoning: {} };
   let providerList = [];
+  let providerApi = new Map();
+  /** True once the endpoint holds something the user typed: stops the autofill. */
+  let endpointDirty = false;
+
+  function renderLanguages(selected) {
+    langSel.innerHTML = "";
+    for (const language of DualTranLanguages.languageOptions()) {
+      const option = document.createElement("option");
+      option.value = language.value;
+      option.textContent = language.label;
+      langSel.appendChild(option);
+    }
+    langSel.value = DualTranLanguages.normalizeCode(selected);
+  }
 
   async function loadCatalog() {
     const stored = (await api.storage.local.get({ [CATALOG_KEY]: null }))[CATALOG_KEY];
@@ -60,17 +76,12 @@
 
   function renderProviders(selectedId) {
     providerList = DualTranCatalog.buildProviderList(catalog.providers, catalog.modelsById);
+    // One flat list: built-ins and the catalogue merged, alias twins removed by
+    // the catalog layer, ordered by what the user actually reads.
+    providerList.sort((a, b) => LABEL_ORDER.compare(a.name, b.name));
+    providerApi = new Map(providerList.map((provider) => [provider.id, provider.api]));
     providerSel.innerHTML = "";
-    let dividerAdded = false;
     for (const provider of providerList) {
-      if (!provider.builtIn && !dividerAdded) {
-        const divider = document.createElement("option");
-        divider.disabled = true;
-        divider.value = MORE_DIVIDER;
-        divider.textContent = "──── " + t("optionMore") + " ────";
-        providerSel.appendChild(divider);
-        dividerAdded = true;
-      }
       const option = document.createElement("option");
       option.value = provider.id;
       option.textContent = provider.name;
@@ -78,6 +89,12 @@
     }
     const known = providerList.some((provider) => provider.id === selectedId);
     providerSel.value = known ? selectedId : "openai";
+  }
+
+  /** Autofill the endpoint for the current provider unless the user owns the value. */
+  function syncEndpoint() {
+    if (endpointDirty) return;
+    baseInput.value = providerApi.get(providerSel.value) || "";
   }
 
   function toggleCustomModel() {
@@ -88,7 +105,7 @@
 
   function renderModels(selectedModelId) {
     const provider = providerById(providerSel.value);
-    const models = (provider && provider.models) || [];
+    const models = ((provider && provider.models) || []).slice().sort((a, b) => LABEL_ORDER.compare(a.label, b.label));
     modelSel.innerHTML = "";
     for (const model of models) {
       const option = document.createElement("option");
@@ -134,18 +151,22 @@
   (async () => {
     await loadCatalog();
     const stored = (await api.storage.local.get({ dtSettings: {} })).dtSettings || {};
-    $("targetLang").value = stored.targetLang || "en";
     engineSel.value = stored.engine || "google";
     const ai = stored.ai || {};
     renderProviders(ai.provider || "openai");
+    renderLanguages(stored.targetLang);
     $("apiKey").value = ai.apiKey || "";
     renderModels(ai.model || "");
     renderReasoning(ai.reasoning || "lowest");
-    $("baseURL").value = ai.baseURL || "";
+    // A stored endpoint is the user's own choice; otherwise show the provider's.
+    baseInput.value = ai.baseURL || "";
+    endpointDirty = Boolean(ai.baseURL);
+    syncEndpoint();
     renderAiVisibility();
   })();
 
   providerSel.addEventListener("change", () => {
+    syncEndpoint();
     renderModels("");
     renderReasoning(reasoningSel.value);
   });
@@ -154,6 +175,9 @@
     renderReasoning(reasoningSel.value);
   });
   modelInput.addEventListener("input", () => renderReasoning(reasoningSel.value));
+  baseInput.addEventListener("input", () => {
+    endpointDirty = true;
+  });
 
   $("save").addEventListener("click", async () => {
     const patch = {
