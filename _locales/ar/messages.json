@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "يُخزَّن محليًا في Thunderbird فقط؛ تُرسَل الطلبات مباشرةً إلى مزوّدك."
+  },
+  "providerPlaceholder": {
+    "message": "اختر مزوّدًا"
+  },
+  "providerRequiredForModel": {
+    "message": "اختر مزوّدًا أولًا"
+  },
+  "providerRequiredError": {
+    "message": "اختر مزوّد ذكاء اصطناعي في الإعدادات قبل الترجمة."
   }
 }

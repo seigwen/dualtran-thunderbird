@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Хранится только локально в Thunderbird; запросы отправляются напрямую вашему провайдеру."
+  },
+  "providerPlaceholder": {
+    "message": "Выберите провайдера"
+  },
+  "providerRequiredForModel": {
+    "message": "Сначала выберите провайдера"
+  },
+  "providerRequiredError": {
+    "message": "Перед переводом выберите провайдера ИИ в настройках."
   }
 }

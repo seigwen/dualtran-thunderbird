@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Зберігається лише локально в Thunderbird; запити надсилаються безпосередньо вашому постачальнику."
+  },
+  "providerPlaceholder": {
+    "message": "Виберіть постачальника"
+  },
+  "providerRequiredForModel": {
+    "message": "Спочатку виберіть постачальника"
+  },
+  "providerRequiredError": {
+    "message": "Перед перекладом виберіть постачальника ШІ в налаштуваннях."
   }
 }

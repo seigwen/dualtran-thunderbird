@@ -8,13 +8,18 @@ export const SETTINGS_KEY = "dtSettings";
 
 const SUPPORTED_TARGETS = ["en", "zh-CN", "ja", "ko", "fr", "de", "es", "pt", "ru", "it"];
 
+/**
+ * SPEC 2.1 — a fresh install has no AI provider. `provider` stays `""` until the
+ * user picks one in the options page; nothing here picks a default for them.
+ * Stored values are merged over these defaults, never rewritten.
+ */
 export const DEFAULT_SETTINGS = Object.freeze({
   targetLang: "en",
   engine: "google",
   ai: {
-    provider: "openai",
+    provider: "",
     apiKey: "",
-    model: "gpt-4o-mini",
+    model: "",
     reasoning: "lowest",
     baseURL: "",
   },

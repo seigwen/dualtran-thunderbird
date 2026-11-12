@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Uloženo pouze lokálně v Thunderbirdu; požadavky jdou přímo k vašemu poskytovateli."
+  },
+  "providerPlaceholder": {
+    "message": "Vyberte poskytovatele"
+  },
+  "providerRequiredForModel": {
+    "message": "Nejprve vyberte poskytovatele"
+  },
+  "providerRequiredError": {
+    "message": "Před překladem vyberte v nastavení poskytovatele AI."
   }
 }

@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Memorizzata solo localmente in Thunderbird; le richieste vanno direttamente al tuo provider."
+  },
+  "providerPlaceholder": {
+    "message": "Seleziona un fornitore"
+  },
+  "providerRequiredForModel": {
+    "message": "Seleziona prima un fornitore"
+  },
+  "providerRequiredError": {
+    "message": "Seleziona un fornitore di IA nelle impostazioni prima di tradurre."
   }
 }

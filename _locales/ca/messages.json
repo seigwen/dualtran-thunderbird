@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Emmagatzemada només localment al Thunderbird; les sol·licituds van directament al teu proveïdor."
+  },
+  "providerPlaceholder": {
+    "message": "Trieu un proveïdor"
+  },
+  "providerRequiredForModel": {
+    "message": "Trieu primer un proveïdor"
+  },
+  "providerRequiredError": {
+    "message": "Trieu un proveïdor d'IA a la configuració abans de traduir."
   }
 }

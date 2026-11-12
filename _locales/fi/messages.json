@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Tallennetaan paikallisesti vain Thunderbirdiin; pyynnöt menevät suoraan palveluntarjoajallesi."
+  },
+  "providerPlaceholder": {
+    "message": "Valitse palveluntarjoaja"
+  },
+  "providerRequiredForModel": {
+    "message": "Valitse ensin palveluntarjoaja"
+  },
+  "providerRequiredError": {
+    "message": "Valitse AI-palveluntarjoaja asetuksista ennen kääntämistä."
   }
 }

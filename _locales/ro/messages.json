@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Stocat local doar în Thunderbird; cererile merg direct la furnizorul tău."
+  },
+  "providerPlaceholder": {
+    "message": "Selectați un furnizor"
+  },
+  "providerRequiredForModel": {
+    "message": "Selectați mai întâi un furnizor"
+  },
+  "providerRequiredError": {
+    "message": "Selectați un furnizor de IA din setări înainte de a traduce."
   }
 }

@@ -24,9 +24,29 @@ export function resolveReasoning(setting, levels) {
   return "";
 }
 
+/**
+ * SPEC 2.1 — the unconfigured-provider message. `errors` is the messenger i18n
+ * facade (or `{ getMessage }`); the English text is the source string, so a
+ * missing catalogue still yields something actionable.
+ */
+export const PROVIDER_REQUIRED_ERROR = "Choose an AI provider in settings before translating.";
+
+export function providerRequiredError(errors) {
+  const text = errors && typeof errors.getMessage === "function" ? errors.getMessage("providerRequiredError") : "";
+  return new Error(text || PROVIDER_REQUIRED_ERROR);
+}
+
+/** A provider id the user actually chose: anything else is "not configured". */
+export function isProviderChosen(provider) {
+  return typeof provider === "string" && provider.trim() !== "";
+}
+
 export function createEngine({ core, config, fetchImpl = null }) {
   async function translateAi(texts, targetLang, aiSettings) {
     const { provider, apiKey, model, baseURL, reasoning } = aiSettings ?? config.ai;
+    // Never guess a provider (no `|| "openai"`): an empty pick means the user
+    // has not configured the AI engine yet. No network request is made.
+    if (!isProviderChosen(provider)) throw providerRequiredError(config.i18n);
     if (!apiKey) {
       throw new Error(
         "AI engine selected but no API key configured - open the DualTran options page (or set a provider key) first."

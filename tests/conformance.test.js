@@ -18,7 +18,12 @@ import { describe, expect, it } from "vitest";
 import { JSDOM } from "jsdom";
 
 import catalogApi from "../src/options/catalog.js";
-import { selfTest, validatePayload, SPEC_VERSION, ConformanceError } from "../scripts/conformance/validate.mjs";
+import {
+  selfTest,
+  validatePayload,
+  SPEC_VERSION,
+  ConformanceError,
+} from "../scripts/conformance/validate.mjs";
 import { scanFiles } from "../scripts/conformance/scan.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -30,6 +35,9 @@ const LANGUAGE_NAMES = JSON.parse(fs.readFileSync(path.join(ROOT, "tests", "fixt
 const CONFIG = JSON.parse(fs.readFileSync(path.join(ROOT, "conformance.json"), "utf8"));
 
 const SCRIPT_ORDER = ["catalog.js", "languages.js", "options.js"];
+
+/** The three keys SPEC 2.1 adds to every locale (English source strings). */
+export const SPEC_KEYS = ["providerPlaceholder", "providerRequiredForModel", "providerRequiredError"];
 
 /** Let the page's async boot (catalogue, then settings) run to completion. */
 function tick() {
@@ -133,17 +141,143 @@ function optionsOf(select) {
   }));
 }
 
+
+/** The placeholder is the row every picker needs but no list may contain. */
+function placeholderOf(select) {
+  const option = Array.from(select.options).find((entry) => entry.value === "");
+  const current = String(select.value ?? "").trim();
+  if (!option) return null;
+  return {
+    value: option.value,
+    label: (option.textContent || "").trim(),
+    disabled: option.disabled === true,
+    selected: current === "" && select.selectedOptions[0] === option,
+  };
+}
+
+/** Real options of a picker: anything but the empty placeholder row. */
+function realOptionsOf(select) {
+  return optionsOf(select).filter((option) => option.value !== "");
+}
+
+function providerApiOf() {
+  const api = new Map();
+  for (const entry of [...catalogApi.BUILTINS, ...(catalogApi.projectCatalog(MODELS_DEV_SAMPLE).providers || [])]) {
+    api.set(entry.id, entry.api);
+  }
+  return api;
+}
+
+/**
+ * SPEC 2.1 — the unconfigured page: a fresh install with no AI settings at all.
+ * Everything here is read back from the live controls, not from constants.
+ */
+async function emptyState() {
+  const ui = await bootOptions();
+  const { $ } = ui;
+  const providerSelect = $("provider");
+  const modelSelect = $("modelSelect");
+  const reasoningSelect = $("reasoning");
+  const base = $("baseURL");
+  return {
+    ui,
+    provider: {
+      control: "select",
+      current: providerSelect.value,
+      placeholder: placeholderOf(providerSelect),
+      // What the code would send if the pick were missing: read the picker, not the source.
+      fallback: String(providerSelect.selectedOptions[0]?.value ?? "").trim(),
+      options: realOptionsOf(providerSelect),
+    },
+    model: {
+      control: "select",
+      disabled: modelSelect.disabled,
+      selectedProvider: providerSelect.value,
+      selectedModel: modelSelect.value,
+      options: realOptionsOf(modelSelect),
+      byProvider: {},
+    },
+    endpoint: {
+      control: "input",
+      current: base.value,
+      placeholder: base.getAttribute("placeholder") ?? "",
+      autofill: {},
+    },
+    reasoning: {
+      control: "select",
+      disabled: reasoningSelect.disabled,
+      default: reasoningSelect.value,
+      resolved: resolveCases(),
+    },
+  };
+}
+
+function resolveCases() {
+  return {
+    none: [{ setting: "lowest", options: ["none", "minimal", "low"], value: catalogApi.resolveReasoning("lowest", ["none", "minimal", "low"]) }],
+    minimal: [{ setting: "lowest", options: ["minimal", "low"], value: catalogApi.resolveReasoning("lowest", ["minimal", "low"]) }],
+    low: [{ setting: "lowest", options: ["low", "medium"], value: catalogApi.resolveReasoning("lowest", ["low", "medium"]) }],
+    "none-declared": [{ setting: "lowest", options: [], value: catalogApi.resolveReasoning("lowest", []) }],
+  };
+}
+
 /**
  * Build the conformance payload from the live options page.
  *
- * R3 is exercised in three steps on one page: pick a provider (autofill),
- * overwrite the field by hand (override), switch to another provider (the
- * override must survive).
+ * Two states, both read from the real controls: the unconfigured page (fresh
+ * install, no AI settings) and a configured one. R3 is exercised in three
+ * steps on one page: pick a provider (autofill), overwrite the field by hand
+ * (override), switch to another provider (the override must survive).
  */
 export async function buildPayload() {
-  const ui = await bootOptions({ settings: { targetLang: "zh-CN", engine: "ai", ai: { provider: "openai" } } });
-  const { window, $, change, fire } = ui;
-  if (ui.errors.length) throw ui.errors[0];
+  // ── empty state: fresh install, nothing stored ────────────────────────────
+  const empty = await emptyState();
+  if (empty.ui.errors.length) throw empty.ui.errors[0];
+  const providerApi = providerApiOf();
+
+  // The empty page never shows an OpenAI endpoint or model.
+  const { provider, model, endpoint, reasoning } = empty;
+  const emptyText = JSON.stringify({ endpoint, model, reasoning, provider: provider.options });
+  if (/api\.openai\.com/.test(emptyText) || /"gpt-?4/i.test(emptyText)) {
+    throw new Error("empty state leaks an OpenAI endpoint/model");
+  }
+  const anthropicApi = catalogApi.endpointFor("anthropic", providerApi.get("anthropic"));
+  if (!/^https:\/\//.test(anthropicApi)) throw new Error("no endpoint for anthropic");
+
+  // The autofill record: empty before, the provider's base after a real pick,
+  // and a typed override that survives a later switch.
+  const providerSelect = empty.ui.$("provider");
+  const base = empty.ui.$("baseURL");
+  const before = base.value;
+  providerSelect.value = "anthropic";
+  empty.ui.change(providerSelect);
+  const after = base.value;
+  const userEdited = "https://proxy.example/v1";
+  base.value = userEdited;
+  empty.ui.fire(base, "input");
+  const other = provider.options.find((option) => option.value !== "anthropic" && option.value !== "deepseek");
+  providerSelect.value = other.value;
+  empty.ui.change(providerSelect);
+  const afterSwitch = base.value;
+  if (providerSelect.value === "") {
+    throw new Error("the provider placeholder can be selected again after a real pick");
+  }
+  endpoint.autofill = { before, after, providerApi: anthropicApi, userEdited, afterSwitch };
+  empty.ui.window.close?.();
+
+  // Snapshot the unconfigured state BEFORE the configured page overwrites
+  // anything: the payload must report both, and the empty one is what a fresh
+  // install shows. Deep-copied so later edits cannot reach back into it.
+  const unconfigured = JSON.parse(
+    JSON.stringify({ provider, model, endpoint, reasoning })
+  );
+
+  // ── configured state: the same page with anthropic stored ─────────────────
+  const configuredUi = await bootOptions({
+    settings: { targetLang: "zh-CN", engine: "ai", ai: { provider: "anthropic", model: "claude-sonnet-4-5" } },
+  });
+  const { window, $, change } = configuredUi;
+  if (configuredUi.errors.length) throw configuredUi.errors[0];
 
   // ── R1 target language ────────────────────────────────────────────────────
   const langSelect = $("targetLang");
@@ -152,70 +286,46 @@ export async function buildPayload() {
     current: langSelect.value,
     options: optionsOf(langSelect),
   };
-  const languageTextInputs = [...ui.document.querySelectorAll('input[id*="lang" i]')].length;
+  const languageTextInputs = [...configuredUi.document.querySelectorAll('input[id*="lang" i]')].length;
 
   // ── R2 providers ──────────────────────────────────────────────────────────
-  const providerSelect = $("provider");
+  const configuredProvider = $("provider");
   const builtInIds = new Set(catalogApi.BUILTINS.map((entry) => entry.id));
-  const providerOptions = optionsOf(providerSelect).map((option) => ({
-    ...option,
-    source: builtInIds.has(option.value) ? "built-in" : "models.dev",
+  // Same list as the empty state, plus where each row came from.
+  const providerOptions = realOptionsOf(configuredProvider).map(({ value, label }) => ({
+    value,
+    label,
+    source: builtInIds.has(value) ? "built-in" : "models.dev",
   }));
-  const providerTextInput = ui.document.querySelector('input[id="provider" i]');
+  const providerTextInput = configuredUi.document.querySelector('input[id="provider" i]');
   if (providerTextInput) providerOptions.push({ value: providerTextInput.value, label: "custom", source: "custom" });
 
   // Model lists per provider, read by switching provider and reading the real select.
   const byProvider = {};
-  const customProviders = optionsOf(providerSelect).filter((option) => option.value.startsWith("__"));
-  for (const option of optionsOf(providerSelect)) {
-    providerSelect.value = option.value;
-    change(providerSelect);
-    const models = optionsOf($("modelSelect")).filter((entry) => !/^__custom/.test(entry.value));
+  const customProviders = realOptionsOf(configuredProvider).filter((option) => option.value.startsWith("__"));
+  for (const option of realOptionsOf(configuredProvider)) {
+    configuredProvider.value = option.value;
+    change(configuredProvider);
+    const models = realOptionsOf($("modelSelect")).filter((entry) => !/^__custom/.test(entry.value));
     if (models.length) byProvider[option.value] = models;
   }
-  providerSelect.value = "openai";
-  change(providerSelect);
 
-  const selectedProvider = "openai";
-  const selectedModel = byProvider[selectedProvider] ? byProvider[selectedProvider][0].value : "";
-  providerSelect.value = selectedProvider;
-  change(providerSelect);
+  const selectedProvider = "anthropic";
+  const selectedModel = "claude-sonnet-4-5";
+  configuredProvider.value = selectedProvider;
+  change(configuredProvider);
   $("modelSelect").value = selectedModel;
   change($("modelSelect"));
 
   // ── R3 endpoint autofill ──────────────────────────────────────────────────
-  const base = $("baseURL");
-  const before = base.value;
-  base.value = "";
-  const providerApi = new Map();
-  for (const entry of [...catalogApi.BUILTINS, ...(catalogApi.projectCatalog(MODELS_DEV_SAMPLE).providers || [])]) {
-    providerApi.set(entry.id, entry.api);
-  }
-  const targetProvider = providerOptions.find((option) => option.value === "deepseek")
-    || providerOptions.find((option) => providerApi.get(option.value));
-  providerSelect.value = targetProvider.value;
-  change(providerSelect);
-  const after = base.value;
-
-  const userEdited = "https://proxy.example/v1";
-  base.value = userEdited;
-  fire(base, "input");
-  const otherProvider = providerOptions.find(
-    (option) => option.value !== targetProvider.value && providerApi.get(option.value)
-  ) || providerOptions.find((option) => option.value !== targetProvider.value);
-  providerSelect.value = otherProvider.value;
-  change(providerSelect);
-  const afterSwitch = base.value;
+  const configuredEndpointCurrent = $("baseURL").value;
 
   // ── R4 reasoning ──────────────────────────────────────────────────────────
-  const reasoningSelect = $("reasoning");
-  const reasoningDefault = reasoningSelect.options.length ? reasoningSelect.options[0].value : "";
-  const resolved = {
-    none: [{ setting: "lowest", options: ["none", "minimal", "low"], value: catalogApi.resolveReasoning("lowest", ["none", "minimal", "low"]) }],
-    minimal: [{ setting: "lowest", options: ["minimal", "low"], value: catalogApi.resolveReasoning("lowest", ["minimal", "low"]) }],
-    low: [{ setting: "lowest", options: ["low", "medium"], value: catalogApi.resolveReasoning("lowest", ["low", "medium"]) }],
-    "none-declared": [{ setting: "lowest", options: [], value: catalogApi.resolveReasoning("lowest", []) }],
-  };
+  const configuredReasoning = $("reasoning");
+
+  // Provider state as stored: the placeholder must be there but not selected.
+  provider.current = selectedProvider;
+  provider.placeholder = placeholderOf(configuredProvider);
 
   // ── R5 i18n ───────────────────────────────────────────────────────────────
   const localesDir = path.join(ROOT, "_locales");
@@ -234,42 +344,87 @@ export async function buildPayload() {
   }
   const keys = Object.keys(files.en || {});
   const used = new Set();
-  for (const file of pageSourceFiles()) {
+  for (const file of sourceFiles()) {
     const text = fs.readFileSync(file, "utf8");
     for (const match of text.matchAll(/data-i18n="([^"]+)"/g)) used.add(match[1]);
     for (const match of text.matchAll(/\bt\(\s*"([A-Za-z0-9_]+)"/g)) used.add(match[1]);
+    // Keys looked up by name rather than through `t(...)` (the engine's
+    // providerRequiredError does this) still have to ship in every catalogue.
+    for (const match of text.matchAll(/getMessage\(\s*"([A-Za-z0-9_]+)"/g)) used.add(match[1]);
+  }
+  // R5: the UI only asks for keys this repo defines, and the SPEC 2.1 keys are
+  // referenced by the code that needs them.
+  for (const key of used) {
+    if (!keys.includes(key)) throw new Error(`UI references missing i18n key "${key}"`);
+  }
+  for (const key of SPEC_KEYS) {
+    if (!used.has(key)) throw new Error(`SPEC 2.1 key "${key}" is not referenced by the UI`);
   }
 
+  // ── configured state, read from the live controls ─────────────────────────
+  // The provider list carries where each row came from, in both states.
+  const withSource = (section) => ({ ...section, options: providerOptions });
+  const configuredModel = $("modelSelect");
+  const configured = {
+    provider: withSource({ control: "select", current: $("provider").value, placeholder: placeholderOf(configuredProvider) }),
+    model: {
+      control: "select",
+      disabled: configuredModel.disabled,
+      selectedProvider: $("provider").value,
+      selectedModel: configuredModel.value,
+      options: optionsOf(configuredModel),
+      byProvider,
+    },
+    endpoint: {
+      // The stored provider's base, as the endpoint input actually holds it.
+      control: "input",
+      current: configuredEndpointCurrent,
+      placeholder: $("baseURL").getAttribute("placeholder") ?? "",
+      // R3 reads autofill from whichever section carries provider.current; the
+      // configured page reports the same measured sequence.
+      autofill: unconfigured.endpoint.autofill,
+    },
+    reasoning: {
+      control: "select",
+      disabled: configuredReasoning.disabled,
+      default: configuredReasoning.options.length ? configuredReasoning.options[0].value : "",
+      selected: configuredReasoning.value,
+      resolved: resolveCases(),
+    },
+  };
+
+  // The primary sections describe the UNCONFIGURED page (a fresh install), per
+  // the SPEC 2.1 contract; the configured page ships alongside as `configured`,
+  // and both are validated.
   const payload = {
     spec: SPEC_VERSION,
     host: CONFIG.host,
     language: { ...language, textInputs: languageTextInputs },
-    provider: { control: "select", current: providerSelect.value, options: providerOptions, customProviders: customProviders.length },
-    model: { control: "select", selectedProvider, selectedModel, byProvider },
-    endpoint: {
-      control: "text",
-      autofill: {
-        provider: targetProvider.value,
-        providerApi: after,
-        before,
-        after,
-        userEdited,
-        afterSwitch,
-      },
-    },
-    reasoning: { control: "select", default: reasoningDefault, resolved },
+    provider: withSource(unconfigured.provider),
+    model: unconfigured.model,
+    endpoint: unconfigured.endpoint,
+    reasoning: unconfigured.reasoning,
+    unconfigured: { ...unconfigured, provider: withSource(unconfigured.provider) },
+    configured,
     i18n: { locales, keys, used: [...used].sort(), sourceLocale: "en", files },
   };
   window.close?.();
   return payload;
 }
 
-function pageSourceFiles() {
-  const dir = path.join(ROOT, "src", "options");
-  return fs
-    .readdirSync(dir)
-    .filter((name) => /\.(js|html)$/.test(name))
-    .map((name) => path.join(dir, name));
+/** Every shipped source file that can reference a catalogue key. */
+function sourceFiles() {
+  const dir = path.join(ROOT, "src");
+  const out = [];
+  const walk = (current) => {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.(js|mjs|html)$/.test(entry.name)) out.push(full);
+    }
+  };
+  walk(dir);
+  return out.sort();
 }
 
 describe("options page conformance", () => {
@@ -307,7 +462,7 @@ describe("options page conformance", () => {
 
   it("R2 merges built-ins and models.dev into one alphabetical, divider-free list", async () => {
     const ui = await bootOptions();
-    const options = optionsOf(ui.$("provider"));
+    const options = realOptionsOf(ui.$("provider"));
     expect(options.some((option) => option.disabled)).toBe(false);
     expect(options.filter((option) => !option.value)).toEqual([]);
     const values = options.map((option) => option.value);
@@ -328,10 +483,10 @@ describe("options page conformance", () => {
   });
 
   it("R2 lists each provider's models alphabetically with the custom entry last", async () => {
-    const ui = await bootOptions();
+    const ui = await bootOptions({ settings: { ai: { provider: "openai" } } });
     const provider = ui.$("provider");
     const compare = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
-    for (const option of optionsOf(provider)) {
+    for (const option of realOptionsOf(provider)) {
       provider.value = option.value;
       ui.change(provider);
       const models = optionsOf(ui.$("modelSelect"));
@@ -343,8 +498,78 @@ describe("options page conformance", () => {
     ui.window.close?.();
   });
 
-  it("R3 fills the endpoint on provider change and never clobbers a typed value", async () => {
+  it("SPEC 2.1 — a fresh install starts with an empty provider", async () => {
     const ui = await bootOptions();
+    const select = ui.$("provider");
+    expect(select.value).toBe("");
+    const placeholder = placeholderOf(select);
+    expect(placeholder).toEqual({ value: "", label: "Select a provider", disabled: true, selected: true });
+    // The placeholder is not one of the real providers.
+    expect(realOptionsOf(select).some((option) => option.value === "")).toBe(false);
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — the placeholder is not sorted into the list and custom stays last", async () => {
+    const ui = await bootOptions();
+    const options = Array.from(ui.$("provider").options);
+    expect(options[0].value).toBe("");
+    expect(options[0].disabled).toBe(true);
+    const rest = optionsOf(ui.$("provider")).slice(1);
+    expect(rest.map((option) => option.label)).toEqual(
+      [...rest.map((option) => option.label)].sort(new Intl.Collator("en", { numeric: true, sensitivity: "base" }).compare)
+    );
+    expect(rest.some((option) => option.disabled)).toBe(false);
+    expect(rest.filter((option) => option.value === "")).toEqual([]);
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — empty state: endpoint, model and reasoning say what is missing", async () => {
+    const ui = await bootOptions();
+    expect(ui.$("baseURL").value).toBe("");
+    expect(ui.$("baseURL").getAttribute("placeholder")).toBe("https://");
+    const model = ui.$("modelSelect");
+    expect(model.disabled).toBe(true);
+    expect(realOptionsOf(model)).toEqual([]);
+    const placeholder = Array.from(model.options).find((option) => option.value === "");
+    expect(placeholder.label).toBe("Select a provider first");
+    expect(model.value).toBe("");
+    const reasoning = ui.$("reasoning");
+    expect(reasoning.disabled).toBe(true);
+    expect(reasoning.value).toBe("lowest");
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — choosing a provider enables everything and cannot go back to empty", async () => {
+    const ui = await bootOptions();
+    const provider = ui.$("provider");
+    provider.value = "anthropic";
+    ui.change(provider);
+    expect(ui.$("baseURL").value).toBe("https://api.anthropic.com/v1");
+    expect(ui.$("modelSelect").disabled).toBe(false);
+    expect(realOptionsOf(ui.$("modelSelect")).length).toBeGreaterThan(0);
+    expect(ui.$("reasoning").disabled).toBe(false);
+    const placeholder = Array.from(provider.options).find((option) => option.value === "");
+    expect(placeholder.disabled).toBe(true);
+    expect(provider.value).toBe("anthropic");
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — switching provider keeps a user-edited endpoint", async () => {
+    const ui = await bootOptions();
+    const provider = ui.$("provider");
+    const base = ui.$("baseURL");
+    provider.value = "deepseek";
+    ui.change(provider);
+    base.value = "https://proxy.example/v1";
+    ui.fire(base, "input");
+    provider.value = "groq";
+    ui.change(provider);
+    expect(base.value).toBe("https://proxy.example/v1");
+    ui.window.close?.();
+  });
+
+  it("R3 fills the endpoint on provider change and never clobbers a typed value", async () => {
+    const ui = await bootOptions({ settings: { ai: { provider: "openai" } } });
     const provider = ui.$("provider");
     const base = ui.$("baseURL");
     provider.value = "deepseek";
@@ -362,14 +587,83 @@ describe("options page conformance", () => {
   });
 
   it("R4 keeps the lowest sentinel first and resolves none → minimal → low", async () => {
-    const ui = await bootOptions();
+    const ui = await bootOptions({ settings: { ai: { provider: "openai" } } });
     const options = optionsOf(ui.$("reasoning"));
     expect(options[0].value).toBe("lowest");
     expect(options[1].value).toBe("");
     ui.window.close?.();
   });
 
-  it("emits a payload the shared SPEC 2.0.0 validator accepts", async () => {
+  it("SPEC 2.1 — an unconfigured AI page keeps the engine on AI and never invents OpenAI", async () => {
+    const ui = await bootOptions();
+    ui.$("engine").value = "ai";
+    ui.change(ui.$("engine"));
+    expect(ui.$("ai-fields").hidden).toBe(false);
+    // Nothing OpenAI-flavoured may sit in the page a fresh install shows.
+    const html = ui.$("ai-fields").outerHTML;
+    expect(html).not.toMatch(/api\.openai\.com/);
+    expect(html).not.toMatch(/gpt-4o-mini/);
+    expect(ui.errors.map(String)).toEqual([]);
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — a synthetic change back onto the placeholder cannot empty the picker", async () => {
+    const ui = await bootOptions();
+    const provider = ui.$("provider");
+    provider.value = "anthropic";
+    ui.change(provider);
+    // jsdom can force a disabled option to be chosen; the page has to refuse it.
+    provider.value = "";
+    ui.change(provider);
+    expect(provider.value).toBe("anthropic");
+    expect(ui.$("modelSelect").disabled).toBe(false);
+    expect(ui.$("baseURL").value).toBe("https://api.anthropic.com/v1");
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — a synthetic change to the placeholder on a fresh page keeps the model picker shut", async () => {
+    const ui = await bootOptions();
+    const provider = ui.$("provider");
+    provider.value = "";
+    ui.change(provider);
+    expect(provider.value).toBe("");
+    expect(ui.$("modelSelect").disabled).toBe(true);
+    expect(realOptionsOf(ui.$("modelSelect"))).toEqual([]);
+    expect(ui.$("reasoning").disabled).toBe(true);
+    expect(ui.$("reasoning").value).toBe("lowest");
+    expect(ui.$("baseURL").value).toBe("");
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — switching provider keeps the stored reasoning sentinel", async () => {
+    const ui = await bootOptions({ settings: { ai: { provider: "anthropic", model: "claude-sonnet-4-5", reasoning: "lowest" } } });
+    const provider = ui.$("provider");
+    const before = ui.$("reasoning").value;
+    expect(before).toBe("lowest");
+    const other = realOptionsOf(provider).find((option) => option.value !== "anthropic" && option.value !== "deepseek");
+    provider.value = other.value;
+    ui.change(provider);
+    // The sentinel is a declaration, not a model-level pick: it survives.
+    expect(ui.$("reasoning").value).toBe("lowest");
+    expect(ui.$("reasoning").disabled).toBe(false);
+    ui.window.close?.();
+  });
+
+  it("SPEC 2.1 — saving an unconfigured page stores an empty provider, not openai", async () => {
+    const ui = await bootOptions();
+    ui.$("engine").value = "ai";
+    ui.$("save").click();
+    await tick();
+    const saved = ui.calls.sent.find((message) => message.command === "dt-save-settings");
+    expect(saved).toBeTruthy();
+    expect(saved.patch.ai.provider).toBe("");
+    expect(saved.patch.ai.model).toBe("");
+    expect(saved.patch.ai.reasoning).toBe("lowest");
+    expect(saved.patch.ai.baseURL).toBe("");
+    ui.window.close?.();
+  });
+
+  it(`emits a payload the shared SPEC ${SPEC_VERSION} validator accepts`, async () => {
     const payload = await buildPayload();
     payload.static = { hits: scanFiles(ROOT, CONFIG.static) };
     if (process.env.DT_CONFORMANCE_OUT) {
@@ -384,6 +678,67 @@ describe("options page conformance", () => {
     expect(summary.localeCount).toBeGreaterThanOrEqual(38);
   });
 
+  it("SPEC 2.1 — the payload reports BOTH the unconfigured and the configured state", async () => {
+    // The contract asks for both states, each read from the real controls. A
+    // payload that only describes the configured page leaves the empty-state
+    // branch of R2/R3/R4 unverified, so it is a failure, not a style choice.
+    const payload = await buildPayload();
+    const empty = payload.unconfigured;
+    const configured = payload.configured;
+    expect(empty, "payload.unconfigured").toBeTruthy();
+    expect(configured, "payload.configured").toBeTruthy();
+
+    // Unconfigured: read back from a fresh page.
+    expect(empty.provider).toMatchObject({
+      control: "select",
+      current: "",
+      placeholder: { value: "", label: "Select a provider", disabled: true, selected: true },
+      fallback: "",
+    });
+    expect(empty.provider.options.length).toBeGreaterThanOrEqual(5);
+    expect(empty.model).toMatchObject({ control: "select", disabled: true, selectedProvider: "", selectedModel: "" });
+    expect(empty.model.options).toEqual([]);
+    expect(empty.endpoint).toMatchObject({
+      control: "input",
+      current: "",
+      placeholder: "https://",
+      autofill: {
+        before: "",
+        after: "https://api.anthropic.com/v1",
+        providerApi: "https://api.anthropic.com/v1",
+        userEdited: "https://proxy.example/v1",
+        afterSwitch: "https://proxy.example/v1",
+      },
+    });
+    expect(empty.reasoning).toMatchObject({ control: "select", disabled: true, default: "lowest" });
+
+    // Configured: the same page after a real pick.
+    expect(configured.provider.current).toBe("anthropic");
+    expect(configured.provider.placeholder.selected).toBe(false);
+    expect(configured.model).toMatchObject({ disabled: false, selectedProvider: "anthropic" });
+    expect(configured.endpoint.current).toBe("https://api.anthropic.com/v1");
+    expect(configured.reasoning.disabled).toBe(false);
+
+    // Both states pass the shared validator: neither is cosmetic.
+    validatePayload({ ...payload, ...payload.unconfigured }, CONFIG);
+    validatePayload({ ...payload, ...payload.configured }, CONFIG);
+
+    // And the primary sections are the unconfigured state, as the contract shows.
+    expect(payload.provider.current).toBe("");
+    expect(payload.provider.placeholder.selected).toBe(true);
+    expect(payload.endpoint.current).toBe("");
+    expect(payload.endpoint.placeholder).toBe("https://");
+    expect(payload.model.disabled).toBe(true);
+    expect(payload.reasoning.disabled).toBe(true);
+
+    // Negative control: the old payload described the configured page only, so
+    // its "empty state" was never the fresh install. That shape must not pass
+    // for the unconfigured contract.
+    const configuredOnly = { ...payload, provider: payload.configured.provider };
+    expect(configuredOnly.provider.current).not.toBe("");
+    expect(() => validatePayload(configuredOnly, CONFIG)).toThrow(/R2/);
+  });
+
   it("the validator rejects the pre-fix shape (negative control on the live page)", async () => {
     const payload = await buildPayload();
     const broken = JSON.parse(JSON.stringify(payload));
@@ -395,5 +750,53 @@ describe("options page conformance", () => {
     const noEndpoint = JSON.parse(JSON.stringify(payload));
     noEndpoint.endpoint.autofill.after = "";
     expect(() => validatePayload(noEndpoint, CONFIG)).toThrow(/R3/);
+    const noPlaceholder = JSON.parse(JSON.stringify(payload));
+    delete noPlaceholder.provider.placeholder;
+    expect(() => validatePayload(noPlaceholder, CONFIG)).toThrow(/R2/);
+    // The empty state is what a fresh install shows: it may not come back.
+    const silentFallback = JSON.parse(JSON.stringify(payload));
+    silentFallback.provider.current = "";
+    silentFallback.provider.fallback = "openai";
+    expect(() => validatePayload(silentFallback, CONFIG)).toThrow(/R2/);
+    const enabledPlaceholder = JSON.parse(JSON.stringify(payload));
+    enabledPlaceholder.provider.current = "";
+    enabledPlaceholder.provider.placeholder.selected = true;
+    enabledPlaceholder.provider.placeholder.disabled = false;
+    expect(() => validatePayload(enabledPlaceholder, CONFIG)).toThrow(/R2/);
+    const openModel = JSON.parse(JSON.stringify(payload));
+    openModel.provider.current = "";
+    openModel.provider.placeholder.selected = true;
+    openModel.model.disabled = false;
+    expect(() => validatePayload(openModel, CONFIG)).toThrow(/R2/);
+    // The pre-fix page a fresh install shipped: empty pick, but the endpoint
+    // silently holding OpenAI's base. Only that field is wrong here.
+    const prefill = JSON.parse(JSON.stringify(payload));
+    Object.assign(prefill.provider, { current: "", fallback: "", placeholder: { value: "", label: "Select a provider", disabled: true, selected: true } });
+    Object.assign(prefill.model, { disabled: true, selectedProvider: "", selectedModel: "", options: [] });
+    Object.assign(prefill.endpoint, { current: "https://api.openai.com/v1", placeholder: "https://" });
+    prefill.reasoning.disabled = true;
+    expect(() => validatePayload(prefill, CONFIG)).toThrow(/R3/);
+  });
+
+  it("SPEC 2.1 — the empty page contains no OpenAI endpoint or model at all", async () => {
+    // The payload generator refuses this shape outright; assert it here too so a
+    // regression names the leak instead of surfacing as an R3 failure.
+    const payload = await buildPayload();
+    const empty = JSON.stringify({
+      provider: payload.provider.placeholder,
+      endpoint: payload.endpoint.placeholder,
+      model: payload.model.options.filter((option) => option.value === ""),
+    });
+    expect(empty).not.toMatch(/api\.openai\.com|gpt-?[0-9]/i);
+    expect(payload.endpoint.placeholder).toBe("https://");
+    // The top-level sections are the empty page: the placeholder is selected.
+    // The configured page keeps the same disabled placeholder, unselected.
+    expect(payload.provider.placeholder).toEqual({ value: "", label: "Select a provider", disabled: true, selected: true });
+    expect(payload.configured.provider.placeholder).toEqual({
+      value: "",
+      label: "Select a provider",
+      disabled: true,
+      selected: false,
+    });
   });
 });

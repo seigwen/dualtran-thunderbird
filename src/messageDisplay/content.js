@@ -6,6 +6,7 @@
  * Runs alongside build/shared/dualSpan.js, which exposes window.__dtDualSpan.
  */
 import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../shared/dualSpan.mjs";
+import { applyProviderState, readSettings } from "../shared/providerGuard.mjs";
 
 (() => {
   const t = (key, detail) => {
@@ -14,6 +15,8 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
   };
 
   let busy = false;
+  /** SPEC 2.1: stored settings, re-read whenever the button (re)mounts. */
+  let settings = null;
 
   // Styles are injected here: the MV3 scripting.messageDisplay registration
   // carries no CSS, and the shared helper file must stay side-effect free.
@@ -43,12 +46,24 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
     fab.textContent = t("btnTranslate");
     fab.addEventListener("click", onToggle);
     (document.body || document.documentElement).appendChild(fab);
+    // SPEC 2.1: with the AI engine and no provider, the primary action is off
+    // and says why. Settings are read after mounting, so the button never has
+    // to guess (and never falls back to some other provider).
+    refreshProviderState(fab);
     return true;
+  }
+
+  async function refreshProviderState(fab = document.getElementById("dt-fab")) {
+    if (!fab) return;
+    settings = await readSettings(browser);
+    if (busy || fab.dataset.dtBusy === "1") return;
+    applyProviderState(fab, settings, t);
   }
 
   async function onToggle() {
     if (busy) return;
     const fab = document.getElementById("dt-fab");
+    if (fab.disabled) return;
     if (document.querySelectorAll(".dt-translation").length > 0) {
       removeAllTranslations(document);
       fab.textContent = t("btnTranslate");
@@ -57,6 +72,7 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
     const blocks = collectTextBlocks(document);
     if (blocks.length === 0) return;
     busy = true;
+    fab.dataset.dtBusy = "1";
     fab.disabled = true;
     fab.textContent = t("btnTranslating");
     try {
@@ -80,7 +96,10 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
       fab.textContent = t("errorTranslate", (error && error.message) || String(error));
     } finally {
       busy = false;
-      fab.disabled = false;
+      delete fab.dataset.dtBusy;
+      // Not `fab.disabled = false`: the AI engine may still have no provider,
+      // and the button must stay shut (and keep its tooltip) in that case.
+      applyProviderState(fab, settings, t);
     }
   }
 
@@ -96,12 +115,17 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
   const remountTimer = setInterval(() => {
     remounts += 1;
     if (mount()) report("fab remounted");
+    // While the AI engine is waiting for a provider the button is shut, so a
+    // remount (new message document) re-reads the settings and re-enables it
+    // as soon as the user has picked one — no reload needed.
+    else refreshProviderState();
     if (remounts >= 30) clearInterval(remountTimer);
   }, 1000);
 
   // Smoke build (DT_SMOKE=1): auto-trigger the translation once the message
   // settles, so the smoke does not depend on synthetic mouse clicks.
-  if (__DT_SMOKE__ && !document.documentElement.hasAttribute("data-dt-smoke-auto")) {
+  const smoke = typeof __DT_SMOKE__ !== "undefined" && __DT_SMOKE__;
+  if (smoke && !document.documentElement.hasAttribute("data-dt-smoke-auto")) {
     document.documentElement.setAttribute("data-dt-smoke-auto", "1");
     setTimeout(() => {
       const fab = document.getElementById("dt-fab");

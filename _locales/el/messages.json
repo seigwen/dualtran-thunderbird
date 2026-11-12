@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Αποθηκεύεται τοπικά μόνο στο Thunderbird· τα αιτήματα πηγαίνουν απευθείας στον πάροχό σας."
+  },
+  "providerPlaceholder": {
+    "message": "Επιλέξτε πάροχο"
+  },
+  "providerRequiredForModel": {
+    "message": "Επιλέξτε πρώτα πάροχο"
+  },
+  "providerRequiredError": {
+    "message": "Επιλέξτε πάροχο AI στις ρυθμίσεις πριν τη μετάφραση."
   }
 }

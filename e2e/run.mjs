@@ -46,7 +46,9 @@ const WEBEXT_STUB = (messageScript) => `
       btnComposeTranslate: "Translate", btnTranslating: "Translating…", btnShowOriginal: "Show original",
       errorTranslate: "Translation failed: $DETAIL$", optionTargetLang: "Target language",
       optionEngineGoogle: "Google", optionEngineAi: "AI (BYOK)", optionsTitle: "DualTran",
-      extName: "DualTran", extDescription: "DualTran", optionApiKeyHint: "stored locally"
+      extName: "DualTran", extDescription: "DualTran", optionApiKeyHint: "stored locally",
+      providerPlaceholder: "Select a provider", providerRequiredForModel: "Select a provider first",
+      providerRequiredError: "Choose an AI provider in settings before translating."
     };
     window.browser = {
       storage: {
@@ -87,6 +89,18 @@ const WEBEXT_STUB = (messageScript) => `
             all.dtSettings = merge(all.dtSettings, message.patch);
             write(all);
             return { ok: true };
+          }
+          // SPEC 2.1: the in-mail buttons ask for the engine + provider before
+          // enabling themselves. Same shape the real background returns.
+          if (message && message.command === "dt-settings") {
+            const settings = read().dtSettings || {};
+            return {
+              settings: {
+                engine: settings.engine || "google",
+                targetLang: settings.targetLang || "en",
+                ai: { provider: (settings.ai && settings.ai.provider) || "" },
+              },
+            };
           }
           ${messageScript}
         },
@@ -159,9 +173,11 @@ async function startServer() {
   return { origin: `http://127.0.0.1:${port}`, close: () => new Promise((r) => server.close(r)) };
 }
 
-async function openOptions(browser, origin, sendScript = DEFAULT_SEND, locale = null) {
+async function openOptions(browser, origin, sendScript = DEFAULT_SEND, locale = null, preload = null) {
   const context = await browser.newContext({ viewport: { width: 900, height: 900 } });
   await context.addInitScript(WEBEXT_STUB(sendScript));
+  // A stored settings blob, for scenarios that need a configured page.
+  if (preload) await context.addInitScript(`localStorage.setItem("__dt_e2e_store", ${JSON.stringify(JSON.stringify(preload))})`);
   if (locale) await context.addInitScript(LOCALE_STUB(readLocaleMessages(locale), locale));
   await context.route("https://models.dev/api.json", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: FIXTURE })
@@ -198,11 +214,23 @@ scenario("options-shape", async ({ browser, origin }) => {
   const shape = await page.evaluate(() => {
     const provider = document.getElementById("provider");
     const options = Array.from(provider.options);
-    const labels = options.map((option) => option.textContent.trim());
+    const placeholder = options.find((option) => option.value === "");
+    const real = options.filter((option) => option.value !== "");
     return {
-      labels,
-      values: options.map((option) => option.value),
-      disabled: options.some((option) => option.disabled),
+      labels: real.map((option) => option.textContent.trim()),
+      values: real.map((option) => option.value),
+      disabled: real.some((option) => option.disabled),
+      first: options[0] && { value: options[0].value, disabled: options[0].disabled, label: options[0].textContent.trim() },
+      selected: provider.value,
+      placeholderDisabledRows: options.filter((option) => option.disabled).length,
+      placeholder: placeholder && { value: placeholder.value, label: placeholder.textContent.trim(), disabled: placeholder.disabled },
+      modelDisabled: document.getElementById("modelSelect").disabled,
+      modelValue: document.getElementById("modelSelect").value,
+      modelLabel: (document.getElementById("modelSelect").options[0] || {}).textContent,
+      reasoningDisabled: document.getElementById("reasoning").disabled,
+      endpoint: document.getElementById("baseURL").value,
+      endpointPlaceholder: document.getElementById("baseURL").placeholder,
+      modelInputPlaceholder: document.getElementById("model").getAttribute("placeholder"),
       target: Array.from(document.getElementById("targetLang").options).map((option) => option.value),
       models: Array.from(document.getElementById("modelSelect").options).map((option) => option.value),
       reasoning: Array.from(document.getElementById("reasoning").options).map((option) => option.value),
@@ -222,12 +250,33 @@ scenario("options-shape", async ({ browser, origin }) => {
   assert(shape.target.includes("ja") && shape.target.includes("pt-BR"), "target picker is missing languages");
   assert(shape.reasoning[0] === "lowest", `reasoning must start at lowest, got ${shape.reasoning[0]}`);
   assert(shape.reasoning[1] === "", "second option must be provider default");
+  // SPEC 2.1: fresh install has no provider — a disabled placeholder leads the
+  // list, the model picker says what to do, the endpoint shows only "https://".
+  assert(shape.selected === "", `fresh install must start unconfigured, got "${shape.selected}"`);
+  assert(
+    JSON.stringify(shape.placeholder) === JSON.stringify({ value: "", label: "Select a provider", disabled: true }),
+    `provider placeholder is wrong: ${JSON.stringify(shape.placeholder)}`
+  );
+  assert(shape.first && shape.first.value === "", "the placeholder must lead the provider list");
+  assert(shape.placeholderDisabledRows === 1, `only the placeholder may be disabled, found ${shape.placeholderDisabledRows}`);
+  assert(shape.modelDisabled, "model picker must be disabled while unconfigured");
+  assert(shape.modelValue === "", `model must stay empty while unconfigured, got "${shape.modelValue}"`);
+  assert(shape.modelLabel === "Select a provider first", `model placeholder: ${shape.modelLabel}`);
+  assert(shape.reasoningDisabled, "reasoning picker must be disabled while unconfigured");
+  assert(shape.endpoint === "", `endpoint must be empty while unconfigured, got "${shape.endpoint}"`);
+  assert(shape.endpointPlaceholder === "https://", `endpoint placeholder must be https://, got "${shape.endpointPlaceholder}"`);
+  // SPEC 2.1: no OpenAI leftovers hide behind the empty state (the custom-model
+  // field used to suggest gpt-4o-mini even before a provider was chosen).
+  assert(shape.modelInputPlaceholder === "", `custom model field must not prefill a model, got "${shape.modelInputPlaceholder}"`);
   await page.screenshot({ path: path.join(ARTIFACTS, "options-shape", "screenshot.png"), fullPage: true });
   await context.close();
 });
 
 scenario("options-save-and-restore", async ({ browser, origin }) => {
-  const { page, context } = await openOptions(browser, origin);
+  // A configured install: provider stored, so the AI fields are live.
+  const { page, context } = await openOptions(browser, origin, DEFAULT_SEND, null, {
+    dtSettings: { targetLang: "en", engine: "google", ai: { provider: "openai", model: "gpt-4o-mini" } },
+  });
   // The AI fields live inside a fieldset that only appears for the AI engine.
   await page.selectOption("#engine", "ai");
   await page.selectOption("#provider", "orcarouter");
@@ -259,6 +308,39 @@ scenario("options-save-and-restore", async ({ browser, origin }) => {
   assert(restored.target === "ja", `target not restored: ${restored.target}`);
   await page.screenshot({ path: path.join(ARTIFACTS, "options-save-and-restore", "screenshot.png") });
   await context.close();
+});
+
+scenario("compose-provider-required", async ({ browser, origin }) => {
+  // SPEC 2.1 on the shipped bundle: AI engine, no provider chosen. The primary
+  // button is off and its tooltip is the German providerRequiredError; a click
+  // must not reach the background. Google on the same page is never blocked.
+  const de = readLocaleMessages("de");
+  const empty = await openCompose(browser, origin, DEFAULT_SEND, "de");
+  await empty.context.addInitScript(
+    `localStorage.setItem("__dt_e2e_store", ${JSON.stringify(JSON.stringify({ dtSettings: { engine: "ai", ai: { provider: "", model: "" } } }))})`
+  );
+  await empty.page.reload();
+  await empty.page.waitForSelector("#dt-fab");
+  await empty.page.waitForFunction(() => document.getElementById("dt-fab").disabled, null, { timeout: 5000 });
+  const blocked = await empty.page.evaluate(() => {
+    const fab = document.getElementById("dt-fab");
+    fab.click();
+    return { disabled: fab.disabled, title: fab.getAttribute("title"), sent: window.__sent || null };
+  });
+  assert(blocked.disabled === true, "the translate button must be disabled while no AI provider is set");
+  assert(blocked.title === de.providerRequiredError, `tooltip must be providerRequiredError, got "${blocked.title}"`);
+  assert(blocked.sent === null || blocked.sent === undefined, `a disabled button must not translate: ${JSON.stringify(blocked.sent)}`);
+  await empty.page.screenshot({ path: path.join(ARTIFACTS, "compose-provider-required", "screenshot.png") });
+  await empty.context.close();
+
+  const google = await openCompose(browser, origin, DEFAULT_SEND, "de");
+  const live = await google.page.evaluate(() => ({
+    disabled: document.getElementById("dt-fab").disabled,
+    title: document.getElementById("dt-fab").getAttribute("title"),
+  }));
+  assert(live.disabled === false, "the Google engine must stay enabled with no AI provider");
+  assert(!live.title, `the Google engine button must carry no tooltip, got "${live.title}"`);
+  await google.context.close();
 });
 
 scenario("compose-translate", async ({ browser, origin }) => {
@@ -335,7 +417,7 @@ scenario("options-error-free-boot", async ({ browser, origin }) => {
   const { page, context, logs } = await openOptions(browser, origin);
   const labels = await page.evaluate(() => ({
     provider: document.querySelector('[data-i18n="optionProvider"]').textContent,
-    disabled: Array.from(document.querySelectorAll("#provider option")).filter((option) => option.disabled).length,
+    disabled: Array.from(document.querySelectorAll("#provider option")).filter((option) => option.disabled && option.value !== "").length,
     reasoning: document.querySelector('[data-i18n="optionReasoning"]').textContent,
   }));
   assert(logs.length === 0, `page errors: ${logs.join(" | ")}`);

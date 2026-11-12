@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Word slegs plaaslik in Thunderbird gestoor; versoeke gaan reguit na jou verskaffer."
+  },
+  "providerPlaceholder": {
+    "message": "Kies 'n verskaffer"
+  },
+  "providerRequiredForModel": {
+    "message": "Kies eers 'n verskaffer"
+  },
+  "providerRequiredError": {
+    "message": "Kies voor vertaling 'n KI-verskaffer in die instellings."
   }
 }

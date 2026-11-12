@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "केवल Thunderbird में स्थानीय रूप से संग्रहीत; अनुरोध सीधे आपके प्रदाता को जाते हैं।"
+  },
+  "providerPlaceholder": {
+    "message": "प्रदाता चुनें"
+  },
+  "providerRequiredForModel": {
+    "message": "पहले प्रदाता चुनें"
+  },
+  "providerRequiredError": {
+    "message": "अनुवाद करने से पहले सेटिंग में AI प्रदाता चुनें।"
   }
 }

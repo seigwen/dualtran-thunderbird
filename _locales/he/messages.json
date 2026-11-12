@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "נשמר מקומית ב-Thunderbird בלבד; הבקשות נשלחות ישירות לספק שלך."
+  },
+  "providerPlaceholder": {
+    "message": "בחרו ספק"
+  },
+  "providerRequiredForModel": {
+    "message": "יש לבחור ספק תחילה"
+  },
+  "providerRequiredError": {
+    "message": "בחרו ספק AI בהגדרות לפני התרגום."
   }
 }

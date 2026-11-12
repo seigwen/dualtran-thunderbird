@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Alleen lokaal opgeslagen in Thunderbird; verzoeken gaan rechtstreeks naar je provider."
+  },
+  "providerPlaceholder": {
+    "message": "Kies een provider"
+  },
+  "providerRequiredForModel": {
+    "message": "Kies eerst een provider"
+  },
+  "providerRequiredError": {
+    "message": "Kies een AI-provider in de instellingen voordat je vertaalt."
   }
 }

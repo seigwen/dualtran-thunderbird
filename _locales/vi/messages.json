@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Chỉ lưu cục bộ trong Thunderbird; yêu cầu được gửi trực tiếp đến nhà cung cấp của bạn."
+  },
+  "providerPlaceholder": {
+    "message": "Chọn nhà cung cấp"
+  },
+  "providerRequiredForModel": {
+    "message": "Hãy chọn nhà cung cấp trước"
+  },
+  "providerRequiredError": {
+    "message": "Hãy chọn nhà cung cấp AI trong cài đặt trước khi dịch."
   }
 }

@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Gemmes kun lokalt i Thunderbird; forespørgsler sendes direkte til din udbyder."
+  },
+  "providerPlaceholder": {
+    "message": "Vælg en udbyder"
+  },
+  "providerRequiredForModel": {
+    "message": "Vælg en udbyder først"
+  },
+  "providerRequiredError": {
+    "message": "Vælg en AI-udbyder i indstillingerne, før du oversætter."
   }
 }

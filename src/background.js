@@ -6,14 +6,29 @@
  * unit-tested against mocks - see tests/background.test.js.
  */
 
+import { isProviderChosen, providerRequiredError } from "./engine.js";
+
 export const DISPLAY_SCRIPTS = ["messageDisplay/content.js"];
 export const COMPOSE_SCRIPT = ["compose/content.js"];
 export const DISPLAY_SCRIPT_ID = "dualtran-message-display@seigwen.dev";
 export const COMPOSE_SCRIPT_ID = "dualtran-compose@seigwen.dev";
 
+/**
+ * SPEC 2.1: with no provider chosen the AI engine has nothing to call, so the
+ * request stops here with the localized `providerRequiredError`. Returning it
+ * as the message result (instead of throwing) means no network request is
+ * made and every content script can render one string.
+ */
+function providerMissing(settings, message) {
+  const engineName = message.engine ?? (settings && settings.engine);
+  const ai = settings ? settings.ai : undefined;
+  return engineName === "ai" && !isProviderChosen(ai && ai.provider);
+}
+
 export async function registerBackground({
   messenger,
   engine,
+  i18n = null,
   getSettingsFn = null,
   setSettingsFn = null,
   debugFn = () => {},
@@ -40,11 +55,32 @@ export async function registerBackground({
         return { error: error && error.message ? error.message : String(error) };
       }
     }
+    if (message.command === "dt-settings") {
+      // SPEC 2.1: the in-mail buttons read the stored settings before they
+      // enable themselves. Only what the buttons need — never the API key.
+      try {
+        const settings = getSettingsFn ? await getSettingsFn() : null;
+        return {
+          settings: settings
+            ? {
+                engine: settings.engine,
+                targetLang: settings.targetLang,
+                ai: { provider: String((settings.ai && settings.ai.provider) || "") },
+              }
+            : null,
+        };
+      } catch (error) {
+        return { error: error && error.message ? error.message : String(error) };
+      }
+    }
     if (message.command !== "dt-translate") {
       return undefined;
     }
     try {
       const settings = getSettingsFn ? await getSettingsFn() : null;
+      if (providerMissing(settings, message)) {
+        return { error: providerRequiredError(i18n || messenger.i18n).message };
+      }
       const result = await engine.translateBatch(message.texts || [], {
         engine: message.engine ?? (settings && settings.engine),
         targetLang: message.targetLang ?? (settings && settings.targetLang),

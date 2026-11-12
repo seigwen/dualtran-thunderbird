@@ -25,8 +25,10 @@ const engine = createEngine({
   config: {
     defaultEngine: "google",
     defaultTargetLang: mapUiLangToTarget(uiLang),
-    ai: { provider: "openai", apiKey: "", model: "gpt-4o-mini", baseURL: "" },
+    // SPEC 2.1: empty until the user picks a provider; the engine refuses to guess.
+    ai: { provider: "", apiKey: "", model: "", baseURL: "" },
   },
+  i18n: api.i18n,
   fetchImpl: null, // default fetch: the extension context has host_permissions
   // Cached models.dev projection written by the options page; the engine reads
   // it to resolve the "lowest" reasoning sentinel against the chosen model.
@@ -39,6 +41,7 @@ const engine = createEngine({
 registerBackground({
   messenger: api,
   engine,
+  i18n: api.i18n,
   getSettingsFn: () => getSettings(api),
   setSettingsFn: (patch) => setSettings(api, patch),
   debugFn,

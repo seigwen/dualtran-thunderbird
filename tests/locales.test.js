@@ -74,6 +74,27 @@ describe("locale catalogues", () => {
     expect(missing, `keys used in src but absent from _locales/en: ${missing.join(", ")}`).toEqual([]);
   });
 
+  it("ships the SPEC 2.1 provider keys with the agreed source strings", () => {
+    expect(en.providerPlaceholder.message).toBe("Select a provider");
+    expect(en.providerRequiredForModel.message).toBe("Select a provider first");
+    expect(en.providerRequiredError.message).toBe("Choose an AI provider in settings before translating.");
+    // Chinese is hand-written, never machine-translated.
+    for (const code of ["zh_CN", "zh_TW"]) {
+      const catalogue = read(code);
+      expect(catalogue.providerPlaceholder.message).toMatch(/选择 AI 提供商|選擇 AI 提供商/);
+      expect(catalogue.providerRequiredForModel.message).toMatch(/请先选择提供商|請先選擇提供商/);
+      expect(catalogue.providerRequiredError.message).toMatch(/翻译前请先在设置中|翻譯前請先在設定中/);
+    }
+    // Every other locale got its own translation, not the English source.
+    for (const code of EXPECTED) {
+      if (code === "en") continue;
+      const catalogue = read(code);
+      expect(catalogue.providerPlaceholder.message, `${code}: placeholder`).not.toBe(en.providerPlaceholder.message);
+      expect(catalogue.providerRequiredForModel.message, `${code}: model hint`).not.toBe(en.providerRequiredForModel.message);
+      expect(catalogue.providerRequiredError.message, `${code}: error`).not.toBe(en.providerRequiredError.message);
+    }
+  });
+
   it("does not leave Chinese in non-Chinese locales", () => {
     for (const code of EXPECTED) {
       // Japanese legitimately uses kanji; Chinese is a source language.

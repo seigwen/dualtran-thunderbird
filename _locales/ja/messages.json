@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Thunderbird内にのみローカル保存され、リクエストはプロバイダーへ直接送信されます"
+  },
+  "providerPlaceholder": {
+    "message": "プロバイダーを選択"
+  },
+  "providerRequiredForModel": {
+    "message": "先にプロバイダーを選択"
+  },
+  "providerRequiredError": {
+    "message": "翻訳する前に設定で AI プロバイダーを選択してください。"
   }
 }

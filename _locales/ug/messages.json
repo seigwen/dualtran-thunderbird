@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "پەقەت Thunderbird دا يەرلىك ساقلىنىدۇ؛ تەلەپلەر بىۋاسىتە تەمىنلىگۈچىڭىزغا يوللىنىدۇ."
+  },
+  "providerPlaceholder": {
+    "message": "بىر تەمىنلىگۈچى تاللاڭ"
+  },
+  "providerRequiredForModel": {
+    "message": "ئاۋۋال تەمىنلىگۈچى تاللاڭ"
+  },
+  "providerRequiredError": {
+    "message": "تەرجىمە قىلىشتىن بۇرۇن تەڭشەكتە AI تەمىنلىگۈچىسىنى تاللاڭ."
   }
 }

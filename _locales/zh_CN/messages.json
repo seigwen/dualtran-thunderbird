@@ -80,5 +80,17 @@
   },
   "optionApiKeyHint": {
     "message": "只保存在本机 Thunderbird 里；请求直接发往你的服务商。"
+  },
+  "providerPlaceholder": {
+    "message": "请选择 AI 提供商",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
+  },
+  "providerRequiredForModel": {
+    "message": "请先选择提供商",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
+  },
+  "providerRequiredError": {
+    "message": "翻译前请先在设置中选择 AI 提供商。",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
   }
 }

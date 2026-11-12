@@ -104,5 +104,19 @@
     return "";
   }
 
-  return { MODELS_DEV_URL, BUILTINS, LEVEL_ORDER, levelsOf, projectCatalog, buildProviderList, resolveReasoning };
+  /**
+   * Endpoint to prefill for a provider: the curated one, else the catalogue's,
+   * else the id turned into an OpenAI-compatible base (catalogue entries such
+   * as Anthropic carry no `api`). Returns "" for the empty pick.
+   */
+  function endpointFor(providerId, api) {
+    const id = String(providerId ?? "").trim();
+    if (!id) return "";
+    if (api) return api;
+    const builtIn = BUILTINS.find((entry) => entry.id === id);
+    if (builtIn) return builtIn.api;
+    return `https://api.${id.replace(/[^a-z0-9.-]/gi, "")}.com/v1`;
+  }
+
+  return { MODELS_DEV_URL, BUILTINS, LEVEL_ORDER, levelsOf, projectCatalog, buildProviderList, endpointFor, resolveReasoning };
 });

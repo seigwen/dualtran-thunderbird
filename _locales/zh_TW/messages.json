@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "只儲存在本機 Thunderbird 裡；請求直接送往你的服務商。"
+  },
+  "providerPlaceholder": {
+    "message": "請選擇 AI 提供商"
+  },
+  "providerRequiredForModel": {
+    "message": "請先選擇提供商"
+  },
+  "providerRequiredError": {
+    "message": "翻譯前請先在設定中選擇 AI 提供商。"
   }
 }
