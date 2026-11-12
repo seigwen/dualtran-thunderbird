@@ -98,10 +98,16 @@
       option.textContent = provider.name;
       providerSel.appendChild(option);
     }
-    // Stored values are never rewritten: an unknown id still shows as empty
-    // rather than silently becoming some other provider.
+    // Stored values are never rewritten: an unknown id is appended and kept
+    // selected rather than silently becoming another provider or an empty pick.
     const known = providerList.some((provider) => provider.id === selectedId);
-    providerSel.value = known ? selectedId : "";
+    if (selectedId && !known) {
+      const stored = document.createElement("option");
+      stored.value = selectedId;
+      stored.textContent = selectedId;
+      providerSel.appendChild(stored);
+    }
+    providerSel.value = selectedId || "";
   }
 
   function providerChosen() {

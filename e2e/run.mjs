@@ -273,10 +273,8 @@ scenario("options-shape", async ({ browser, origin }) => {
 });
 
 scenario("options-save-and-restore", async ({ browser, origin }) => {
-  // A configured install: provider stored, so the AI fields are live.
-  const { page, context } = await openOptions(browser, origin, DEFAULT_SEND, null, {
-    dtSettings: { targetLang: "en", engine: "google", ai: { provider: "openai", model: "gpt-4o-mini" } },
-  });
+  // Start from a fresh install (empty provider); select the AI engine first.
+  const { page, context } = await openOptions(browser, origin);
   // The AI fields live inside a fieldset that only appears for the AI engine.
   await page.selectOption("#engine", "ai");
   await page.selectOption("#provider", "orcarouter");
