@@ -27,6 +27,8 @@
   let providerApi = new Map();
   /** True once the endpoint holds something the user typed: stops the autofill. */
   let endpointDirty = false;
+  /** Last real pick, so the disabled placeholder can never win a revert. */
+  let lastProvider = "";
 
   function renderLanguages(selected) {
     langSel.innerHTML = "";
@@ -81,32 +83,72 @@
     providerList.sort((a, b) => LABEL_ORDER.compare(a.name, b.name));
     providerApi = new Map(providerList.map((provider) => [provider.id, provider.api]));
     providerSel.innerHTML = "";
+    // SPEC 2.1: the empty pick is a disabled placeholder, not a provider. It
+    // leads the list so a fresh install shows what to do, but it is never
+    // sorted in and never offered as a choice (an empty provider stays empty;
+    // the user cannot return to it after picking one).
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = t("providerPlaceholder");
+    placeholder.disabled = true;
+    providerSel.appendChild(placeholder);
     for (const provider of providerList) {
       const option = document.createElement("option");
       option.value = provider.id;
       option.textContent = provider.name;
       providerSel.appendChild(option);
     }
+    // Stored values are never rewritten: an unknown id is appended and kept
+    // selected rather than silently becoming another provider or an empty pick.
     const known = providerList.some((provider) => provider.id === selectedId);
-    providerSel.value = known ? selectedId : "openai";
+    if (selectedId && !known) {
+      const stored = document.createElement("option");
+      stored.value = selectedId;
+      stored.textContent = selectedId;
+      providerSel.appendChild(stored);
+    }
+    providerSel.value = selectedId || "";
+  }
+
+  function providerChosen() {
+    return providerSel.value !== "";
   }
 
   /** Autofill the endpoint for the current provider unless the user owns the value. */
   function syncEndpoint() {
     if (endpointDirty) return;
-    baseInput.value = providerApi.get(providerSel.value) || "";
+    baseInput.value = providerChosen() ? DualTranCatalog.endpointFor(providerSel.value, providerApi.get(providerSel.value)) : "";
+  }
+
+  /** Placeholder of the endpoint field: bare scheme until a provider exists. */
+  function renderEndpointPlaceholder() {
+    baseInput.placeholder = providerChosen() ? "" : "https://";
   }
 
   function toggleCustomModel() {
-    const custom = modelSel.value === CUSTOM_MODEL;
+    const custom = providerChosen() && modelSel.value === CUSTOM_MODEL;
     modelInput.hidden = !custom;
     customLabel.hidden = !custom;
   }
 
   function renderModels(selectedModelId) {
     const provider = providerById(providerSel.value);
-    const models = ((provider && provider.models) || []).slice().sort((a, b) => LABEL_ORDER.compare(a.label, b.label));
+    const models = providerChosen() && provider ? provider.models.slice().sort((a, b) => LABEL_ORDER.compare(a.label, b.label)) : [];
     modelSel.innerHTML = "";
+    if (!providerChosen()) {
+      // Nothing to choose from until a provider is picked: one disabled row
+      // says so, and the custom-model entry stays out of the way.
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = t("providerRequiredForModel");
+      modelSel.appendChild(placeholder);
+      modelSel.disabled = true;
+      modelSel.value = "";
+      modelInput.hidden = true;
+      customLabel.hidden = true;
+      return;
+    }
+    modelSel.disabled = false;
     for (const model of models) {
       const option = document.createElement("option");
       option.value = model.id;
@@ -127,7 +169,7 @@
   }
 
   function renderReasoning(selected) {
-    const levels = reasoningLevels();
+    const levels = providerChosen() ? reasoningLevels() : [];
     const values = DualTranCatalog.LEVEL_ORDER.filter((level) => levels.includes(level));
     reasoningSel.innerHTML = "";
     const entries = [["lowest", t("optionReasoningLowest")], ["", t("optionReasoningDefault")]].concat(
@@ -141,6 +183,9 @@
     }
     const known = entries.some(([value]) => value === selected);
     reasoningSel.value = known ? selected : "lowest";
+    // SPEC 2.1: disabled until a provider is picked, but the stored sentinel
+    // (`lowest`) is kept — the picker never invents a concrete level.
+    reasoningSel.disabled = !providerChosen();
   }
 
   function renderAiVisibility() {
@@ -153,7 +198,8 @@
     const stored = (await api.storage.local.get({ dtSettings: {} })).dtSettings || {};
     engineSel.value = stored.engine || "google";
     const ai = stored.ai || {};
-    renderProviders(ai.provider || "openai");
+    // SPEC 2.1: no `|| "openai"` — an unset provider stays unset.
+    renderProviders(ai.provider || "");
     renderLanguages(stored.targetLang);
     $("apiKey").value = ai.apiKey || "";
     renderModels(ai.model || "");
@@ -161,14 +207,23 @@
     // A stored endpoint is the user's own choice; otherwise show the provider's.
     baseInput.value = ai.baseURL || "";
     endpointDirty = Boolean(ai.baseURL);
+    renderEndpointPlaceholder();
     syncEndpoint();
     renderAiVisibility();
   })();
 
   providerSel.addEventListener("change", () => {
+    if (!providerChosen()) {
+      // The placeholder is disabled; a synthetic change lands back on it.
+      providerSel.value = lastProvider;
+      return;
+    }
+    lastProvider = providerSel.value;
+    renderEndpointPlaceholder();
     syncEndpoint();
     renderModels("");
     renderReasoning(reasoningSel.value);
+    reasoningSel.disabled = false;
   });
   modelSel.addEventListener("change", () => {
     toggleCustomModel();
@@ -187,7 +242,8 @@
         provider: providerSel.value,
         reasoning: reasoningSel.value,
         apiKey: $("apiKey").value.trim(),
-        model: selectedModel() || "gpt-4o-mini",
+        // SPEC 2.1: store what the user picked, including "nothing picked yet".
+        model: providerChosen() ? selectedModel() : "",
         baseURL: $("baseURL").value.trim(),
       },
     };

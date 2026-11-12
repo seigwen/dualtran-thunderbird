@@ -5,6 +5,7 @@
  * work unchanged.
  */
 import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../shared/dualSpan.mjs";
+import { applyProviderState, readSettings } from "../shared/providerGuard.mjs";
 
 (() => {
   const t = (key, detail) => {
@@ -13,6 +14,8 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
   };
 
   let busy = false;
+  /** SPEC 2.1: stored settings, re-read whenever the button (re)mounts. */
+  let settings = null;
 
   function mount() {
     if (document.getElementById("dt-fab")) return;
@@ -23,11 +26,22 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
     fab.textContent = t("btnComposeTranslate");
     fab.addEventListener("click", onToggle);
     (document.body || document.documentElement).appendChild(fab);
+    // SPEC 2.1: AI engine without a provider → disabled primary button whose
+    // tooltip is providerRequiredError. No provider is guessed.
+    refreshProviderState(fab);
+  }
+
+  async function refreshProviderState(fab = document.getElementById("dt-fab")) {
+    if (!fab) return;
+    settings = await readSettings(browser);
+    if (busy || fab.dataset.dtBusy === "1") return;
+    applyProviderState(fab, settings, t);
   }
 
   async function onToggle() {
     if (busy) return;
     const fab = document.getElementById("dt-fab");
+    if (fab.disabled) return;
     if (document.querySelectorAll(".dt-translation").length > 0) {
       removeAllTranslations(document);
       fab.textContent = t("btnComposeTranslate");
@@ -36,6 +50,7 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
     const blocks = collectTextBlocks(document);
     if (blocks.length === 0) return;
     busy = true;
+    fab.dataset.dtBusy = "1";
     fab.disabled = true;
     fab.classList.add("busy");
     fab.textContent = t("btnTranslating");
@@ -58,8 +73,10 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
       fab.textContent = t("errorTranslate", (error && error.message) || String(error));
     } finally {
       busy = false;
-      fab.disabled = false;
+      delete fab.dataset.dtBusy;
       fab.classList.remove("busy");
+      // Keep the AI-engine guard: the provider may still be unset.
+      applyProviderState(fab, settings, t);
     }
   }
 
@@ -69,6 +86,7 @@ import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../sha
   const remountTimer = setInterval(() => {
     remounts += 1;
     mount();
+    if (!document.getElementById("dt-fab") || document.getElementById("dt-fab").disabled) refreshProviderState();
     if (remounts >= 30) clearInterval(remountTimer);
   }, 1000);
 

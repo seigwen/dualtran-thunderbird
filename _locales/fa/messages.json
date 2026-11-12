@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "فقط به‌صورت محلی در Thunderbird ذخیره می‌شود؛ درخواست‌ها مستقیماً به ارائه‌دهنده شما ارسال می‌شوند."
+  },
+  "providerPlaceholder": {
+    "message": "یک ارائه‌دهنده انتخاب کنید"
+  },
+  "providerRequiredForModel": {
+    "message": "ابتدا یک ارائه‌دهنده انتخاب کنید"
+  },
+  "providerRequiredError": {
+    "message": "پیش از ترجمه، یک ارائه‌دهنده هوش مصنوعی در تنظیمات انتخاب کنید."
   }
 }

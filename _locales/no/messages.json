@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Lagres kun lokalt i Thunderbird; forespørsler går direkte til leverandøren din."
+  },
+  "providerPlaceholder": {
+    "message": "Velg en leverandør"
+  },
+  "providerRequiredForModel": {
+    "message": "Velg en leverandør først"
+  },
+  "providerRequiredError": {
+    "message": "Velg en AI-leverandør i innstillingene før du oversetter."
   }
 }

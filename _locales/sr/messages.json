@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Čuva se lokalno samo u Thunderbirdu; zahtevi idu direktno ka vašem provajderu."
+  },
+  "providerPlaceholder": {
+    "message": "Изаберите добављача"
+  },
+  "providerRequiredForModel": {
+    "message": "Прво изаберите добављача"
+  },
+  "providerRequiredError": {
+    "message": "Пре превођења изаберите AI добављача у подешавањима."
   }
 }

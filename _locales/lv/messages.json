@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Glabājas tikai lokāli Thunderbird; pieprasījumi tiek sūtīti tieši jūsu pakalpojumu sniedzējam."
+  },
+  "providerPlaceholder": {
+    "message": "Izvēlieties pakalpojumu sniedzēju"
+  },
+  "providerRequiredForModel": {
+    "message": "Vispirms izvēlieties pakalpojumu sniedzēju"
+  },
+  "providerRequiredError": {
+    "message": "Pirms tulkošanas iestatījumos izvēlieties AI pakalpojumu sniedzēju."
   }
 }

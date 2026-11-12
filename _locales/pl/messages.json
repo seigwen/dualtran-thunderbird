@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Przechowywany wyłącznie lokalnie w Thunderbirdzie; żądania trafiają bezpośrednio do Twojego dostawcy."
+  },
+  "providerPlaceholder": {
+    "message": "Wybierz dostawcę"
+  },
+  "providerRequiredForModel": {
+    "message": "Najpierw wybierz dostawcę"
+  },
+  "providerRequiredError": {
+    "message": "Przed tłumaczeniem wybierz dostawcę AI w ustawieniach."
   }
 }

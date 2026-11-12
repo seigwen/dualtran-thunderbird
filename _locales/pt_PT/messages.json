@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Guardada apenas localmente no Thunderbird; os pedidos são enviados diretamente para o seu fornecedor."
+  },
+  "providerPlaceholder": {
+    "message": "Selecione um fornecedor"
+  },
+  "providerRequiredForModel": {
+    "message": "Selecione primeiro um fornecedor"
+  },
+  "providerRequiredError": {
+    "message": "Selecione um fornecedor de IA nas definições antes de traduzir."
   }
 }

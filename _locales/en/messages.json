@@ -80,5 +80,17 @@
   },
   "optionApiKeyHint": {
     "message": "Stored locally in Thunderbird only; requests go straight to your provider."
+  },
+  "providerPlaceholder": {
+    "message": "Select a provider",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
+  },
+  "providerRequiredForModel": {
+    "message": "Select a provider first",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
+  },
+  "providerRequiredError": {
+    "message": "Choose an AI provider in settings before translating.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
   }
 }

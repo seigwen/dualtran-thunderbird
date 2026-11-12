@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Pohranjeno lokalno samo u Thunderbirdu; zahtjevi idu izravno vašem pružatelju usluga."
+  },
+  "providerPlaceholder": {
+    "message": "Odaberite pružatelja"
+  },
+  "providerRequiredForModel": {
+    "message": "Najprije odaberite pružatelja"
+  },
+  "providerRequiredError": {
+    "message": "Prije prijevoda odaberite AI pružatelja u postavkama."
   }
 }

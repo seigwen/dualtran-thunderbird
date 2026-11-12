@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "จัดเก็บไว้ในเครื่องนี้ใน Thunderbird เท่านั้น คำขอจะส่งตรงไปยังผู้ให้บริการของคุณ"
+  },
+  "providerPlaceholder": {
+    "message": "เลือกผู้ให้บริการ"
+  },
+  "providerRequiredForModel": {
+    "message": "เลือกผู้ให้บริการก่อน"
+  },
+  "providerRequiredError": {
+    "message": "เลือกผู้ให้บริการ AI ในการตั้งค่าก่อนแปล"
   }
 }

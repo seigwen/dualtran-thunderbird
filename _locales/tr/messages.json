@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Yalnızca Thunderbird içinde yerel olarak saklanır; istekler doğrudan sağlayıcınıza gider."
+  },
+  "providerPlaceholder": {
+    "message": "Bir sağlayıcı seçin"
+  },
+  "providerRequiredForModel": {
+    "message": "Önce bir sağlayıcı seçin"
+  },
+  "providerRequiredError": {
+    "message": "Çeviri yapmadan önce ayarlardan bir yapay zekâ sağlayıcısı seçin."
   }
 }

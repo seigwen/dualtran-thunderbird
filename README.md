@@ -3,7 +3,9 @@
 **Bilingual email translation in your mail client.** The original message stays
 untouched; the translation appears right below each block (original + translation
 side by side). Google engine free by default; bring your own AI model (BYOK, any
-OpenAI-compatible endpoint) for better quality.
+OpenAI-compatible endpoint) for better quality. A fresh install has **no AI
+provider selected** — pick one in the settings before the AI engine will
+translate.
 
 Part of the [DualTran](https://github.com/seigwen/DualTran-extension) family —
 the same translation core (`dualtran` on npm) that powers the browser extension,

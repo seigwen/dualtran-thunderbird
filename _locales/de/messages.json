@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Nur lokal in Thunderbird gespeichert; Anfragen gehen direkt an Ihren Anbieter."
+  },
+  "providerPlaceholder": {
+    "message": "Anbieter auswählen"
+  },
+  "providerRequiredForModel": {
+    "message": "Zuerst einen Anbieter auswählen"
+  },
+  "providerRequiredError": {
+    "message": "Wähle vor dem Übersetzen einen KI-Anbieter in den Einstellungen."
   }
 }

@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Csak helyben, a Thunderbirdben tárolva; a kérések közvetlenül a szolgáltatójához mennek."
+  },
+  "providerPlaceholder": {
+    "message": "Válasszon szolgáltatót"
+  },
+  "providerRequiredForModel": {
+    "message": "Először válasszon szolgáltatót"
+  },
+  "providerRequiredError": {
+    "message": "Fordítás előtt válasszon AI-szolgáltatót a beállításokban."
   }
 }

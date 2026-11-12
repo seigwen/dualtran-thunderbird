@@ -80,5 +80,14 @@
   },
   "optionApiKeyHint": {
     "message": "Geymt staðbundið í Thunderbird eingöngu; beiðnir fara beint til þjónustuveitandans þíns."
+  },
+  "providerPlaceholder": {
+    "message": "Veldu þjónustuaðila"
+  },
+  "providerRequiredForModel": {
+    "message": "Veldu fyrst þjónustuaðila"
+  },
+  "providerRequiredError": {
+    "message": "Veldu AI-þjónustuaðila í stillingunum áður en þú þýðir."
   }
 }
