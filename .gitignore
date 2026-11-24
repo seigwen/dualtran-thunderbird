@@ -10,3 +10,4 @@ e2e-artifacts/
 # Local debugging evidence and throwaway probes
 .hermes/
 aiprobe.mjs
+ui-test/
