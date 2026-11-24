@@ -90,3 +90,57 @@ describe("removeAllTranslations", () => {
     expect(doc.querySelectorAll(`[${TRANSLATED_ATTR}]`)).toHaveLength(0);
   });
 });
+
+describe("collectTextBlocks on a real reading pane", () => {
+  // Thunderbird renders the reading pane as a header table followed by the body.
+  // A plain-text message body lands in a single <pre>, and the header cells are
+  // TD elements - which is exactly how "translate this mail" ended up sending
+  // From/To/Date/Subject to the model and nothing else.
+  const pane = `
+    <div id="messageHeader">
+      <table><tbody>
+        <tr><th>From</th><td>Hermes Notify &lt;clusiro@gmail.com&gt;</td></tr>
+        <tr><th>To</th><td>seigwen@gmail.com</td></tr>
+        <tr><th>Subject</th><td>DualTran error-copy verification</td></tr>
+        <tr><th>Date</th><td>11/24/2026, 9:57 AM</td></tr>
+      </tbody></table>
+    </div>
+    <div id="messageEditor"><div class="moz-text-plain"><pre>
+This is a test message used to verify the DualTran translation button.
+
+Second paragraph: open this mail in the reading pane and click the AI button.
+</pre></div></div>
+  `;
+
+  it("never sends reading-pane header cells as body text", () => {
+    const doc = makeDoc(pane);
+    const blocks = collectTextBlocks(doc);
+    const texts = blocks.map((b) => b.text);
+    expect(texts.join("\n")).not.toContain("Hermes Notify");
+    expect(texts.join("\n")).not.toContain("11/24/2026");
+    expect(texts.some((t) => /^Subject:/i.test(t))).toBe(false);
+  });
+
+  it("collects a plain-text body living in a <pre>", () => {
+    const doc = makeDoc(pane);
+    const blocks = collectTextBlocks(doc);
+    expect(blocks.length).toBeGreaterThan(0);
+    expect(blocks.some((b) => b.text.includes("verify the DualTran translation button"))).toBe(true);
+  });
+
+  it("still collects a normal HTML body and skips code blocks", () => {
+    const doc = makeDoc(`
+      <div id="messageHeader"><table><tr><th>From</th><td>A Person</td></tr></table></div>
+      <div id="messageEditor">
+        <p>First real paragraph of the newsletter.</p>
+        <p>Second real paragraph of the newsletter.</p>
+        <pre><code>const x = 1; // not prose to translate</code></pre>
+      </div>
+    `);
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts).toContain("First real paragraph of the newsletter.");
+    expect(texts).toContain("Second real paragraph of the newsletter.");
+    expect(texts.join("\n")).not.toContain("const x = 1");
+    expect(texts.join("\n")).not.toContain("A Person");
+  });
+});

@@ -8,9 +8,14 @@
 
 export const TRANSLATED_ATTR = "data-dt-translated";
 
-const CANDIDATE_TAGS = ["P", "LI", "H1", "H2", "H3", "H4", "H5", "H6", "TD", "BLOCKQUOTE"];
+const CANDIDATE_TAGS = ["P", "LI", "H1", "H2", "H3", "H4", "H5", "H6", "TD", "BLOCKQUOTE", "PRE"];
 const CANDIDATE_SELECTOR = CANDIDATE_TAGS.join(",");
-const SKIP_SELECTOR = ".dt-translation, pre, code, script, style, noscript, textarea";
+// `#messageHeader` is Thunderbird's reading-pane header (From/To/Subject/Date).
+// Its cells are TD elements, so without this the collector sent the header to
+// the model and never the body - "translate this mail" produced four header
+// lines. A plain-text body is rendered into a single <pre>, which used to be in
+// this list too; only <code> inside it must stay untranslated.
+const SKIP_SELECTOR = ".dt-translation, #messageHeader, code, script, style, noscript, textarea";
 
 /** True when a text block carries prose worth translating. */
 export function shouldTranslateText(text) {
@@ -32,6 +37,8 @@ export function collectTextBlocks(root) {
   for (const el of root.querySelectorAll(CANDIDATE_SELECTOR)) {
     if (el.getAttribute(TRANSLATED_ATTR)) continue;
     if (el.closest(SKIP_SELECTOR)) continue;
+    // A <pre> that wraps <code> is a code block, not a plain-text body.
+    if (el.tagName === "PRE" && el.querySelector("code")) continue;
     if (el.querySelector(CANDIDATE_SELECTOR)) continue; // container of nested candidates
     const text = el.textContent || "";
     if (!shouldTranslateText(text)) continue;

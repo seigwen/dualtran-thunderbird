@@ -109,6 +109,12 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
           if (insertDualSpan(document, block.el, result.translations[index])) inserted += 1;
         }
       });
+      // A reply that produced nothing on the page is not a success: reporting it
+      // as idle leaves the reader staring at untranslated text with no reason.
+      if (inserted === 0) {
+        group.setError(t("errorNoTranslatableText"), "");
+        return;
+      }
       group.setIdle(result.engine === "ai" ? "ai" : "google");
       report(`translated ${inserted} block(s) via ${result.engine}`);
     } catch (error) {

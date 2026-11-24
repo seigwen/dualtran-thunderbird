@@ -14,6 +14,17 @@
 const REQUEST_KEY = "dtRequest";
 const RESPONSE_KEY = "dtResponse";
 
+/**
+ * How long the content script waits for `dtResponse`.
+ *
+ * Measured on the Thunderbird host: a 24-block AI translation took ~200 s, and
+ * a 4-block one exceeded 300 s on a slow day. The previous 120 s budget expired
+ * while the background was still working, so the reply arrived with nobody
+ * listening - the UI showed neither a translation nor an error. Keep this well
+ * above the observed worst case; a timeout here is a fallback, not a deadline.
+ */
+export const DEFAULT_REQUEST_TIMEOUT_MS = 600000;
+
 function newId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -24,7 +35,7 @@ function newId() {
  * @param {number} timeoutMs
  * @returns {Promise<object>} the background's reply (same shape as sendMessage)
  */
-export function requestViaStorage(browser, payload, timeoutMs = 120000) {
+export function requestViaStorage(browser, payload, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
   // Environments without storage events (older hosts, unit-test stubs) keep the
   // old path; the storage channel exists because a stopped event page in
   // Thunderbird does not receive sendMessage at all.

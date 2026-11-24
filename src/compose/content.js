@@ -86,11 +86,18 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
         );
         return;
       }
+      let inserted = 0;
       blocks.forEach((block, index) => {
         if (result.translations[index]) {
-          insertDualSpan(document, block.el, result.translations[index]);
+          if (insertDualSpan(document, block.el, result.translations[index])) inserted += 1;
         }
       });
+      // A reply that produced nothing on the page is not a success: reporting it
+      // as idle leaves the writer staring at untranslated text with no reason.
+      if (inserted === 0) {
+        group.setError(t("errorNoTranslatableText"), "");
+        return;
+      }
       group.setIdle(result.engine === "ai" ? "ai" : "google");
     } catch (error) {
       const message = (error && error.message) || String(error);
