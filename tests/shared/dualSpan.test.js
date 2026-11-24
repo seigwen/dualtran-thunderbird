@@ -144,3 +144,32 @@ Second paragraph: open this mail in the reading pane and click the AI button.
     expect(texts.join("\n")).not.toContain("A Person");
   });
 });
+
+describe("insertDualSpan engine attribution", () => {
+  // The browser extension paints Google and AI results in different colours
+  // (translatedColor vs aiTranslatedColor). The host needs the same tell, so the
+  // injected block carries the engine it came from.
+  it("marks the block with the engine that produced it", () => {
+    const doc = makeDoc(`<p>Hello world</p>`);
+    const el = doc.querySelector("p");
+    expect(insertDualSpan(doc, el, "你好，世界", "ai")).toBe(true);
+    const block = doc.querySelector(".dt-translation");
+    expect(block.dataset.engine).toBe("ai");
+  });
+
+  it("defaults to google when no engine is given", () => {
+    const doc = makeDoc(`<p>Hello world</p>`);
+    const el = doc.querySelector("p");
+    insertDualSpan(doc, el, "你好，世界");
+    expect(doc.querySelector(".dt-translation").dataset.engine).toBe("google");
+  });
+
+  it("keeps the block readable as plain text for both engines", () => {
+    const doc = makeDoc(`<p>Hello world</p>`);
+    const el = doc.querySelector("p");
+    insertDualSpan(doc, el, "你好，世界", "ai");
+    const block = doc.querySelector(".dt-translation");
+    expect(block.textContent).toBe("你好，世界");
+    expect(block.getAttribute("dir")).toBe("auto");
+  });
+});

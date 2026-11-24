@@ -28,9 +28,18 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
   // channel, so everything is injected from here.
   const style = document.createElement("style");
   style.textContent =
-    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(64,128,200,.65);white-space:pre-wrap}" +
-    ".dt-translation::before{content:'DualTran';display:block;font-size:10px;letter-spacing:.04em;color:rgba(64,128,200,.9)}" +
-    "@media (prefers-color-scheme:dark){.dt-translation{border-left-color:rgba(130,170,230,.6)}}";
+    // Google and AI get the same two-tone treatment the browser extension uses
+    // (translatedColor vs aiTranslatedColor): the engine tag on each block picks
+    // the accent, and the label says which engine produced it. "Google" and "AI"
+    // are brand tokens and stay untranslated.
+    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(29,78,216,.55);white-space:pre-wrap}" +
+    ".dt-translation::before{content:'DualTran · Google';display:block;font-size:10px;letter-spacing:.04em;color:rgba(29,78,216,.85)}" +
+    ".dt-translation[data-engine='ai']{border-left-color:rgba(124,58,237,.55)}" +
+    ".dt-translation[data-engine='ai']::before{content:'DualTran · AI';color:rgba(124,58,237,.85)}" +
+    "@media (prefers-color-scheme:dark){" +
+    ".dt-translation{border-left-color:rgba(147,197,253,.6)}" +
+    ".dt-translation[data-engine='ai']{border-left-color:rgba(196,181,253,.6)}" +
+    "}";
   (document.head || document.documentElement).appendChild(style);
 
   const report = (note) => {
@@ -108,7 +117,7 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
       let inserted = 0;
       blocks.forEach((block, index) => {
         if (result.translations[index]) {
-          if (insertDualSpan(document, block.el, result.translations[index])) inserted += 1;
+          if (insertDualSpan(document, block.el, result.translations[index], result.engine)) inserted += 1;
         }
       });
       // A reply that produced nothing on the page is not a success: reporting it

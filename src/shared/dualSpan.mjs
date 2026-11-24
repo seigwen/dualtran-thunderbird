@@ -48,10 +48,14 @@ export function collectTextBlocks(root) {
 }
 
 /** Insert the translation block right after the original. Returns false if already done. */
-export function insertDualSpan(doc, el, translated) {
+export function insertDualSpan(doc, el, translated, engine = "google") {
   if (!el || el.getAttribute(TRANSLATED_ATTR)) return false;
   const block = doc.createElement("div");
   block.className = "dt-translation";
+  // The browser extension paints Google and AI results in different colours
+  // (translatedColor vs aiTranslatedColor); the engine tag lets the stylesheet
+  // give the reader the same tell.
+  block.dataset.engine = engine === "ai" ? "ai" : "google";
   block.setAttribute("dir", "auto");
   block.textContent = translated;
   el.setAttribute(TRANSLATED_ATTR, "1");
