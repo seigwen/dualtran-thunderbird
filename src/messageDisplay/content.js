@@ -53,6 +53,8 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
       t,
       onOriginal: showOriginal,
       onTranslate: (engine) => translate(engine),
+      // The width/position the reader picked last time.
+      storage: browser.storage && browser.storage.local,
     });
     // SPEC 2.1: with no AI provider the AI button is off and says why. Settings
     // are read after mounting, so the button never has to guess.

@@ -38,6 +38,8 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
       t,
       onOriginal: showOriginal,
       onTranslate: (engine) => translate(engine),
+      // The width/position the reader picked last time.
+      storage: browser.storage && browser.storage.local,
     });
     // SPEC 2.1: AI engine without a provider → the AI button is off and its
     // tooltip is providerRequiredError. No provider is guessed.
