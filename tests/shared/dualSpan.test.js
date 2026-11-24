@@ -173,3 +173,38 @@ describe("insertDualSpan engine attribution", () => {
     expect(block.getAttribute("dir")).toBe("auto");
   });
 });
+
+describe("collectTextBlocks against the measured reading pane", () => {
+  // Measured with a DT_PROBE=1 build on this host: the message document is ONE
+  // <table> (counts.tds = 25, headerId = false, headerRows = 0). Header cells and
+  // body share that table and carry no distinguishing id or class, so the text
+  // shape is the only rule available.
+  const pane = `
+    <table>
+      <tr><td>Subject: Elastic UI, CSS Siblings, and a Front-End Farm</td></tr>
+      <tr><td>From: CodePen &lt;support@codepen.io&gt;</td></tr>
+      <tr><td>To: seigwen@gmail.com</td></tr>
+      <tr><td>Date: 11/24/2026, 4:15 AM</td></tr>
+      <tr><td><pre>This week's CodePen community highlights include an elastic SVG drawer UI.</pre></td></tr>
+    </table>`;
+
+  it("does not collect reading-pane header cells", () => {
+    const doc = makeDoc(pane);
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts.some((t) => /^(Subject|From|To|Date)\s*:/.test(t))).toBe(false);
+  });
+
+  it("still collects the body paragraph that follows the header", () => {
+    const doc = makeDoc(pane);
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts.some((t) => t.includes("elastic SVG drawer UI"))).toBe(true);
+  });
+
+  it("keeps prose that merely mentions a header prefix mid-sentence", () => {
+    const doc = makeDoc(
+      `<div id="messageEditor"><p>The Subject: line of the mail was long.</p></div>`
+    );
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts).toContain("The Subject: line of the mail was long.");
+  });
+});

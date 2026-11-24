@@ -26,6 +26,27 @@ export function shouldTranslateText(text) {
   return true;
 }
 
+const HEADER_PREFIX = /^(Subject|From|To|Cc|Bcc|Reply-To|Date|Sender|Return-Path)\s*:/i;
+
+/**
+ * True when a block is a reading-pane header line rather than body prose.
+ *
+ * Measured on this host (DT_PROBE build): the whole message is a single <table>,
+ * the header cells are <td> siblings of the body, and Thunderbird gives them no
+ * id or class to select on - `#messageHeader` and `.message-header-row` are both
+ * absent from the message document. The text shape is therefore the only signal
+ * available. Only the FIRST line is tested, so prose that merely mentions a
+ * header prefix mid-sentence stays translatable.
+ *
+ * Trade-off (2026-11-24): a body paragraph that itself *starts* with `Subject:`
+ * (or the other prefixes) will be skipped. Accepted because that shape does not
+ * occur in real mail; revisit if a report ever shows a dropped paragraph.
+ */
+export function isReadingPaneHeaderText(text) {
+  const first = String(text || "").trim().split(/\r?\n/)[0];
+  return HEADER_PREFIX.test(first);
+}
+
 /**
  * Collect translatable blocks in document order.
  *
@@ -42,6 +63,7 @@ export function collectTextBlocks(root) {
     if (el.querySelector(CANDIDATE_SELECTOR)) continue; // container of nested candidates
     const text = el.textContent || "";
     if (!shouldTranslateText(text)) continue;
+    if (isReadingPaneHeaderText(text)) continue;
     out.push({ el, text: text.trim() });
   }
   return out;
