@@ -82,12 +82,40 @@
     "message": "Nur lokal in Thunderbird gespeichert; Anfragen gehen direkt an Ihren Anbieter."
   },
   "providerPlaceholder": {
-    "message": "Anbieter auswählen"
+    "message": "Anbieter auswählen",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Zuerst einen Anbieter auswählen"
+    "message": "Zuerst einen Anbieter auswählen",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Wähle vor dem Übersetzen einen KI-Anbieter in den Einstellungen."
+    "message": "Wähle vor dem Übersetzen einen KI-Anbieter in den Einstellungen.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Original",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Übersetzungsfehler: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Keine Antwort vom AI-Anbieter. Bitte überprüfen Sie Ihren API-Schlüssel und Modellnamen."
+  },
+  "errorTranslationTimeout": {
+    "message": "Zeitüberschreitung bei der Übersetzungsanfrage"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API-Schlüssel nicht gefunden!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Diese Nachricht enthält keinen übersetzbaren Text."
   }
 }

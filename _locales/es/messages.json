@@ -82,12 +82,40 @@
     "message": "Se almacena solo localmente en Thunderbird; las solicitudes van directamente a tu proveedor."
   },
   "providerPlaceholder": {
-    "message": "Selecciona un proveedor"
+    "message": "Selecciona un proveedor",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Selecciona primero un proveedor"
+    "message": "Selecciona primero un proveedor",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Selecciona un proveedor de IA en los ajustes antes de traducir."
+    "message": "Selecciona un proveedor de IA en los ajustes antes de traducir.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Original",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Error de traducción: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "No hay respuesta del proveedor de AI. Verifica tu clave API y el nombre del modelo."
+  },
+  "errorTranslationTimeout": {
+    "message": "Se agotó el tiempo de espera de la solicitud de traducción"
+  },
+  "errorApiKeyNotFound": {
+    "message": "¡No se encontró la clave API!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Este mensaje no tiene texto traducible"
   }
 }

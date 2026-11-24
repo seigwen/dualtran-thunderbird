@@ -47,6 +47,16 @@ describe("createEngine", () => {
     expect(res.engine).toBe("ai");
   });
 
+  it("keeps the provider's HTTP status on the thrown error", async () => {
+    // The classification layer needs the status to say "HTTP 401 — check your
+    // API key" instead of echoing the SDK's null-ish message.
+    const core = stubCore({
+      streamChat: async () => ({ totalChunks: 0, streamError: { statusCode: 401, message: "null" } }),
+    });
+    const engine = createEngine({ core, config: { ...baseConfig, defaultEngine: "ai" } });
+    await expect(engine.translateBatch(["Hola"])).rejects.toMatchObject({ statusCode: 401 });
+  });
+
   it("throws a helpful error when the AI engine has no key", async () => {
     const engine = createEngine({
       core: stubCore(),

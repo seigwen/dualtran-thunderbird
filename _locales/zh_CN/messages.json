@@ -92,5 +92,29 @@
   "providerRequiredError": {
     "message": "翻译前请先在设置中选择 AI 提供商。",
     "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "原文"
+  },
+  "errorTranslationWithMessage": {
+    "message": "翻译错误：$ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "AI 服务未返回响应，请检查 API Key 和模型名称是否正确。"
+  },
+  "errorTranslationTimeout": {
+    "message": "翻译请求超时"
+  },
+  "errorApiKeyNotFound": {
+    "message": "未找到 API 密钥！"
+  },
+  "errorNoTranslatableText": {
+    "message": "这封邮件没有可翻译的正文。"
   }
 }

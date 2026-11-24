@@ -45,11 +45,14 @@ describe("locale catalogues", () => {
     }
   });
 
-  it("keeps the $DETAIL$ placeholder and its placeholder block", () => {
+  it("keeps the $ERROR_MESSAGE$ placeholder and its placeholder block", () => {
     for (const code of EXPECTED) {
-      const entry = read(code).errorTranslate;
-      expect(entry.message, `${code}: $DETAIL$`).toContain("$DETAIL$");
-      expect(entry.placeholders, `${code}: placeholders`).toEqual(en.errorTranslate.placeholders);
+      const entry = read(code).errorTranslationWithMessage;
+      expect(entry, `${code}: missing errorTranslationWithMessage`).toBeTruthy();
+      expect(entry.message, `${code}: $ERROR_MESSAGE$`).toContain("$ERROR_MESSAGE$");
+      expect(entry.placeholders, `${code}: placeholders`).toEqual(
+        en.errorTranslationWithMessage.placeholders
+      );
     }
   });
 

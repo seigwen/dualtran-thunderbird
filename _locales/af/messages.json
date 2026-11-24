@@ -82,12 +82,40 @@
     "message": "Word slegs plaaslik in Thunderbird gestoor; versoeke gaan reguit na jou verskaffer."
   },
   "providerPlaceholder": {
-    "message": "Kies 'n verskaffer"
+    "message": "Kies 'n verskaffer",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Kies eers 'n verskaffer"
+    "message": "Kies eers 'n verskaffer",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Kies voor vertaling 'n KI-verskaffer in die instellings."
+    "message": "Kies voor vertaling 'n KI-verskaffer in die instellings.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Oorspronklik",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Vertaalfout: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Geen antwoord van AI-verskaffer nie. Verifieer asseblief jou API-sleutel en modelnaam."
+  },
+  "errorTranslationTimeout": {
+    "message": "Vertalingsversoek het uitgetel"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API-sleutel nie gevind nie!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Hierdie boodskap het geen vertaalbare teks nie."
   }
 }

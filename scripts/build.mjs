@@ -20,11 +20,14 @@ fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
 
 // 1) background bundle (core inlined)
+// Classic script, not an ES module: Thunderbird 160's MV3 event page leaves a
+// module background "Stopped" and fails to wake it on sendMessage, which shows
+// up in the content script as "Receiving end does not exist".
 await build({
   entryPoints: [path.join(ROOT, "src/background.src.js")],
   outfile: path.join(DIST, "background.js"),
   bundle: true,
-  format: "esm",
+  format: "iife",
   platform: "browser",
   target: ["firefox128"],
   define: { "process.env.NODE_ENV": '"production"', __DT_SMOKE__: String(!!process.env.DT_SMOKE) },

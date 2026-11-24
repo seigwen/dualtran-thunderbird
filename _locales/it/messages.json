@@ -82,12 +82,40 @@
     "message": "Memorizzata solo localmente in Thunderbird; le richieste vanno direttamente al tuo provider."
   },
   "providerPlaceholder": {
-    "message": "Seleziona un fornitore"
+    "message": "Seleziona un fornitore",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Seleziona prima un fornitore"
+    "message": "Seleziona prima un fornitore",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Seleziona un fornitore di IA nelle impostazioni prima di tradurre."
+    "message": "Seleziona un fornitore di IA nelle impostazioni prima di tradurre.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Originale",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Errore di traduzione: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Nessuna risposta dal provider AI. Verifica la chiave API e il nome del modello."
+  },
+  "errorTranslationTimeout": {
+    "message": "Timeout della richiesta di traduzione"
+  },
+  "errorApiKeyNotFound": {
+    "message": "Chiave API non trovata!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Questo messaggio non contiene testo traducibile."
   }
 }

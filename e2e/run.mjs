@@ -43,8 +43,8 @@ const WEBEXT_STUB = (messageScript) => `
       optionReasoningLowest: "Lowest (default)", optionReasoningDefault: "Provider default",
       optionProvider: "Provider", optionModel: "Model", optionBaseUrl: "Custom base URL",
       optionApiKey: "API key", optionSave: "Save", optionSaved: "Saved",
-      btnComposeTranslate: "Translate", btnTranslating: "Translating…", btnShowOriginal: "Show original",
-      errorTranslate: "Translation failed: $DETAIL$", optionTargetLang: "Target language",
+      btnOriginal: "Original", btnComposeTranslate: "Translate", btnTranslating: "Translating…", btnShowOriginal: "Show original",
+      errorAiNoResponse: "No response from AI provider.", errorTranslate: "Translation failed: $DETAIL$", optionTargetLang: "Target language",
       optionEngineGoogle: "Google", optionEngineAi: "AI (BYOK)", optionsTitle: "DualTran",
       extName: "DualTran", extDescription: "DualTran", optionApiKeyHint: "stored locally",
       providerPlaceholder: "Select a provider", providerRequiredForModel: "Select a provider first",
@@ -198,7 +198,7 @@ async function openCompose(browser, origin, sendScript = DEFAULT_SEND, locale = 
   const logs = [];
   page.on("pageerror", (error) => logs.push(error.message));
   await page.goto(`${origin}/compose-page.html`);
-  await page.waitForSelector("#dt-fab");
+  await page.waitForSelector("#dt-fab-group");
   return { page, context, logs };
 }
 
@@ -318,14 +318,18 @@ scenario("compose-provider-required", async ({ browser, origin }) => {
     `localStorage.setItem("__dt_e2e_store", ${JSON.stringify(JSON.stringify({ dtSettings: { engine: "ai", ai: { provider: "", model: "" } } }))})`
   );
   await empty.page.reload();
-  await empty.page.waitForSelector("#dt-fab");
-  await empty.page.waitForFunction(() => document.getElementById("dt-fab").disabled, null, { timeout: 5000 });
+  await empty.page.waitForSelector('#dt-fab-group [data-engine="ai"]');
+  await empty.page.waitForFunction(
+    () => document.querySelector('#dt-fab-group [data-engine="ai"]').disabled,
+    null,
+    { timeout: 5000 }
+  );
   const blocked = await empty.page.evaluate(() => {
-    const fab = document.getElementById("dt-fab");
+    const fab = document.querySelector('#dt-fab-group [data-engine="ai"]');
     fab.click();
     return { disabled: fab.disabled, title: fab.getAttribute("title"), sent: window.__sent || null };
   });
-  assert(blocked.disabled === true, "the translate button must be disabled while no AI provider is set");
+  assert(blocked.disabled === true, "the AI button must be disabled while no AI provider is set");
   assert(blocked.title === de.providerRequiredError, `tooltip must be providerRequiredError, got "${blocked.title}"`);
   assert(blocked.sent === null || blocked.sent === undefined, `a disabled button must not translate: ${JSON.stringify(blocked.sent)}`);
   await empty.page.screenshot({ path: path.join(ARTIFACTS, "compose-provider-required", "screenshot.png") });
@@ -333,8 +337,8 @@ scenario("compose-provider-required", async ({ browser, origin }) => {
 
   const google = await openCompose(browser, origin, DEFAULT_SEND, "de");
   const live = await google.page.evaluate(() => ({
-    disabled: document.getElementById("dt-fab").disabled,
-    title: document.getElementById("dt-fab").getAttribute("title"),
+    disabled: document.querySelector('#dt-fab-group [data-engine="google"]').disabled,
+    title: document.querySelector('#dt-fab-group [data-engine="google"]').getAttribute("title"),
   }));
   assert(live.disabled === false, "the Google engine must stay enabled with no AI provider");
   assert(!live.title, `the Google engine button must carry no tooltip, got "${live.title}"`);
@@ -343,20 +347,21 @@ scenario("compose-provider-required", async ({ browser, origin }) => {
 
 scenario("compose-translate", async ({ browser, origin }) => {
   const { page, context } = await openCompose(browser, origin);
-  await page.click("#dt-fab");
+  await page.click('#dt-fab-group [data-engine="google"]');
   await page.waitForFunction(() => document.querySelectorAll(".dt-translation").length === 2, null, {
     timeout: 5000,
   });
   const state = await page.evaluate(() => ({
     translations: Array.from(document.querySelectorAll(".dt-translation")).map((node) => node.textContent),
     marked: document.querySelectorAll("[data-dt-translated]").length,
-    label: document.getElementById("dt-fab").textContent,
+    active: document.querySelector("#dt-fab-group .active").dataset.engine,
     sent: window.__sent,
   }));
   assert(state.translations.every((text) => text.startsWith("[译]")), `bad translations: ${state.translations}`);
   assert(state.marked === 2, `expected 2 marked blocks, got ${state.marked}`);
   assert(state.sent.command === "dt-translate", `wrong command: ${state.sent && state.sent.command}`);
-  assert(state.label.toLowerCase().includes("original") || state.label.includes("原文") || state.label.length > 0, "fab label did not change");
+  assert(state.sent.engine === "google", `the Google button must request the google engine, got ${state.sent.engine}`);
+  assert(state.active === "google", `the Google button must stay active, got ${state.active}`);
   await page.screenshot({ path: path.join(ARTIFACTS, "compose-translate", "screenshot.png") });
   await context.close();
 });
@@ -369,40 +374,45 @@ scenario("compose-loading", async ({ browser, origin }) => {
     return { translations: (message.texts || []).map((text) => "[译] " + text) };
   `;
   const { page, context } = await openCompose(browser, origin, slow);
-  await page.click("#dt-fab");
-  await page.waitForFunction(() => document.getElementById("dt-fab").classList.contains("busy"), null, {
-    timeout: 1000,
-  });
+  await page.click('#dt-fab-group [data-engine="google"]');
+  await page.waitForFunction(
+    () => document.querySelector('#dt-fab-group [data-engine="google"]').disabled,
+    null,
+    { timeout: 1000 }
+  );
+  const busyLabel = await page.evaluate(
+    () => document.querySelector('#dt-fab-group [data-engine="google"]').textContent
+  );
+  assert(busyLabel.includes("Translating"), `busy label must say translating, got "${busyLabel}"`);
   await page.screenshot({ path: path.join(ARTIFACTS, "compose-loading", "screenshot-while-busy.png") });
-  await page.waitForFunction(() => !document.getElementById("dt-fab").classList.contains("busy"), null, {
-    timeout: 6000,
-  });
+  await page.waitForFunction(
+    () => !document.querySelector('#dt-fab-group [data-engine="google"]').disabled,
+    null,
+    { timeout: 6000 }
+  );
   const state = await page.evaluate(() => ({
-    busy: document.getElementById("dt-fab").classList.contains("busy"),
-    disabled: document.getElementById("dt-fab").disabled,
+    disabled: document.querySelector('#dt-fab-group [data-engine="google"]').disabled,
     translations: document.querySelectorAll(".dt-translation").length,
   }));
-  assert(!state.busy, "spinner stayed after the response");
   assert(!state.disabled, "button stayed disabled");
   assert(state.translations === 2, `expected 2 translations, got ${state.translations}`);
   await context.close();
 });
 
 scenario("compose-error", async ({ browser, origin }) => {
-  const failing = `return { error: "mock 401" };`;
+  const failing = `return { error: "HTTP 401 Unauthorized — check your API key", errorDetail: "HTTP 401 Unauthorized — check your API key" };`;
   const { page, context } = await openCompose(browser, origin, failing);
-  await page.click("#dt-fab");
-  await page.waitForFunction(() => /401/.test(document.getElementById("dt-fab").textContent), null, {
-    timeout: 5000,
-  });
+  await page.click('#dt-fab-group [data-engine="google"]');
+  await page.waitForSelector(".dt-fab-error", { timeout: 5000 });
   const state = await page.evaluate(() => ({
-    label: document.getElementById("dt-fab").textContent,
-    busy: document.getElementById("dt-fab").classList.contains("busy"),
-    disabled: document.getElementById("dt-fab").disabled,
+    label: document.querySelector(".dt-fab-error").textContent,
+    title: document.querySelector(".dt-fab-error").getAttribute("title"),
+    disabled: document.querySelector('#dt-fab-group [data-engine="google"]').disabled,
     translations: document.querySelectorAll(".dt-translation").length,
   }));
   assert(/401/.test(state.label), `error must surface 401, got ${state.label}`);
-  assert(!state.busy, "spinner must be cleared on failure");
+  assert(/api key/i.test(state.label), `error must say what to check, got ${state.label}`);
+  assert(/401/.test(state.title), `the raw detail must sit in the tooltip, got ${state.title}`);
   assert(!state.disabled, "button must be usable again");
   assert(state.translations === 0, "a failed translation must not insert blocks");
   await page.screenshot({ path: path.join(ARTIFACTS, "compose-error", "screenshot.png") });
@@ -453,8 +463,10 @@ scenario("i18n-locale", async ({ browser, origin }) => {
   await context.close();
 
   const compose = await openCompose(browser, origin, DEFAULT_SEND, "de");
-  const fab = await compose.page.evaluate(() => document.getElementById("dt-fab").textContent.trim());
-  assert(fab === de.btnComposeTranslate, `compose button must be German, got "${fab}"`);
+  const fab = await compose.page.evaluate(() =>
+    document.querySelector('#dt-fab-group [data-engine="original"]').textContent.trim()
+  );
+  assert(fab === de.btnOriginal, `compose Original button must be German, got "${fab}"`);
   await compose.page.screenshot({ path: path.join(ARTIFACTS, "i18n-locale", "compose-de.png") });
   await compose.context.close();
 });

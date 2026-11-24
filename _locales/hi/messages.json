@@ -82,12 +82,40 @@
     "message": "केवल Thunderbird में स्थानीय रूप से संग्रहीत; अनुरोध सीधे आपके प्रदाता को जाते हैं।"
   },
   "providerPlaceholder": {
-    "message": "प्रदाता चुनें"
+    "message": "प्रदाता चुनें",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "पहले प्रदाता चुनें"
+    "message": "पहले प्रदाता चुनें",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "अनुवाद करने से पहले सेटिंग में AI प्रदाता चुनें।"
+    "message": "अनुवाद करने से पहले सेटिंग में AI प्रदाता चुनें।",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "मूल",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "अनुवाद त्रुटि: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "AI प्रदाता से कोई प्रतिक्रिया नहीं मिली। कृपया अपनी API कुंजी और मॉडल नाम सत्यापित करें।"
+  },
+  "errorTranslationTimeout": {
+    "message": "अनुवाद अनुरोध का समय समाप्त हो गया"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API कुंजी नहीं मिली!"
+  },
+  "errorNoTranslatableText": {
+    "message": "इस संदेश में कोई अनुवाद योग्य पाठ नहीं है"
   }
 }

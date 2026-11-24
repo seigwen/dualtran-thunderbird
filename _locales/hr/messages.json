@@ -82,12 +82,40 @@
     "message": "Pohranjeno lokalno samo u Thunderbirdu; zahtjevi idu izravno vašem pružatelju usluga."
   },
   "providerPlaceholder": {
-    "message": "Odaberite pružatelja"
+    "message": "Odaberite pružatelja",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Najprije odaberite pružatelja"
+    "message": "Najprije odaberite pružatelja",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Prije prijevoda odaberite AI pružatelja u postavkama."
+    "message": "Prije prijevoda odaberite AI pružatelja u postavkama.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Izvorno",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Greška prijevoda: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Nema odgovora od AI pružatelja. Provjerite svoj API ključ i naziv modela."
+  },
+  "errorTranslationTimeout": {
+    "message": "Zahtjev za prevođenje je istekao"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API ključ nije pronađen!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Ova poruka ne sadrži tekst za prijevod."
   }
 }

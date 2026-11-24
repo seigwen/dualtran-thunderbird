@@ -52,3 +52,19 @@ export function applyProviderState(button, settings, t) {
   else button.removeAttribute("title");
   return message;
 }
+
+/**
+ * Same rule for the floating engine group: only the AI button can be blocked,
+ * and it is blocked exactly when no provider is stored. The Google button is
+ * always live (no account, no key).
+ */
+export function applyGroupProviderState(group, settings, t) {
+  const aiButton = group && group.root && group.root.querySelector('[data-engine="ai"]');
+  if (!aiButton) return "";
+  const blocked = !providerChosen(settings && settings.ai);
+  const message = blocked ? (typeof t === "function" ? t("providerRequiredError") : "") || PROVIDER_REQUIRED_FALLBACK : "";
+  aiButton.disabled = blocked;
+  if (message) aiButton.setAttribute("title", message);
+  else aiButton.removeAttribute("title");
+  return message;
+}

@@ -82,12 +82,40 @@
     "message": "נשמר מקומית ב-Thunderbird בלבד; הבקשות נשלחות ישירות לספק שלך."
   },
   "providerPlaceholder": {
-    "message": "בחרו ספק"
+    "message": "בחרו ספק",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "יש לבחור ספק תחילה"
+    "message": "יש לבחור ספק תחילה",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "בחרו ספק AI בהגדרות לפני התרגום."
+    "message": "בחרו ספק AI בהגדרות לפני התרגום.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "מקור",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "שגיאת תרגום: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "אין תגובה מספק ה-AI. אנא אמת את מפתח ה-API ושם המודל שלך."
+  },
+  "errorTranslationTimeout": {
+    "message": "פסק הזמן של בקשת התרגום"
+  },
+  "errorApiKeyNotFound": {
+    "message": "מפתח API לא נמצא!"
+  },
+  "errorNoTranslatableText": {
+    "message": "להודעה זו אין טקסט שניתן לתרגם."
   }
 }

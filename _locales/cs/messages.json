@@ -82,12 +82,40 @@
     "message": "Uloženo pouze lokálně v Thunderbirdu; požadavky jdou přímo k vašemu poskytovateli."
   },
   "providerPlaceholder": {
-    "message": "Vyberte poskytovatele"
+    "message": "Vyberte poskytovatele",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Nejprve vyberte poskytovatele"
+    "message": "Nejprve vyberte poskytovatele",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Před překladem vyberte v nastavení poskytovatele AI."
+    "message": "Před překladem vyberte v nastavení poskytovatele AI.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Originál",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Chyba překladu: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Žádná odpověď od poskytovatele AI. Zkontrolujte prosím svůj API klíč a název modelu."
+  },
+  "errorTranslationTimeout": {
+    "message": "Časový limit požadavku na překlad vypršel"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API klíč nebyl nalezen!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Tato zpráva neobsahuje žádný přeložitelný text."
   }
 }

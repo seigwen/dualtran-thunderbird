@@ -82,12 +82,40 @@
     "message": "Chỉ lưu cục bộ trong Thunderbird; yêu cầu được gửi trực tiếp đến nhà cung cấp của bạn."
   },
   "providerPlaceholder": {
-    "message": "Chọn nhà cung cấp"
+    "message": "Chọn nhà cung cấp",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Hãy chọn nhà cung cấp trước"
+    "message": "Hãy chọn nhà cung cấp trước",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Hãy chọn nhà cung cấp AI trong cài đặt trước khi dịch."
+    "message": "Hãy chọn nhà cung cấp AI trong cài đặt trước khi dịch.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Bản gốc",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Lỗi dịch: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Không có phản hồi từ nhà cung cấp AI. Vui lòng kiểm tra khóa API và tên mô hình của bạn."
+  },
+  "errorTranslationTimeout": {
+    "message": "Yêu cầu dịch đã hết thời gian chờ"
+  },
+  "errorApiKeyNotFound": {
+    "message": "Không tìm thấy khóa API!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Tin nhắn này không có văn bản có thể dịch"
   }
 }

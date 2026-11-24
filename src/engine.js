@@ -79,7 +79,16 @@ export function createEngine({ core, config, fetchImpl = null }) {
         },
       });
       if (streamError) {
-        throw new Error(core.formatAiError(streamError).message);
+        // Keep the provider's status/body on the error we throw: the message
+        // alone is often a stringified null and cannot be classified later.
+        const formatted = core.formatAiError(streamError);
+        const error = new Error(formatted.message);
+        error.cause = streamError;
+        const status = streamError && (streamError.statusCode || streamError.status);
+        if (status) error.statusCode = status;
+        if (streamError && streamError.responseBody) error.responseBody = streamError.responseBody;
+        if (streamError && streamError.data) error.data = streamError.data;
+        throw error;
       }
       if (totalChunks === 0) {
         throw new Error("No response from AI provider");
