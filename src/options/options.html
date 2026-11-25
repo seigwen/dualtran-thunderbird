@@ -4,13 +4,18 @@
   <meta charset="utf-8" />
   <title data-i18n="optionsTitle">DualTran Options</title>
   <style>
-    /* Thunderbird renders options_ui inside a fixed-height browser element whose
-       own overflow is hidden: without scrolling on the document, every control
-       below the fold (Custom base URL included) cannot be reached by wheel, Page
-       Down or Tab. */
-    html, body { height: 100%; }
+    /* Thunderbird renders options_ui inside a browser element whose own overflow
+       is hidden: without scrolling on the document, every control below the fold
+       (Custom base URL included) cannot be reached by wheel, Page Down or Tab.
+       Scroll on `html`, not on `body`.
+       Do NOT put `height: 100%` on html/body: when the host hands the options
+       frame an auto or zero height (it does in the embedded side-by-side view),
+       100% resolves to 0 and the entire form collapses - the panel renders empty
+       even though the DOM is fine. `min-height` keeps the natural content height
+       while still filling a tall frame. */
+    html { height: auto; min-height: 100vh; overflow-y: auto; }
     body { font: 14px/1.6 system-ui, sans-serif; margin: 16px; min-width: 340px;
-           overflow-y: auto; box-sizing: border-box; }
+           min-height: 100vh; box-sizing: border-box; }
     h1 { font-size: 16px; margin: 0 0 12px; }
     label { display: block; margin: 10px 0 2px; font-weight: 600; }
     input[type="text"], select { width: 100%; box-sizing: border-box; padding: 4px 6px; }

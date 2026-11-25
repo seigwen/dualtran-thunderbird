@@ -594,6 +594,19 @@ describe("options page conformance", () => {
     ui.window.close?.();
   });
 
+  it("the options page never pins html/body to height:100%", () => {
+    // In the embedded side-by-side view Thunderbird can hand the options frame an
+    // auto/zero height; `height: 100%` then resolves to 0 and the whole form
+    // collapses into an apparently empty panel. Scroll belongs on `html`, and the
+    // box height must be a minimum, not a fixed value.
+    const html = fs.readFileSync(path.join(OPTIONS_DIR, "options.html"), "utf8");
+    const style = html.slice(html.indexOf("<style>"), html.indexOf("</style>"));
+    expect(style).not.toMatch(/html\s*,\s*body\s*\{[^}]*height:\s*100%/);
+    expect(style).not.toMatch(/body\s*\{[^}]*[^-]height:\s*100%/);
+    expect(style).toMatch(/min-height:\s*100vh/);
+    expect(style).toMatch(/overflow-y:\s*auto/);
+  });
+
   it("the API key field is masked but still round-trips its value", async () => {
     // This node screenshots the Options page during installs, so a plain text field
     // leaked the operator's real BYOK key into the captures. Masking is deliberate
