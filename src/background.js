@@ -120,7 +120,7 @@ export const COMPOSE_SCRIPT_ID = "dualtran-compose@seigwen.dev";
  * made and every content script can render one string.
  */
 function providerMissing(settings, message) {
-  const engineName = message.engine ?? (settings && settings.engine);
+  const engineName = message.engine ?? "google";
   const ai = settings ? settings.ai : undefined;
   return engineName === "ai" && !isProviderChosen(ai && ai.provider);
 }
@@ -163,7 +163,6 @@ export async function registerBackground({
         return {
           settings: settings
             ? {
-                engine: settings.engine,
                 targetLang: settings.targetLang,
                 ai: { provider: String((settings.ai && settings.ai.provider) || "") },
               }
@@ -190,7 +189,7 @@ export async function registerBackground({
         return { error: providerRequiredError(i18n || messenger.i18n).message };
       }
       const result = await engine.translateBatch(message.texts || [], {
-        engine: message.engine ?? (settings && settings.engine),
+        engine: message.engine ?? "google",
         targetLang: message.targetLang ?? (settings && settings.targetLang),
         ai: settings ? settings.ai : undefined,
       });

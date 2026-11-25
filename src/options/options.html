@@ -28,13 +28,11 @@
   <label data-i18n="optionTargetLang" for="targetLang">Translate into</label>
   <select id="targetLang"></select>
 
-  <label data-i18n="optionEngine" for="engine">Engine</label>
-  <select id="engine">
-    <option value="google" data-i18n="optionEngineGoogle">Google</option>
-    <option value="ai" data-i18n="optionEngineAi">AI (BYOK)</option>
-  </select>
-
-  <fieldset id="ai-fields" hidden>
+  <!-- No engine picker: the floating Original / Google / AI group chooses the
+       engine per click, so a stored "default engine" only ever acted as an
+       unused fallback. The AI fields are always shown because the AI button is
+       always one click away. -->
+  <fieldset id="ai-fields">
     <label data-i18n="optionProvider" for="provider">Provider</label>
     <select id="provider"></select>
     <label data-i18n="optionApiKey" for="apiKey">API key</label>

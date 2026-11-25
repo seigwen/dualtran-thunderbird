@@ -169,7 +169,7 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
     document.documentElement.setAttribute("data-dt-smoke-auto", "1");
     setTimeout(() => {
       report(`smoke auto-trigger, group=${!!group}`);
-      if (group && !busy) translate((settings && settings.engine) || "google");
+      if (group && !busy) translate("google");
     }, 6000);
   }
 })();

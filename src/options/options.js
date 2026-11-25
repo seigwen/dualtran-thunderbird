@@ -7,8 +7,6 @@
   }
 
   const $ = (id) => document.getElementById(id);
-  const engineSel = $("engine");
-  const aiFields = $("ai-fields");
   const langSel = $("targetLang");
   const providerSel = $("provider");
   const modelSel = $("modelSelect");
@@ -188,15 +186,9 @@
     reasoningSel.disabled = !providerChosen();
   }
 
-  function renderAiVisibility() {
-    aiFields.hidden = engineSel.value !== "ai";
-  }
-  engineSel.addEventListener("change", renderAiVisibility);
-
   (async () => {
     await loadCatalog();
     const stored = (await api.storage.local.get({ dtSettings: {} })).dtSettings || {};
-    engineSel.value = stored.engine || "google";
     const ai = stored.ai || {};
     // SPEC 2.1: no `|| "openai"` — an unset provider stays unset.
     renderProviders(ai.provider || "");
@@ -209,7 +201,6 @@
     endpointDirty = Boolean(ai.baseURL);
     renderEndpointPlaceholder();
     syncEndpoint();
-    renderAiVisibility();
     // Same defaults the browser extension ships (src/lib/config.js).
     $("translatedColor").value = stored.translatedColor || "#1d4ed8";
     $("aiTranslatedColor").value = stored.aiTranslatedColor || "#7c3aed";
@@ -262,7 +253,6 @@
     showStatus.saved = false;
     const patch = {
       targetLang: $("targetLang").value,
-      engine: engineSel.value,
       translatedColor: $("translatedColor").value,
       aiTranslatedColor: $("aiTranslatedColor").value,
       ai: {
@@ -297,7 +287,6 @@
   // Dropdowns and colour pickers commit on change.
   for (const el of [
     $("targetLang"),
-    engineSel,
     providerSel,
     modelSel,
     reasoningSel,

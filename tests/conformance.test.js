@@ -594,10 +594,11 @@ describe("options page conformance", () => {
     ui.window.close?.();
   });
 
-  it("SPEC 2.1 — an unconfigured AI page keeps the engine on AI and never invents OpenAI", async () => {
+  it("SPEC 2.1 — the AI fields are always present and never invent OpenAI", async () => {
     const ui = await bootOptions();
-    ui.$("engine").value = "ai";
-    ui.change(ui.$("engine"));
+    // No engine picker: the floating group chooses per click, so the AI fields
+    // must be reachable without switching a dropdown first.
+    expect(ui.$("engine")).toBeNull();
     expect(ui.$("ai-fields").hidden).toBe(false);
     // Nothing OpenAI-flavoured may sit in the page a fresh install shows.
     const html = ui.$("ai-fields").outerHTML;
@@ -652,8 +653,8 @@ describe("options page conformance", () => {
   it("SPEC 2.1 — saving an unconfigured page stores an empty provider, not openai", async () => {
     const ui = await bootOptions();
     // No Save button any more: every control persists on change.
-    ui.$("engine").value = "ai";
-    ui.change(ui.$("engine"));
+    ui.$("targetLang").value = "zh-CN";
+    ui.change(ui.$("targetLang"));
     await tick();
     const saved = ui.calls.sent.find((message) => message.command === "dt-save-settings");
     expect(saved).toBeTruthy();

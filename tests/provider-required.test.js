@@ -144,12 +144,12 @@ describe("SPEC 2.1 — background route", () => {
   it("an unconfigured provider never reaches the engine", async () => {
     const engine = { translateBatch: vi.fn(async () => ({ translations: [] })) };
     const { messenger, captured, getSettingsFn } = messengerStub({
-      engine: "ai",
       targetLang: "en",
       ai: { provider: "", apiKey: "k", model: "", baseURL: "", reasoning: "lowest" },
     });
     await registerBackground({ messenger, engine, getSettingsFn });
-    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"] });
+    // The engine always travels with the request now.
+    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"], engine: "ai" });
     expect(out.error).toBe(PROVIDER_REQUIRED);
     expect(engine.translateBatch).not.toHaveBeenCalled();
   });

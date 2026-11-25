@@ -158,16 +158,16 @@ describe("SPEC 2.1 — background: dt-translate short-circuits", () => {
 
   it("returns providerRequiredError as the result shape the content scripts read", async () => {
     const { captured, engine, messenger } = harness({ engine: "ai", ai: AI_EMPTY, targetLang: "en" });
-    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ engine: "ai", ai: AI_EMPTY, targetLang: "en" }) });
-    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"] });
+    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ ai: AI_EMPTY, targetLang: "en" }) });
+    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"], engine: "ai" });
     expect(out).toEqual({ error: SOURCE });
     expect(engine.translateBatch).not.toHaveBeenCalled();
   });
 
   it("uses the injected i18n facade, so the message is localized", async () => {
     const { captured, engine, messenger } = harness(null, { getMessage: (key) => (key === "providerRequiredError" ? "翻译前请先在设置中选择 AI 提供商。" : "") });
-    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ engine: "ai", ai: AI_EMPTY, targetLang: "en" }) });
-    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"] });
+    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ ai: AI_EMPTY, targetLang: "en" }) });
+    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"], engine: "ai" });
     expect(out.error).toBe("翻译前请先在设置中选择 AI 提供商。");
     expect(engine.translateBatch).not.toHaveBeenCalled();
   });
@@ -189,15 +189,17 @@ describe("SPEC 2.1 — background: dt-translate short-circuits", () => {
     expect(engine.translateBatch).toHaveBeenCalledTimes(1);
   });
 
-  it("dt-settings answers with the engine and provider only — never the API key", async () => {
+  it("dt-settings answers with the target language and provider only — never the API key", async () => {
+    // No engine in the reply: the floating group carries its own per click, so
+    // there is no stored default to report.
     const { captured, engine, messenger } = harness(null);
     await registerBackground({
       messenger,
       engine,
-      getSettingsFn: async () => ({ engine: "ai", targetLang: "en", ai: { provider: "", apiKey: "sk-secret", model: "m", baseURL: "" } }),
+      getSettingsFn: async () => ({ targetLang: "en", ai: { provider: "", apiKey: "sk-secret", model: "m", baseURL: "" } }),
     });
     const out = await captured.onMessage({ command: "dt-settings" });
-    expect(out).toEqual({ settings: { engine: "ai", targetLang: "en", ai: { provider: "" } } });
+    expect(out).toEqual({ settings: { targetLang: "en", ai: { provider: "" } } });
     expect(JSON.stringify(out)).not.toMatch(/sk-secret/);
   });
 });

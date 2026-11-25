@@ -21,7 +21,8 @@ describe("settings", () => {
     const { messenger } = mockMessenger();
     const s = await getSettings(messenger);
     expect(s.targetLang).toBe(DEFAULT_SETTINGS.targetLang);
-    expect(s.engine).toBe("google");
+    // No stored default engine: the floating group decides per click.
+    expect(s.engine).toBeUndefined();
     expect(s.ai.apiKey).toBe("");
   });
 
@@ -29,16 +30,16 @@ describe("settings", () => {
     const { messenger } = mockMessenger({ [SETTINGS_KEY]: { targetLang: "fr", ai: { apiKey: "k" } } });
     const s = await getSettings(messenger);
     expect(s.targetLang).toBe("fr");
-    expect(s.engine).toBe("google");
+    expect(s.engine).toBeUndefined();
     expect(s.ai.apiKey).toBe("k");
     expect(s.ai.provider).toBe(DEFAULT_SETTINGS.ai.provider);
   });
 
   it("persists settings under one key", async () => {
     const { messenger, store } = mockMessenger();
-    await setSettings(messenger, { targetLang: "ja", engine: "ai" });
+    await setSettings(messenger, { targetLang: "ja" });
     expect(store[SETTINGS_KEY].targetLang).toBe("ja");
-    expect(store[SETTINGS_KEY].engine).toBe("ai");
+    expect(store[SETTINGS_KEY].engine).toBeUndefined();
   });
 
   it("maps UI locales to a sensible default target", () => {
