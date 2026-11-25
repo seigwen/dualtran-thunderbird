@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Acest mesaj nu conține text traductibil."
+  },
+  "optionAppearance": {
+    "message": "Aspect"
+  },
+  "optionGoogleColor": {
+    "message": "Culoarea traducerii Google"
+  },
+  "optionAiColor": {
+    "message": "Culoarea traducerii AI"
   }
 }

@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "بۇ ئۇچۇردا تەرجىمە قىلىدىغان تېكىست يوق."
+  },
+  "optionAppearance": {
+    "message": "كۆرۈنۈش"
+  },
+  "optionGoogleColor": {
+    "message": "Google تەرجىمە رەڭگى"
+  },
+  "optionAiColor": {
+    "message": "AI تەرجىمە رەڭگى"
   }
 }

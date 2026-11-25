@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "لا يحتوي هذا النص على نص قابل للترجمة."
+  },
+  "optionAppearance": {
+    "message": "المظهر"
+  },
+  "optionGoogleColor": {
+    "message": "لون ترجمة Google"
+  },
+  "optionAiColor": {
+    "message": "لون ترجمة الذكاء الاصطناعي"
   }
 }

@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "ข้อความนี้ไม่มีข้อความที่สามารถแปลได้"
+  },
+  "optionAppearance": {
+    "message": "รูปลักษณ์"
+  },
+  "optionGoogleColor": {
+    "message": "สีการแปลของ Google"
+  },
+  "optionAiColor": {
+    "message": "สีการแปลของ AI"
   }
 }

@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "To sporočilo nima besedila za prevajanje."
+  },
+  "optionAppearance": {
+    "message": "Videz"
+  },
+  "optionGoogleColor": {
+    "message": "Barva prevoda Google"
+  },
+  "optionAiColor": {
+    "message": "Barva prevoda AI"
   }
 }

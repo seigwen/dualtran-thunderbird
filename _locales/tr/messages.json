@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Bu mesajda çevrilebilir metin yok."
+  },
+  "optionAppearance": {
+    "message": "Görünüm"
+  },
+  "optionGoogleColor": {
+    "message": "Google çeviri rengi"
+  },
+  "optionAiColor": {
+    "message": "AI çeviri rengi"
   }
 }

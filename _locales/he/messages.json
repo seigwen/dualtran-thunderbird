@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "להודעה זו אין טקסט שניתן לתרגם."
+  },
+  "optionAppearance": {
+    "message": "מראה"
+  },
+  "optionGoogleColor": {
+    "message": "צבע תרגום Google"
+  },
+  "optionAiColor": {
+    "message": "צבע תרגום AI"
   }
 }

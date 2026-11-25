@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "이 메시지에는 번역할 텍스트가 없습니다"
+  },
+  "optionAppearance": {
+    "message": "모양"
+  },
+  "optionGoogleColor": {
+    "message": "Google 번역 색상"
+  },
+  "optionAiColor": {
+    "message": "AI 번역 색상"
   }
 }

@@ -116,5 +116,14 @@
   },
   "errorNoTranslatableText": {
     "message": "这封邮件没有可翻译的正文。"
+  },
+  "optionAppearance": {
+    "message": "外观"
+  },
+  "optionGoogleColor": {
+    "message": "Google 译文颜色"
+  },
+  "optionAiColor": {
+    "message": "AI 译文颜色"
   }
 }

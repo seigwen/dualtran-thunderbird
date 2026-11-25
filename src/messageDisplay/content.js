@@ -28,18 +28,14 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
   // channel, so everything is injected from here.
   const style = document.createElement("style");
   style.textContent =
-    // Google and AI get the same two-tone treatment the browser extension uses
-    // (translatedColor vs aiTranslatedColor): the engine tag on each block picks
-    // the accent, and the label says which engine produced it. "Google" and "AI"
-    // are brand tokens and stay untranslated.
-    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(29,78,216,.55);white-space:pre-wrap}" +
-    ".dt-translation::before{content:'DualTran · Google';display:block;font-size:10px;letter-spacing:.04em;color:rgba(29,78,216,.85)}" +
-    ".dt-translation[data-engine='ai']{border-left-color:rgba(124,58,237,.55)}" +
-    ".dt-translation[data-engine='ai']::before{content:'DualTran · AI';color:rgba(124,58,237,.85)}" +
-    "@media (prefers-color-scheme:dark){" +
-    ".dt-translation{border-left-color:rgba(147,197,253,.6)}" +
-    ".dt-translation[data-engine='ai']{border-left-color:rgba(196,181,253,.6)}" +
-    "}";
+    // Match the browser extension's newLine rendering (src/lib/config.js):
+    // the translation is plain text in the engine's colour, with no border and no
+    // label. Only a vertical gap separates it from the original - a left indent
+    // would read as a layout glitch once the border is gone. The colours come from
+    // settings (translatedColor / aiTranslatedColor) through CSS variables so a
+    // change in Options takes effect without rebuilding.
+    ".dt-translation{margin:2px 0 8px;padding:0;white-space:pre-wrap;color:var(--dt-google-color,#1d4ed8)}" +
+    ".dt-translation[data-engine='ai']{color:var(--dt-ai-color,#7c3aed)}";
   (document.head || document.documentElement).appendChild(style);
 
   const report = (note) => {
@@ -71,9 +67,18 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
     return true;
   }
 
+  /** Push the configured text colours into the document's CSS variables. */
+  function applyTextColours(sett) {
+    if (!sett) return;
+    const root = document.documentElement;
+    if (sett.translatedColor) root.style.setProperty("--dt-google-color", sett.translatedColor);
+    if (sett.aiTranslatedColor) root.style.setProperty("--dt-ai-color", sett.aiTranslatedColor);
+  }
+
   async function refreshProviderState() {
     if (!group) return;
     settings = await readSettings(browser);
+    applyTextColours(settings);
     if (busy) return;
     applyGroupProviderState(group, settings, t);
   }

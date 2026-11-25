@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Dit bericht bevat geen vertaalbare tekst."
+  },
+  "optionAppearance": {
+    "message": "Weergave"
+  },
+  "optionGoogleColor": {
+    "message": "Kleur Google-vertaling"
+  },
+  "optionAiColor": {
+    "message": "Kleur AI-vertaling"
   }
 }

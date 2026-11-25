@@ -16,6 +16,11 @@ const SUPPORTED_TARGETS = ["en", "zh-CN", "ja", "ko", "fr", "de", "es", "pt", "r
 export const DEFAULT_SETTINGS = Object.freeze({
   targetLang: "en",
   engine: "google",
+  // Translation text colours. The values are the browser extension's defaults
+  // (src/lib/config.js: translatedColor / aiTranslatedColor), which in turn match
+  // the floating button palette, so both hosts read as one product.
+  translatedColor: "#1d4ed8",
+  aiTranslatedColor: "#7c3aed",
   ai: {
     provider: "",
     apiKey: "",

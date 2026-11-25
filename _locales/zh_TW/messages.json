@@ -113,5 +113,14 @@
   },
   "errorNoTranslatableText": {
     "message": "這封郵件沒有可翻譯的正文。"
+  },
+  "optionAppearance": {
+    "message": "外觀"
+  },
+  "optionGoogleColor": {
+    "message": "Google 譯文顏色"
+  },
+  "optionAiColor": {
+    "message": "AI 譯文顏色"
   }
 }

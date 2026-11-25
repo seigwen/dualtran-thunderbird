@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "این پیام متن قابل ترجمه‌ای ندارد"
+  },
+  "optionAppearance": {
+    "message": "ظاهر"
+  },
+  "optionGoogleColor": {
+    "message": "رنگ ترجمه Google"
+  },
+  "optionAiColor": {
+    "message": "رنگ ترجمه هوش مصنوعی"
   }
 }

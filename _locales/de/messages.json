@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Diese Nachricht enthält keinen übersetzbaren Text."
+  },
+  "optionAppearance": {
+    "message": "Darstellung"
+  },
+  "optionGoogleColor": {
+    "message": "Google-Übersetzungsfarbe"
+  },
+  "optionAiColor": {
+    "message": "KI-Übersetzungsfarbe"
   }
 }

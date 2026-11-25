@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Ce message ne contient aucun texte traduisible."
+  },
+  "optionAppearance": {
+    "message": "Apparence"
+  },
+  "optionGoogleColor": {
+    "message": "Couleur de traduction Google"
+  },
+  "optionAiColor": {
+    "message": "Couleur de traduction IA"
   }
 }

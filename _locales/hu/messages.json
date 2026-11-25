@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Ebben az üzenetben nincs lefordítható szöveg."
+  },
+  "optionAppearance": {
+    "message": "Megjelenés"
+  },
+  "optionGoogleColor": {
+    "message": "Google fordítás színe"
+  },
+  "optionAiColor": {
+    "message": "AI fordítás színe"
   }
 }

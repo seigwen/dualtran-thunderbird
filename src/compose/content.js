@@ -24,17 +24,13 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
   // styles for the injected translations are added here (compose windows have
   // no CSS registration). The group carries its own stylesheet.
   const style = document.createElement("style");
-  // Same two-tone treatment as the reading pane: the engine tag on each block
-  // picks the accent so Google and AI results are distinguishable at a glance.
+  // Match the browser extension's newLine rendering: plain text in the engine's
+  // colour, no border, no label. Only a vertical gap separates it from the
+  // original. Colours come from settings via CSS variables, so an Options change
+  // applies on the next mount without a rebuild.
   style.textContent =
-    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(29,78,216,.55);white-space:pre-wrap}" +
-    ".dt-translation::before{content:'DualTran · Google';display:block;font-size:10px;letter-spacing:.04em;color:rgba(29,78,216,.85)}" +
-    ".dt-translation[data-engine='ai']{border-left-color:rgba(124,58,237,.55)}" +
-    ".dt-translation[data-engine='ai']::before{content:'DualTran · AI';color:rgba(124,58,237,.85)}" +
-    "@media (prefers-color-scheme:dark){" +
-    ".dt-translation{border-left-color:rgba(147,197,253,.6)}" +
-    ".dt-translation[data-engine='ai']{border-left-color:rgba(196,181,253,.6)}" +
-    "}";
+    ".dt-translation{margin:2px 0 8px;padding:0;white-space:pre-wrap;color:var(--dt-google-color,#1d4ed8)}" +
+    ".dt-translation[data-engine='ai']{color:var(--dt-ai-color,#7c3aed)}";
   document.documentElement.appendChild(style);
 
   function mount() {
@@ -55,9 +51,18 @@ import { requestViaStorage } from "../shared/requestChannel.mjs";
     refreshProviderState();
   }
 
+  /** Push the configured text colours into the document's CSS variables. */
+  function applyTextColours(sett) {
+    if (!sett) return;
+    const root = document.documentElement;
+    if (sett.translatedColor) root.style.setProperty("--dt-google-color", sett.translatedColor);
+    if (sett.aiTranslatedColor) root.style.setProperty("--dt-ai-color", sett.aiTranslatedColor);
+  }
+
   async function refreshProviderState() {
     if (!group) return;
     settings = await readSettings(browser);
+    applyTextColours(settings);
     if (busy) return;
     applyGroupProviderState(group, settings, t);
   }

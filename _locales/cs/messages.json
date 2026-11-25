@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Tato zpráva neobsahuje žádný přeložitelný text."
+  },
+  "optionAppearance": {
+    "message": "Vzhled"
+  },
+  "optionGoogleColor": {
+    "message": "Barva překladu Google"
+  },
+  "optionAiColor": {
+    "message": "Barva překladu AI"
   }
 }

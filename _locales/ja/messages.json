@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "このメッセージには翻訳可能なテキストがありません"
+  },
+  "optionAppearance": {
+    "message": "外観"
+  },
+  "optionGoogleColor": {
+    "message": "Google翻訳の色"
+  },
+  "optionAiColor": {
+    "message": "AI翻訳の色"
   }
 }

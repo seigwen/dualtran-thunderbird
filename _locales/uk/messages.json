@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "У цьому повідомленні немає тексту для перекладу."
+  },
+  "optionAppearance": {
+    "message": "Вигляд"
+  },
+  "optionGoogleColor": {
+    "message": "Колір перекладу Google"
+  },
+  "optionAiColor": {
+    "message": "Колір перекладу ШІ"
   }
 }

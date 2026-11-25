@@ -210,6 +210,9 @@
     renderEndpointPlaceholder();
     syncEndpoint();
     renderAiVisibility();
+    // Same defaults the browser extension ships (src/lib/config.js).
+    $("translatedColor").value = stored.translatedColor || "#1d4ed8";
+    $("aiTranslatedColor").value = stored.aiTranslatedColor || "#7c3aed";
   })();
 
   providerSel.addEventListener("change", () => {
@@ -238,6 +241,8 @@
     const patch = {
       targetLang: $("targetLang").value,
       engine: engineSel.value,
+      translatedColor: $("translatedColor").value,
+      aiTranslatedColor: $("aiTranslatedColor").value,
       ai: {
         provider: providerSel.value,
         reasoning: reasoningSel.value,

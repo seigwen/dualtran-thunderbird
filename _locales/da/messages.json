@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Denne meddelelse har ingen tekst, der kan oversættes."
+  },
+  "optionAppearance": {
+    "message": "Udseende"
+  },
+  "optionGoogleColor": {
+    "message": "Google-oversættelsesfarve"
+  },
+  "optionAiColor": {
+    "message": "AI-oversættelsesfarve"
   }
 }

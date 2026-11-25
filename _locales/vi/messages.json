@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Tin nhắn này không có văn bản có thể dịch"
+  },
+  "optionAppearance": {
+    "message": "Giao diện"
+  },
+  "optionGoogleColor": {
+    "message": "Màu bản dịch Google"
+  },
+  "optionAiColor": {
+    "message": "Màu bản dịch AI"
   }
 }

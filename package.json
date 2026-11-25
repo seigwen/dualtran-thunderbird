@@ -1,6 +1,6 @@
 {
   "name": "dualtran-thunderbird",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "type": "module",
   "description": "DualTran for Thunderbird - bilingual (dual-span) email translation with Google or your own AI model (BYOK).",

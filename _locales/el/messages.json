@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Αυτό το μήνυμα δεν περιέχει μεταφράσιμο κείμενο."
+  },
+  "optionAppearance": {
+    "message": "Εμφάνιση"
+  },
+  "optionGoogleColor": {
+    "message": "Χρώμα μετάφρασης Google"
+  },
+  "optionAiColor": {
+    "message": "Χρώμα μετάφρασης AI"
   }
 }

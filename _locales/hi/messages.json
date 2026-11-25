@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "इस संदेश में कोई अनुवाद योग्य पाठ नहीं है"
+  },
+  "optionAppearance": {
+    "message": "रूप-रंग"
+  },
+  "optionGoogleColor": {
+    "message": "Google अनुवाद रंग"
+  },
+  "optionAiColor": {
+    "message": "AI अनुवाद रंग"
   }
 }

@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Þessi skilaboð hafa engan texta sem hægt er að þýða."
+  },
+  "optionAppearance": {
+    "message": "Útlit"
+  },
+  "optionGoogleColor": {
+    "message": "Litur Google þýðingar"
+  },
+  "optionAiColor": {
+    "message": "Litur AI þýðingar"
   }
 }

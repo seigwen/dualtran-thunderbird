@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Ova poruka ne sadrži tekst za prijevod."
+  },
+  "optionAppearance": {
+    "message": "Izgled"
+  },
+  "optionGoogleColor": {
+    "message": "Boja Google prijevoda"
+  },
+  "optionAiColor": {
+    "message": "Boja AI prijevoda"
   }
 }

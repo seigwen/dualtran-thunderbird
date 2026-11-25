@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Šajā ziņojumā nav tulkojama teksta."
+  },
+  "optionAppearance": {
+    "message": "Izskats"
+  },
+  "optionGoogleColor": {
+    "message": "Google tulkojuma krāsa"
+  },
+  "optionAiColor": {
+    "message": "AI tulkojuma krāsa"
   }
 }

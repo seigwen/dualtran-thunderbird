@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "Det här meddelandet har ingen översättningsbar text."
+  },
+  "optionAppearance": {
+    "message": "Utseende"
+  },
+  "optionGoogleColor": {
+    "message": "Färg för Google-översättning"
+  },
+  "optionAiColor": {
+    "message": "Färg för AI-översättning"
   }
 }

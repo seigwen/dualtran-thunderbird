@@ -117,5 +117,14 @@
   },
   "errorNoTranslatableText": {
     "message": "В этом сообщении нет текста для перевода."
+  },
+  "optionAppearance": {
+    "message": "Внешний вид"
+  },
+  "optionGoogleColor": {
+    "message": "Цвет перевода Google"
+  },
+  "optionAiColor": {
+    "message": "Цвет перевода ИИ"
   }
 }

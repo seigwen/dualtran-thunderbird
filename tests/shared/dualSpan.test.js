@@ -208,3 +208,30 @@ describe("collectTextBlocks against the measured reading pane", () => {
     expect(texts).toContain("The Subject: line of the mail was long.");
   });
 });
+
+describe("translation block styling matches the browser extension", () => {
+  // The browser extension's newLine rendering is plain text in the engine colour:
+  // no left border, no label (src/lib/config.js: translatedColor / aiTranslatedColor).
+  it("carries the engine tag the colour rule keys off", () => {
+    const doc = makeDoc(`<p>Hello</p>`);
+    insertDualSpan(doc, doc.querySelector("p"), "你好", "ai");
+    expect(doc.querySelector(".dt-translation").dataset.engine).toBe("ai");
+  });
+
+  it("the injected stylesheet has no border and no ::before label", async () => {
+    const fs = await import("node:fs");
+    for (const file of ["../../src/messageDisplay/content.js", "../../src/compose/content.js"]) {
+      const src = fs.readFileSync(new URL(file, import.meta.url), "utf8");
+      expect(src).not.toContain("border-left");
+      expect(src).not.toContain("::before");
+      expect(src).toContain("var(--dt-google-color");
+      expect(src).toContain("var(--dt-ai-color");
+    }
+  });
+
+  it("colour defaults are the browser extension's values", async () => {
+    const { DEFAULT_SETTINGS } = await import("../../src/settings.js");
+    expect(DEFAULT_SETTINGS.translatedColor).toBe("#1d4ed8");
+    expect(DEFAULT_SETTINGS.aiTranslatedColor).toBe("#7c3aed");
+  });
+});
