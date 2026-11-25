@@ -186,3 +186,57 @@ describe("AI request shape (no stray prompt)", () => {
     expect(out.translations).toEqual([""]);
   });
 });
+
+describe("AI reply unwrapping", () => {
+  // The core prompt talks about "<译泽>" tags while engine.js sends plain text, so
+  // some models answer with their own wrapper. It must never reach the page.
+  function engineReturning(chunks) {
+    const core = {
+      buildTranslationMessages: () => ({ system: "sys", assistant: "ok" }),
+      streamChat: async ({ onChunk }) => {
+        for (const c of chunks) onChunk(c);
+        return { totalChunks: chunks.length };
+      },
+      formatAiError: (e) => ({ message: String(e) }),
+      codeToLanguageNameInEnglish: () => "Chinese",
+    };
+    return createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        defaultEngine: "ai",
+        ai: { provider: "ollama-cloud", apiKey: "k", model: "m", reasoning: "lowest", baseURL: "" },
+      },
+    });
+  }
+
+  it("strips the <译译> wrapper the model invents", async () => {
+    const engine = engineReturning(["<译译>", "你好世界", "</译译>"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("strips the <译泽> spelling from the prompt as well", async () => {
+    const engine = engineReturning(["<译泽>你好世界</译泽>"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("strips a wrapper split across whitespace and newlines", async () => {
+    const engine = engineReturning(["<译译>\n  你好世界\n</译译>"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("leaves a plain reply untouched", async () => {
+    const engine = engineReturning(["你好世界"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("keeps angle brackets that belong to the prose", async () => {
+    const engine = engineReturning(["在 HTML 里 <br> 表示换行"]);
+    const out = await engine.translateBatch(["In HTML <br> means a line break"]);
+    expect(out.translations).toEqual(["在 HTML 里 <br> 表示换行"]);
+  });
+});

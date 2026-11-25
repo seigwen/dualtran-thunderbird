@@ -63,6 +63,27 @@ export function isMetaReply(text) {
   return META_REPLY_RE.test(t);
 }
 
+/**
+ * The core prompt talks about `<译泽>` tags while engine.js sends plain text, so
+ * some models invent that wrapper and return `<译译>译文</译译>`. Nothing else strips
+ * it, and the tags used to reach the page verbatim.
+ *
+ * Only a wrapper that spans the *whole* reply is removed, so prose that happens to
+ * contain angle brackets (`在 HTML 里 <br> 表示换行`) is left alone. Peeling repeats
+ * a few times for nested answers.
+ */
+const TRANSLATION_WRAPPER_RE = /^<译[译泽]>\s*([\s\S]*?)\s*<\/译[译泽]>$/;
+
+export function stripTranslationWrapper(text) {
+  let out = String(text || "").trim();
+  for (let i = 0; i < 3; i += 1) {
+    const match = out.match(TRANSLATION_WRAPPER_RE);
+    if (!match) break;
+    out = match[1].trim();
+  }
+  return out;
+}
+
 export function createEngine({ core, config, fetchImpl = null }) {
   async function translateAi(texts, targetLang, aiSettings) {
     const { provider, apiKey, model, baseURL, reasoning } = aiSettings ?? config.ai;
@@ -118,7 +139,7 @@ export function createEngine({ core, config, fetchImpl = null }) {
       if (totalChunks === 0) {
         throw new Error("No response from AI provider");
       }
-      const cleaned = text.trim();
+      const cleaned = stripTranslationWrapper(text);
       results.push(isMetaReply(cleaned) ? "" : cleaned);
     }
     return results;
