@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI翻訳の色"
+  },
+  "optionSaveFailed": {
+    "message": "設定を保存できませんでした"
   }
 }

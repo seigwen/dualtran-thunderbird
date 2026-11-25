@@ -237,7 +237,29 @@
     endpointDirty = true;
   });
 
-  $("save").addEventListener("click", async () => {
+  /**
+   * Persist the whole form. Chrome parity: there is no Save button - every
+   * control writes on change, so a setting can never be left half-applied.
+   */
+  let saveTimer = null;
+  let saving = false;
+
+  function showStatus(text, isError) {
+    const el = $("status");
+    el.textContent = text;
+    el.style.color = isError ? "#b91c1c" : "#666";
+    clearTimeout(showStatus.timer);
+    showStatus.timer = setTimeout(() => (el.textContent = ""), 2500);
+  }
+
+  async function saveSettings() {
+    if (saving) {
+      // A save is in flight; run once more when it finishes so the last edit wins.
+      saveSettings.pending = true;
+      return;
+    }
+    saving = true;
+    showStatus.saved = false;
     const patch = {
       targetLang: $("targetLang").value,
       engine: engineSel.value,
@@ -252,8 +274,52 @@
         baseURL: $("baseURL").value.trim(),
       },
     };
-    await api.runtime.sendMessage({ command: "dt-save-settings", patch });
-    $("status").textContent = t("optionSaved");
-    setTimeout(() => ($("status").textContent = ""), 2500);
+    try {
+      await api.runtime.sendMessage({ command: "dt-save-settings", patch });
+      showStatus(t("optionSaved"), false);
+    } catch (error) {
+      showStatus(t("optionSaveFailed"), true);
+    } finally {
+      saving = false;
+      if (saveSettings.pending) {
+        saveSettings.pending = false;
+        saveSettings();
+      }
+    }
+  }
+
+  /** Typed fields fire on every keystroke; persist once the typing settles. */
+  function saveSoon() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveSettings, 300);
+  }
+
+  // Dropdowns and colour pickers commit on change.
+  for (const el of [
+    $("targetLang"),
+    engineSel,
+    providerSel,
+    modelSel,
+    reasoningSel,
+    $("translatedColor"),
+    $("aiTranslatedColor"),
+  ]) {
+    el.addEventListener("change", saveSettings);
+  }
+
+  // Text fields: change covers a blur, blur covers "typed then closed the tab".
+  for (const el of [$("apiKey"), baseInput, modelInput]) {
+    el.addEventListener("change", saveSettings);
+    el.addEventListener("blur", saveSettings);
+    el.addEventListener("input", saveSoon);
+  }
+
+  // Selecting a provider rewrites model and endpoint; persist the settled state.
+  providerSel.addEventListener("change", () => {
+    setTimeout(saveSettings, 0);
   });
+  modelSel.addEventListener("change", () => {
+    setTimeout(saveSettings, 0);
+  });
+
 })();

@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Cor da tradução AI"
+  },
+  "optionSaveFailed": {
+    "message": "Não foi possível guardar as definições"
   }
 }

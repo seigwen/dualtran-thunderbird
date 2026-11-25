@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Цвет перевода ИИ"
+  },
+  "optionSaveFailed": {
+    "message": "Не удалось сохранить настройки"
   }
 }

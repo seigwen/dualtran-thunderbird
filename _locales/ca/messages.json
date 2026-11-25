@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Color de la traducció d'IA"
+  },
+  "optionSaveFailed": {
+    "message": "No s'ha pogut desar la configuració"
   }
 }

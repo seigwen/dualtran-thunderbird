@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Χρώμα μετάφρασης AI"
+  },
+  "optionSaveFailed": {
+    "message": "Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων"
   }
 }

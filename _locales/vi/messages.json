@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Màu bản dịch AI"
+  },
+  "optionSaveFailed": {
+    "message": "Không thể lưu cài đặt"
   }
 }

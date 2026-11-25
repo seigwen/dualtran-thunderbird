@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "KI-Übersetzungsfarbe"
+  },
+  "optionSaveFailed": {
+    "message": "Die Einstellungen konnten nicht gespeichert werden"
   }
 }

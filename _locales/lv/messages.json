@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI tulkojuma krāsa"
+  },
+  "optionSaveFailed": {
+    "message": "Nevarēja saglabāt iestatījumus"
   }
 }

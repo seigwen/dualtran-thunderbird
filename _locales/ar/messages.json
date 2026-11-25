@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "لون ترجمة الذكاء الاصطناعي"
+  },
+  "optionSaveFailed": {
+    "message": "تعذر حفظ الإعدادات"
   }
 }

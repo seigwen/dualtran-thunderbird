@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Boja AI prijevoda"
+  },
+  "optionSaveFailed": {
+    "message": "Nije moguće spremiti postavke"
   }
 }

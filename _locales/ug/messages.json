@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI تەرجىمە رەڭگى"
+  },
+  "optionSaveFailed": {
+    "message": "تەڭشەكلەرنى ساقلاش مۇمكىن بولمىدى"
   }
 }

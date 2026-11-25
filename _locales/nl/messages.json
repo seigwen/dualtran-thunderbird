@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Kleur AI-vertaling"
+  },
+  "optionSaveFailed": {
+    "message": "Kon de instellingen niet opslaan"
   }
 }

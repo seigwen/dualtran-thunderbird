@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI 번역 색상"
+  },
+  "optionSaveFailed": {
+    "message": "설정을 저장할 수 없습니다"
   }
 }

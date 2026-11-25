@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "رنگ ترجمه هوش مصنوعی"
+  },
+  "optionSaveFailed": {
+    "message": "ذخیره تنظیمات ممکن نشد"
   }
 }

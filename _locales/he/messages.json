@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "צבע תרגום AI"
+  },
+  "optionSaveFailed": {
+    "message": "לא ניתן היה לשמור את ההגדרות"
   }
 }

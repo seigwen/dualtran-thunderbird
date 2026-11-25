@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Tekoälykäännöksen väri"
+  },
+  "optionSaveFailed": {
+    "message": "Asetusten tallentaminen epäonnistui"
   }
 }

@@ -651,8 +651,9 @@ describe("options page conformance", () => {
 
   it("SPEC 2.1 — saving an unconfigured page stores an empty provider, not openai", async () => {
     const ui = await bootOptions();
+    // No Save button any more: every control persists on change.
     ui.$("engine").value = "ai";
-    ui.$("save").click();
+    ui.change(ui.$("engine"));
     await tick();
     const saved = ui.calls.sent.find((message) => message.command === "dt-save-settings");
     expect(saved).toBeTruthy();

@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Колір перекладу ШІ"
+  },
+  "optionSaveFailed": {
+    "message": "Не вдалося зберегти налаштування"
   }
 }

@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Colore traduzione AI"
+  },
+  "optionSaveFailed": {
+    "message": "Impossibile salvare le impostazioni"
   }
 }

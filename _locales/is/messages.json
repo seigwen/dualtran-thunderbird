@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Litur AI þýðingar"
+  },
+  "optionSaveFailed": {
+    "message": "Gat ekki vistað stillingarnar"
   }
 }

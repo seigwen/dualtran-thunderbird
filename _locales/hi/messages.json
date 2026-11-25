@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI अनुवाद रंग"
+  },
+  "optionSaveFailed": {
+    "message": "सेटिंग्स सहेजी नहीं जा सकीं"
   }
 }

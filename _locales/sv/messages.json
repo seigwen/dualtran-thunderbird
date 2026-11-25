@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Färg för AI-översättning"
+  },
+  "optionSaveFailed": {
+    "message": "Det gick inte att spara inställningarna"
   }
 }

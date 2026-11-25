@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI-oversættelsesfarve"
+  },
+  "optionSaveFailed": {
+    "message": "Kunne ikke gemme indstillingerne"
   }
 }

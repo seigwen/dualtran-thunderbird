@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Culoarea traducerii AI"
+  },
+  "optionSaveFailed": {
+    "message": "Nu s-au putut salva setările"
   }
 }

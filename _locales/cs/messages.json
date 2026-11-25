@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Barva překladu AI"
+  },
+  "optionSaveFailed": {
+    "message": "Nastavení se nepodařilo uložit"
   }
 }

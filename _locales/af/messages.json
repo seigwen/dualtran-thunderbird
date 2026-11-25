@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI-vertalingskleur"
+  },
+  "optionSaveFailed": {
+    "message": "Kon nie die instellings stoor nie"
   }
 }

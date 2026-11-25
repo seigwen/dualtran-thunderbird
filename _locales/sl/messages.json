@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "Barva prevoda AI"
+  },
+  "optionSaveFailed": {
+    "message": "Nastavitev ni bilo mogoče shraniti"
   }
 }

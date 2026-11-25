@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI çeviri rengi"
+  },
+  "optionSaveFailed": {
+    "message": "Ayarlar kaydedilemedi"
   }
 }

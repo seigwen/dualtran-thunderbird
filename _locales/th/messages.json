@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "สีการแปลของ AI"
+  },
+  "optionSaveFailed": {
+    "message": "ไม่สามารถบันทึกการตั้งค่าได้"
   }
 }

@@ -126,5 +126,8 @@
   },
   "optionAiColor": {
     "message": "AI fordítás színe"
+  },
+  "optionSaveFailed": {
+    "message": "Nem sikerült menteni a beállításokat"
   }
 }

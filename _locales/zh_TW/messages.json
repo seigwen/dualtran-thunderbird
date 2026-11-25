@@ -122,5 +122,8 @@
   },
   "optionAiColor": {
     "message": "AI 譯文顏色"
+  },
+  "optionSaveFailed": {
+    "message": "設定儲存失敗"
   }
 }
