@@ -273,20 +273,28 @@ scenario("options-shape", async ({ browser, origin }) => {
 });
 
 scenario("options-save-and-restore", async ({ browser, origin }) => {
-  // Start from a fresh install (empty provider); select the AI engine first.
+  // Start from a fresh install (empty provider). There is no engine picker and no
+  // Save button any more: the floating group carries the engine per click, and
+  // every control persists on change.
   const { page, context } = await openOptions(browser, origin);
-  // The AI fields live inside a fieldset that only appears for the AI engine.
-  await page.selectOption("#engine", "ai");
   await page.selectOption("#provider", "orcarouter");
   await page.selectOption("#modelSelect", "orcarouter/fusion-mini");
   await page.selectOption("#reasoning", "high");
   await page.selectOption("#targetLang", "ja");
-  await page.click("#save");
-  await page.waitForFunction(() => document.getElementById("status").textContent.length > 0);
+  // Wait for the debounced auto-save to reach storage, not for a status line.
+  await page.waitForFunction(
+    () => {
+      const stored = JSON.parse(localStorage.getItem("__dt_e2e_store") || "{}");
+      return stored.dtSettings && stored.dtSettings.ai && stored.dtSettings.ai.provider === "orcarouter";
+    },
+    null,
+    { timeout: 5000 }
+  );
 
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("__dt_e2e_store") || "{}"));
   const saved = stored.dtSettings || {};
-  assert(saved.engine === "ai", `engine not saved: ${saved.engine}`);
+  // 7df5426 dropped the stored default engine: it must not come back in the payload.
+  assert(!("engine" in saved), `engine should not be stored any more: ${saved.engine}`);
   assert(saved.targetLang === "ja", `target not saved: ${saved.targetLang}`);
   assert(saved.ai && saved.ai.provider === "orcarouter", `provider not saved: ${JSON.stringify(saved.ai)}`);
   assert(saved.ai.model === "orcarouter/fusion-mini", `model not saved: ${saved.ai.model}`);
@@ -444,7 +452,9 @@ scenario("i18n-locale", async ({ browser, origin }) => {
     provider: document.querySelector('[data-i18n="optionProvider"]').textContent.trim(),
     target: document.querySelector('[data-i18n="optionTargetLang"]').textContent.trim(),
     reasoning: document.querySelector('[data-i18n="optionReasoning"]').textContent.trim(),
-    save: document.getElementById("save").textContent.trim(),
+    // The Save button is gone (save-on-change); the API key label is the field that
+    // still carries a plain data-i18n string in the same form.
+    apiKey: document.querySelector('[data-i18n="optionApiKey"]').textContent.trim(),
     leaks: Array.from(document.querySelectorAll("[data-i18n]"))
       .filter((node) => {
         const key = node.getAttribute("data-i18n");
@@ -458,7 +468,7 @@ scenario("i18n-locale", async ({ browser, origin }) => {
   assert(options.provider === de.optionProvider, `provider label must be German, got "${options.provider}"`);
   assert(options.target === de.optionTargetLang, `target label must be German, got "${options.target}"`);
   assert(options.reasoning === de.optionReasoning, `reasoning label must be German, got "${options.reasoning}"`);
-  assert(options.save === de.optionSave, `save button must be German, got "${options.save}"`);
+  assert(options.apiKey === de.optionApiKey, `API key label must be German, got "${options.apiKey}"`);
   await page.screenshot({ path: path.join(ARTIFACTS, "i18n-locale", "options-de.png") });
   await context.close();
 
