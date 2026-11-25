@@ -212,15 +212,20 @@ describe("SPEC 2.1 — background: dt-translate short-circuits", () => {
 describe("SPEC 2.1 — translate button explains the missing provider", () => {
   const PROVIDER_REQUIRED_ZH = "翻译前请先在设置中选择 AI 提供商。";
 
-  function bootContent(script, { provider, messages, staleGroup = false, preTranslated = false }) {
+  function bootContent(
+    script,
+    { provider, messages, staleGroup = false, preTranslated = false, translateReply, bodyHtml = null }
+  ) {
     // A previous content script can leave its group behind after the add-on is
     // reloaded; simulate that orphan so the recovery path is covered.
     const orphan = staleGroup ? '<div id="dt-fab-group"><button data-engine="ai">AI</button></div>' : "";
     // A finished translation marks the source nodes and adds sibling blocks;
     // the collector skips marked nodes, so a second engine must clear first.
-    const body = preTranslated
-      ? '<div id="messageEditor"><p data-dt-translated="1">Hello world, this is prose.</p><div class="dt-translation">你好世界</div></div>'
-      : '<div id="messageEditor"><p>Hello world, this is prose.</p></div>';
+    const body = bodyHtml
+      ? bodyHtml
+      : preTranslated
+        ? '<div id="messageEditor"><p data-dt-translated="1">Hello world, this is prose.</p><div class="dt-translation">你好世界</div></div>'
+        : '<div id="messageEditor"><p>Hello world, this is prose.</p></div>';
     const dom = new JSDOM(`<!doctype html><html><body>${orphan}${body}</body></html>`, {
       url: "https://mail.test/message.html",
       runScripts: "outside-only",
@@ -237,6 +242,7 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
       runtime: { sendMessage: async (message) => {
         calls.push(message);
         if (message.command === "dt-settings") return { settings: provider };
+        if (message.command === "dt-translate") return translateReply;
         return undefined;
       } },
     };
@@ -264,6 +270,7 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
     btnTranslating: "Translating…",
     btnShowOriginal: "Show original",
     errorAiNoResponse: "No response from AI provider.",
+    errorNoTranslatableText: "Nothing to translate on this page.",
     providerRequiredError: SOURCE,
   };
 
@@ -339,6 +346,66 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
       expect(requests[0].engine).toBe("ai");
       // The old translation must be gone, not stacked on top of the new one.
       expect(ui.document.querySelectorAll(".dt-translation").length).toBe(0);
+      ui.window.close?.();
+    });
+
+    // The silent-idle regressions (a click that ends with nothing on screen and no
+    // explanation) are the ones users reported twice. These three cases pin the
+    // rule: a reply that puts no block on the page must surface a reason.
+    it(`${label}: a reply with no translations reports why, never a silent idle`, async () => {
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        translateReply: { translations: [], engine: "google" },
+      });
+      await settle(ui.document);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      const error = ui.document.querySelector("#dt-fab-group .dt-fab-error");
+      expect(error).toBeTruthy();
+      expect(error.textContent).toBe(MESSAGES.errorNoTranslatableText);
+      expect(ui.document.querySelectorAll(".dt-translation").length).toBe(0);
+      ui.window.close?.();
+    });
+
+    it(`${label}: a page with nothing translatable says so instead of returning silently`, async () => {
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        // No p/li/td/pre and no text: collectTextBlocks returns an empty list.
+        bodyHtml: '<div id="messageEditor"><div class="dt-translation">stale</div></div>',
+      });
+      await settle(ui.document);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      // Nothing was collected, so the request must never be sent...
+      expect(ui.calls.filter((call) => call.command === "dt-translate")).toEqual([]);
+      // ...and the click still explains itself.
+      const error = ui.document.querySelector("#dt-fab-group .dt-fab-error");
+      expect(error).toBeTruthy();
+      expect(error.textContent).toBe(MESSAGES.errorNoTranslatableText);
+      ui.window.close?.();
+    });
+
+    it(`${label}: a successful reply inserts the block and shows no error`, async () => {
+      // Positive control: without it the two cases above would also pass on a
+      // group that reports an error for every click.
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        translateReply: { translations: ["你好，世界，这是一段文章。"], engine: "google" },
+      });
+      await settle(ui.document);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      expect(ui.document.querySelectorAll(".dt-translation").length).toBe(1);
+      expect(ui.document.querySelector("#dt-fab-group .dt-fab-error")).toBeFalsy();
       ui.window.close?.();
     });
 
