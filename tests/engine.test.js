@@ -129,3 +129,60 @@ describe("createEngine — reasoning depth", () => {
     expect(seen[1]).toBe("");
   });
 });
+
+describe("AI request shape (no stray prompt)", () => {
+  // The core ships an assistant prefill "I understand. Please give me the text."
+  // engine.js used to resend it as a *user* message, so the model sometimes
+  // answered "I understand. Please give me the text." (or its Chinese twin
+  // "我明白了。请把文本给我。") instead of translating.
+  it("sends only the system prompt and the block to translate", async () => {
+    const seen = [];
+    const core = {
+      buildTranslationMessages: () => ({ system: "sys", assistant: "I understand. Please give me the text." }),
+      streamChat: async ({ messages, onChunk }) => {
+        seen.push(messages);
+        onChunk("<译泽>你好</译泽>");
+        return { totalChunks: 1 };
+      },
+      formatAiError: (e) => ({ message: String(e) }),
+      codeToLanguageNameInEnglish: () => "Chinese",
+    };
+    const engine = createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        defaultEngine: "ai",
+        ai: { provider: "ollama-cloud", apiKey: "k", model: "m", reasoning: "lowest", baseURL: "" },
+      },
+    });
+    await engine.translateBatch(["Hello world"], { engine: "ai", targetLang: "zh-CN" });
+    expect(seen).toHaveLength(1);
+    const roles = seen[0].map((m) => m.role);
+    expect(roles).toEqual(["system", "user"]);
+    expect(seen[0][1].content).toBe("Hello world");
+  });
+
+  it("discards a reply that is the model talking about the task", async () => {
+    const core = {
+      buildTranslationMessages: () => ({ system: "sys", assistant: "I understand. Please give me the text." }),
+      streamChat: async ({ onChunk }) => {
+        onChunk("我明白了。请把文本给我。");
+        return { totalChunks: 1 };
+      },
+      formatAiError: (e) => ({ message: String(e) }),
+      codeToLanguageNameInEnglish: () => "Chinese",
+    };
+    const engine = createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        defaultEngine: "ai",
+        ai: { provider: "ollama-cloud", apiKey: "k", model: "m", reasoning: "lowest", baseURL: "" },
+      },
+    });
+    const out = await engine.translateBatch(["Hello world"], { engine: "ai", targetLang: "zh-CN" });
+    // An empty result makes the content script show "no translatable text"
+    // rather than pasting the model's meta-reply into the message.
+    expect(out.translations).toEqual([""]);
+  });
+});
