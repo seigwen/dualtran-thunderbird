@@ -82,12 +82,52 @@
     "message": "Shranjeno samo lokalno v Thunderbirdu; zahteve gredo neposredno k vašemu ponudniku."
   },
   "providerPlaceholder": {
-    "message": "Izberite ponudnika"
+    "message": "Izberite ponudnika",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Najprej izberite ponudnika"
+    "message": "Najprej izberite ponudnika",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Pred prevajanjem v nastavitvah izberite ponudnika AI."
+    "message": "Pred prevajanjem v nastavitvah izberite ponudnika AI.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Izvirnik",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Napaka prevoda: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Ni odgovora ponudnika AI. Preverite svoj API ključ in ime modela."
+  },
+  "errorTranslationTimeout": {
+    "message": "Zahteva za prevod je potekla"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API ključa ni mogoče najti!"
+  },
+  "errorNoTranslatableText": {
+    "message": "To sporočilo nima besedila za prevajanje."
+  },
+  "optionAppearance": {
+    "message": "Videz"
+  },
+  "optionGoogleColor": {
+    "message": "Barva prevoda Google"
+  },
+  "optionAiColor": {
+    "message": "Barva prevoda AI"
+  },
+  "optionSaveFailed": {
+    "message": "Nastavitev ni bilo mogoče shraniti"
   }
 }

@@ -82,12 +82,52 @@
     "message": "Stocat local doar în Thunderbird; cererile merg direct la furnizorul tău."
   },
   "providerPlaceholder": {
-    "message": "Selectați un furnizor"
+    "message": "Selectați un furnizor",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Selectați mai întâi un furnizor"
+    "message": "Selectați mai întâi un furnizor",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Selectați un furnizor de IA din setări înainte de a traduce."
+    "message": "Selectați un furnizor de IA din setări înainte de a traduce.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Original",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Eroare de traducere: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Niciun răspuns de la furnizorul AI. Verifică cheia API și numele modelului."
+  },
+  "errorTranslationTimeout": {
+    "message": "Cererea de traducere a expirat"
+  },
+  "errorApiKeyNotFound": {
+    "message": "Cheia API nu a fost găsită!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Acest mesaj nu conține text traductibil."
+  },
+  "optionAppearance": {
+    "message": "Aspect"
+  },
+  "optionGoogleColor": {
+    "message": "Culoarea traducerii Google"
+  },
+  "optionAiColor": {
+    "message": "Culoarea traducerii AI"
+  },
+  "optionSaveFailed": {
+    "message": "Nu s-au putut salva setările"
   }
 }

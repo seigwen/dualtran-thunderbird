@@ -82,12 +82,52 @@
     "message": "Glabājas tikai lokāli Thunderbird; pieprasījumi tiek sūtīti tieši jūsu pakalpojumu sniedzējam."
   },
   "providerPlaceholder": {
-    "message": "Izvēlieties pakalpojumu sniedzēju"
+    "message": "Izvēlieties pakalpojumu sniedzēju",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Vispirms izvēlieties pakalpojumu sniedzēju"
+    "message": "Vispirms izvēlieties pakalpojumu sniedzēju",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Pirms tulkošanas iestatījumos izvēlieties AI pakalpojumu sniedzēju."
+    "message": "Pirms tulkošanas iestatījumos izvēlieties AI pakalpojumu sniedzēju.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Oriģināls",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Tulkošanas kļūda: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Nav atbildes no AI pakalpojumu sniedzēja. Lūdzu, pārbaudiet savu API atslēgu un modeļa nosaukumu."
+  },
+  "errorTranslationTimeout": {
+    "message": "Tulkošanas pieprasījuma noildze"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API atslēga nav atrasta!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Šajā ziņojumā nav tulkojama teksta."
+  },
+  "optionAppearance": {
+    "message": "Izskats"
+  },
+  "optionGoogleColor": {
+    "message": "Google tulkojuma krāsa"
+  },
+  "optionAiColor": {
+    "message": "AI tulkojuma krāsa"
+  },
+  "optionSaveFailed": {
+    "message": "Nevarēja saglabāt iestatījumus"
   }
 }

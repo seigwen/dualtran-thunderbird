@@ -82,12 +82,52 @@
     "message": "Csak helyben, a Thunderbirdben tárolva; a kérések közvetlenül a szolgáltatójához mennek."
   },
   "providerPlaceholder": {
-    "message": "Válasszon szolgáltatót"
+    "message": "Válasszon szolgáltatót",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Először válasszon szolgáltatót"
+    "message": "Először válasszon szolgáltatót",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Fordítás előtt válasszon AI-szolgáltatót a beállításokban."
+    "message": "Fordítás előtt válasszon AI-szolgáltatót a beállításokban.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Eredeti",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Fordítási hiba: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Nincs válasz az AI-szolgáltatótól. Kérjük, ellenőrizze az API-kulcsát és a modell nevét."
+  },
+  "errorTranslationTimeout": {
+    "message": "A fordítási kérés túllépte az időkorlátot"
+  },
+  "errorApiKeyNotFound": {
+    "message": "Az API-kulcs nem található!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Ebben az üzenetben nincs lefordítható szöveg."
+  },
+  "optionAppearance": {
+    "message": "Megjelenés"
+  },
+  "optionGoogleColor": {
+    "message": "Google fordítás színe"
+  },
+  "optionAiColor": {
+    "message": "AI fordítás színe"
+  },
+  "optionSaveFailed": {
+    "message": "Nem sikerült menteni a beállításokat"
   }
 }

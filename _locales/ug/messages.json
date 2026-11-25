@@ -82,12 +82,52 @@
     "message": "پەقەت Thunderbird دا يەرلىك ساقلىنىدۇ؛ تەلەپلەر بىۋاسىتە تەمىنلىگۈچىڭىزغا يوللىنىدۇ."
   },
   "providerPlaceholder": {
-    "message": "بىر تەمىنلىگۈچى تاللاڭ"
+    "message": "بىر تەمىنلىگۈچى تاللاڭ",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "ئاۋۋال تەمىنلىگۈچى تاللاڭ"
+    "message": "ئاۋۋال تەمىنلىگۈچى تاللاڭ",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "تەرجىمە قىلىشتىن بۇرۇن تەڭشەكتە AI تەمىنلىگۈچىسىنى تاللاڭ."
+    "message": "تەرجىمە قىلىشتىن بۇرۇن تەڭشەكتە AI تەمىنلىگۈچىسىنى تاللاڭ.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "ئەسلى",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "تەرجىمە خاتالىقى: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "AI تەمىنلىگۈچىدىن جاۋاب يوق. API ئاچقۇچىڭىز ۋە مودېل ئىسمىنى تەكشۈرۈڭ."
+  },
+  "errorTranslationTimeout": {
+    "message": "تەرجىمە تەلەپ قىلىش ۋاقتى ئۆتۈپ كەتتى"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API ئاچقۇچى تېپىلمىدى!"
+  },
+  "errorNoTranslatableText": {
+    "message": "بۇ ئۇچۇردا تەرجىمە قىلىدىغان تېكىست يوق."
+  },
+  "optionAppearance": {
+    "message": "كۆرۈنۈش"
+  },
+  "optionGoogleColor": {
+    "message": "Google تەرجىمە رەڭگى"
+  },
+  "optionAiColor": {
+    "message": "AI تەرجىمە رەڭگى"
+  },
+  "optionSaveFailed": {
+    "message": "تەڭشەكلەرنى ساقلاش مۇمكىن بولمىدى"
   }
 }

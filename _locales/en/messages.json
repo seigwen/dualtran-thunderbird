@@ -92,5 +92,42 @@
   "providerRequiredError": {
     "message": "Choose an AI provider in settings before translating.",
     "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Original",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Translation error: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "No response from AI provider. Please verify your API key and model name."
+  },
+  "errorTranslationTimeout": {
+    "message": "Translation request timed out"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API key not found!"
+  },
+  "errorNoTranslatableText": {
+    "message": "This message has no translatable text."
+  },
+  "optionAppearance": {
+    "message": "Appearance"
+  },
+  "optionGoogleColor": {
+    "message": "Google translation colour"
+  },
+  "optionAiColor": {
+    "message": "AI translation colour"
+  },
+  "optionSaveFailed": {
+    "message": "Could not save the settings"
   }
 }

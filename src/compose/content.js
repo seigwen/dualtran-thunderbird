@@ -1,82 +1,127 @@
 /**
- * Compose windows: the same floating button translates the message being
- * written. The compose script has full DOM access to the editor (even for
- * plaintext messages it is an HTML document), so the shared dual-span helpers
- * work unchanged.
+ * Compose windows: the same floating engine group (Original | Google | AI)
+ * translates the message being written. The compose script has full DOM access
+ * to the editor (even for plaintext messages it is an HTML document), so the
+ * shared dual-span helpers work unchanged.
+ *
+ * Kept in lockstep with messageDisplay/content.js: same group, same error
+ * classification, same SPEC 2.1 provider guard.
  */
 import { collectTextBlocks, insertDualSpan, removeAllTranslations } from "../shared/dualSpan.mjs";
-import { applyProviderState, readSettings } from "../shared/providerGuard.mjs";
+import { applyGroupProviderState, readSettings } from "../shared/providerGuard.mjs";
+import { mountFabGroup } from "../shared/fabGroup.mjs";
+import { requestViaStorage } from "../shared/requestChannel.mjs";
 
 (() => {
-  const t = (key, detail) => {
-    const msg = browser.i18n.getMessage(key) || key;
-    return detail === undefined ? msg : msg.replace("$DETAIL$", detail);
-  };
+  const t = (key) => browser.i18n.getMessage(key) || key;
 
   let busy = false;
-  /** SPEC 2.1: stored settings, re-read whenever the button (re)mounts. */
+  /** SPEC 2.1: stored settings, re-read whenever the group (re)mounts. */
   let settings = null;
+  let group = null;
+
+  // The compose script itself is registered from the shared helper file, so
+  // styles for the injected translations are added here (compose windows have
+  // no CSS registration). The group carries its own stylesheet.
+  const style = document.createElement("style");
+  // Match the browser extension's newLine rendering: plain text in the engine's
+  // colour, no border, no label. Only a vertical gap separates it from the
+  // original. Colours come from settings via CSS variables, so an Options change
+  // applies on the next mount without a rebuild.
+  style.textContent =
+    ".dt-translation{margin:2px 0 8px;padding:0;white-space:pre-wrap;color:var(--dt-google-color,#1d4ed8)}" +
+    ".dt-translation[data-engine='ai']{color:var(--dt-ai-color,#7c3aed)}";
+  document.documentElement.appendChild(style);
 
   function mount() {
-    if (document.getElementById("dt-fab")) return;
-    const fab = document.createElement("button");
-    fab.id = "dt-fab";
-    fab.type = "button";
-    fab.className = "dt-fab";
-    fab.textContent = t("btnComposeTranslate");
-    fab.addEventListener("click", onToggle);
-    (document.body || document.documentElement).appendChild(fab);
-    // SPEC 2.1: AI engine without a provider → disabled primary button whose
+    const existing = document.getElementById("dt-fab-group");
+    if (existing && group) return;
+    // Orphaned group from a dead content script: drop it, or `group` stays null
+    // and every click returns silently (see messageDisplay/content.js).
+    if (existing) existing.remove();
+    group = mountFabGroup(document, {
+      t,
+      onOriginal: showOriginal,
+      onTranslate: (engine) => translate(engine),
+      // The width/position the reader picked last time.
+      storage: browser.storage && browser.storage.local,
+    });
+    // SPEC 2.1: AI engine without a provider → the AI button is off and its
     // tooltip is providerRequiredError. No provider is guessed.
-    refreshProviderState(fab);
+    refreshProviderState();
   }
 
-  async function refreshProviderState(fab = document.getElementById("dt-fab")) {
-    if (!fab) return;
+  /** Push the configured text colours into the document's CSS variables. */
+  function applyTextColours(sett) {
+    if (!sett) return;
+    const root = document.documentElement;
+    if (sett.translatedColor) root.style.setProperty("--dt-google-color", sett.translatedColor);
+    if (sett.aiTranslatedColor) root.style.setProperty("--dt-ai-color", sett.aiTranslatedColor);
+  }
+
+  async function refreshProviderState() {
+    if (!group) return;
     settings = await readSettings(browser);
-    if (busy || fab.dataset.dtBusy === "1") return;
-    applyProviderState(fab, settings, t);
+    applyTextColours(settings);
+    if (busy) return;
+    applyGroupProviderState(group, settings, t);
   }
 
-  async function onToggle() {
+  function showOriginal() {
     if (busy) return;
-    const fab = document.getElementById("dt-fab");
-    if (fab.disabled) return;
-    if (document.querySelectorAll(".dt-translation").length > 0) {
-      removeAllTranslations(document);
-      fab.textContent = t("btnComposeTranslate");
+    removeAllTranslations(document);
+    group.setIdle("original");
+  }
+
+  async function translate(engine) {
+    if (busy) return;
+    // Recover from a dead instance (see mount): a click must never be a no-op.
+    if (!group) mount();
+    if (!group) return;
+    // Clear before collecting: marked nodes are skipped by the collector, so
+    // switching engines after a success would otherwise do nothing.
+    if (document.querySelectorAll(".dt-translation").length > 0) removeAllTranslations(document);
+    const blocks = collectTextBlocks(document);
+    if (blocks.length === 0) {
+      // Staying silent here reads as "the button is broken"; say what happened.
+      group.setError(t("errorNoTranslatableText"), "");
       return;
     }
-    const blocks = collectTextBlocks(document);
-    if (blocks.length === 0) return;
     busy = true;
-    fab.dataset.dtBusy = "1";
-    fab.disabled = true;
-    fab.classList.add("busy");
-    fab.textContent = t("btnTranslating");
+    group.setBusy(engine);
     try {
-      const result = await browser.runtime.sendMessage({
+      const result = await requestViaStorage(browser, {
         command: "dt-translate",
         texts: blocks.map((block) => block.text),
+        engine,
       });
       if (!result || result.error) {
-        fab.textContent = t("errorTranslate", (result && result.error) || "unknown");
+        group.setError(
+          (result && result.error) || t("errorAiNoResponse"),
+          (result && result.errorDetail) || ""
+        );
         return;
       }
+      let inserted = 0;
       blocks.forEach((block, index) => {
         if (result.translations[index]) {
-          insertDualSpan(document, block.el, result.translations[index]);
+          if (insertDualSpan(document, block.el, result.translations[index], result.engine)) inserted += 1;
         }
       });
-      fab.textContent = t("btnShowOriginal");
+      // A reply that produced nothing on the page is not a success: reporting it
+      // as idle leaves the writer staring at untranslated text with no reason.
+      if (inserted === 0) {
+        group.setError(t("errorNoTranslatableText"), "");
+        return;
+      }
+      group.setIdle(result.engine === "ai" ? "ai" : "google");
     } catch (error) {
-      fab.textContent = t("errorTranslate", (error && error.message) || String(error));
+      const message = (error && error.message) || String(error);
+      group.setError(message, message);
     } finally {
       busy = false;
-      delete fab.dataset.dtBusy;
-      fab.classList.remove("busy");
       // Keep the AI-engine guard: the provider may still be unset.
-      applyProviderState(fab, settings, t);
+      if (settings) applyGroupProviderState(group, settings, t);
     }
   }
 
@@ -86,17 +131,7 @@ import { applyProviderState, readSettings } from "../shared/providerGuard.mjs";
   const remountTimer = setInterval(() => {
     remounts += 1;
     mount();
-    if (!document.getElementById("dt-fab") || document.getElementById("dt-fab").disabled) refreshProviderState();
+    if (!document.getElementById("dt-fab-group")) refreshProviderState();
     if (remounts >= 30) clearInterval(remountTimer);
   }, 1000);
-
-  // The compose script itself is registered from the shared helper file, so
-  // styles are injected here (compose windows have no CSS registration).
-  const style = document.createElement("style");
-  style.textContent =
-    ".dt-fab{position:fixed;right:18px;bottom:18px;z-index:2147483000;padding:6px 14px;border:1px solid rgba(64,128,200,.55);border-radius:16px;background:#f6f9ff;color:#1d4e89;font:13px/1.4 system-ui,sans-serif;cursor:pointer;opacity:.92}" +
-    ".dt-translation{margin:2px 0 10px;padding:2px 0 2px 10px;border-left:3px solid rgba(64,128,200,.65);white-space:pre-wrap}" +
-    ".dt-fab.busy::before{content:'';display:inline-block;width:11px;height:11px;box-sizing:border-box;margin-right:6px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:dt-spin .8s linear infinite;vertical-align:-1px}" +
-    "@keyframes dt-spin{to{transform:rotate(360deg)}}";
-  document.documentElement.appendChild(style);
 })();

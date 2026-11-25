@@ -4,7 +4,18 @@
   <meta charset="utf-8" />
   <title data-i18n="optionsTitle">DualTran Options</title>
   <style>
-    body { font: 14px/1.6 system-ui, sans-serif; margin: 16px; min-width: 340px; }
+    /* Thunderbird renders options_ui inside a browser element whose own overflow
+       is hidden: without scrolling on the document, every control below the fold
+       (Custom base URL included) cannot be reached by wheel, Page Down or Tab.
+       Scroll on `html`, not on `body`.
+       Do NOT put `height: 100%` on html/body: when the host hands the options
+       frame an auto or zero height (it does in the embedded side-by-side view),
+       100% resolves to 0 and the entire form collapses - the panel renders empty
+       even though the DOM is fine. `min-height` keeps the natural content height
+       while still filling a tall frame. */
+    html { height: auto; min-height: 100vh; overflow-y: auto; }
+    body { font: 14px/1.6 system-ui, sans-serif; margin: 16px; min-width: 340px;
+           min-height: 100vh; box-sizing: border-box; }
     h1 { font-size: 16px; margin: 0 0 12px; }
     label { display: block; margin: 10px 0 2px; font-weight: 600; }
     input[type="text"], select { width: 100%; box-sizing: border-box; padding: 4px 6px; }
@@ -12,6 +23,8 @@
     #ai-fields[hidden] { display: none; }
     button { margin-top: 12px; padding: 6px 16px; }
     .muted { color: #666; font-size: 12px; }
+    input[type="color"] { width: 64px; height: 28px; padding: 0 2px; }
+    #appearance label { margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -20,17 +33,17 @@
   <label data-i18n="optionTargetLang" for="targetLang">Translate into</label>
   <select id="targetLang"></select>
 
-  <label data-i18n="optionEngine" for="engine">Engine</label>
-  <select id="engine">
-    <option value="google" data-i18n="optionEngineGoogle">Google</option>
-    <option value="ai" data-i18n="optionEngineAi">AI (BYOK)</option>
-  </select>
-
-  <fieldset id="ai-fields" hidden>
+  <!-- No engine picker: the floating Original / Google / AI group chooses the
+       engine per click, so a stored "default engine" only ever acted as an
+       unused fallback. The AI fields are always shown because the AI button is
+       always one click away. -->
+  <fieldset id="ai-fields">
     <label data-i18n="optionProvider" for="provider">Provider</label>
     <select id="provider"></select>
     <label data-i18n="optionApiKey" for="apiKey">API key</label>
-    <input type="text" id="apiKey" autocomplete="off" />
+    <!-- password: this node screenshots the page during installs and a plain field
+         leaked the operator's BYOK key. Deliberately diverges from the Chrome build. -->
+    <input type="password" id="apiKey" autocomplete="off" />
     <label data-i18n="optionModel" for="model">Model</label>
     <select id="modelSelect"></select>
     <label data-i18n="optionCustomModel" for="model" id="customModelLabel" hidden>Custom model</label>
@@ -42,8 +55,15 @@
     <p class="muted" data-i18n="optionApiKeyHint">Stored locally in Thunderbird only; requests go straight to your provider.</p>
   </fieldset>
 
-  <button id="save" data-i18n="optionSave">Save</button>
-  <span id="status" class="muted"></span>
+  <fieldset id="appearance">
+    <legend data-i18n="optionAppearance">Appearance</legend>
+    <label data-i18n="optionGoogleColor" for="translatedColor">Google translation colour</label>
+    <input type="color" id="translatedColor" />
+    <label data-i18n="optionAiColor" for="aiTranslatedColor">AI translation colour</label>
+    <input type="color" id="aiTranslatedColor" />
+  </fieldset>
+
+  <span id="status" class="muted" role="status" aria-live="polite"></span>
 
   <script src="catalog.js"></script>
   <script src="languages.js"></script>

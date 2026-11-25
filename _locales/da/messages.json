@@ -82,12 +82,52 @@
     "message": "Gemmes kun lokalt i Thunderbird; forespørgsler sendes direkte til din udbyder."
   },
   "providerPlaceholder": {
-    "message": "Vælg en udbyder"
+    "message": "Vælg en udbyder",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Vælg en udbyder først"
+    "message": "Vælg en udbyder først",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Vælg en AI-udbyder i indstillingerne, før du oversætter."
+    "message": "Vælg en AI-udbyder i indstillingerne, før du oversætter.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Original",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Oversættelsesfejl: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Intet svar fra AI-udbyderen. Kontrollér venligst din API-nøgle og modelnavn."
+  },
+  "errorTranslationTimeout": {
+    "message": "Oversættelsesanmodning fik timeout"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API-nøgle ikke fundet!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Denne meddelelse har ingen tekst, der kan oversættes."
+  },
+  "optionAppearance": {
+    "message": "Udseende"
+  },
+  "optionGoogleColor": {
+    "message": "Google-oversættelsesfarve"
+  },
+  "optionAiColor": {
+    "message": "AI-oversættelsesfarve"
+  },
+  "optionSaveFailed": {
+    "message": "Kunne ikke gemme indstillingerne"
   }
 }

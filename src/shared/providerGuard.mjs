@@ -19,18 +19,6 @@ export function providerChosen(ai) {
   return typeof (ai && ai.provider) === "string" && ai.provider.trim() !== "";
 }
 
-/**
- * The tooltip a primary button carries right now: empty when translating can
- * proceed, `providerRequiredError` when the AI engine has no provider yet.
- */
-export function providerBlockMessage(settings, t) {
-  const engine = settings && settings.engine;
-  if (engine !== "ai") return "";
-  if (providerChosen(settings.ai)) return "";
-  const text = typeof t === "function" ? t("providerRequiredError") : "";
-  return text || PROVIDER_REQUIRED_FALLBACK;
-}
-
 /** Ask the background for the stored settings; never throws. */
 export async function readSettings(browser) {
   try {
@@ -42,13 +30,17 @@ export async function readSettings(browser) {
 }
 
 /**
- * Put the button into the state its settings imply. Returns the tooltip text
- * that was applied ("" when the button is live), so callers can log/persist.
+ * Same rule for the floating engine group: only the AI button can be blocked,
+ * and it is blocked exactly when no provider is stored. The Google button is
+ * always live (no account, no key).
  */
-export function applyProviderState(button, settings, t) {
-  const message = providerBlockMessage(settings, t);
-  button.disabled = message !== "";
-  if (message) button.setAttribute("title", message);
-  else button.removeAttribute("title");
+export function applyGroupProviderState(group, settings, t) {
+  const aiButton = group && group.root && group.root.querySelector('[data-engine="ai"]');
+  if (!aiButton) return "";
+  const blocked = !providerChosen(settings && settings.ai);
+  const message = blocked ? (typeof t === "function" ? t("providerRequiredError") : "") || PROVIDER_REQUIRED_FALLBACK : "";
+  aiButton.disabled = blocked;
+  if (message) aiButton.setAttribute("title", message);
+  else aiButton.removeAttribute("title");
   return message;
 }

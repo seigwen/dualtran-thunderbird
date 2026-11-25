@@ -90,3 +90,148 @@ describe("removeAllTranslations", () => {
     expect(doc.querySelectorAll(`[${TRANSLATED_ATTR}]`)).toHaveLength(0);
   });
 });
+
+describe("collectTextBlocks on a real reading pane", () => {
+  // Thunderbird renders the reading pane as a header table followed by the body.
+  // A plain-text message body lands in a single <pre>, and the header cells are
+  // TD elements - which is exactly how "translate this mail" ended up sending
+  // From/To/Date/Subject to the model and nothing else.
+  const pane = `
+    <div id="messageHeader">
+      <table><tbody>
+        <tr><th>From</th><td>Hermes Notify &lt;clusiro@gmail.com&gt;</td></tr>
+        <tr><th>To</th><td>seigwen@gmail.com</td></tr>
+        <tr><th>Subject</th><td>DualTran error-copy verification</td></tr>
+        <tr><th>Date</th><td>11/24/2026, 9:57 AM</td></tr>
+      </tbody></table>
+    </div>
+    <div id="messageEditor"><div class="moz-text-plain"><pre>
+This is a test message used to verify the DualTran translation button.
+
+Second paragraph: open this mail in the reading pane and click the AI button.
+</pre></div></div>
+  `;
+
+  it("never sends reading-pane header cells as body text", () => {
+    const doc = makeDoc(pane);
+    const blocks = collectTextBlocks(doc);
+    const texts = blocks.map((b) => b.text);
+    expect(texts.join("\n")).not.toContain("Hermes Notify");
+    expect(texts.join("\n")).not.toContain("11/24/2026");
+    expect(texts.some((t) => /^Subject:/i.test(t))).toBe(false);
+  });
+
+  it("collects a plain-text body living in a <pre>", () => {
+    const doc = makeDoc(pane);
+    const blocks = collectTextBlocks(doc);
+    expect(blocks.length).toBeGreaterThan(0);
+    expect(blocks.some((b) => b.text.includes("verify the DualTran translation button"))).toBe(true);
+  });
+
+  it("still collects a normal HTML body and skips code blocks", () => {
+    const doc = makeDoc(`
+      <div id="messageHeader"><table><tr><th>From</th><td>A Person</td></tr></table></div>
+      <div id="messageEditor">
+        <p>First real paragraph of the newsletter.</p>
+        <p>Second real paragraph of the newsletter.</p>
+        <pre><code>const x = 1; // not prose to translate</code></pre>
+      </div>
+    `);
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts).toContain("First real paragraph of the newsletter.");
+    expect(texts).toContain("Second real paragraph of the newsletter.");
+    expect(texts.join("\n")).not.toContain("const x = 1");
+    expect(texts.join("\n")).not.toContain("A Person");
+  });
+});
+
+describe("insertDualSpan engine attribution", () => {
+  // The browser extension paints Google and AI results in different colours
+  // (translatedColor vs aiTranslatedColor). The host needs the same tell, so the
+  // injected block carries the engine it came from.
+  it("marks the block with the engine that produced it", () => {
+    const doc = makeDoc(`<p>Hello world</p>`);
+    const el = doc.querySelector("p");
+    expect(insertDualSpan(doc, el, "你好，世界", "ai")).toBe(true);
+    const block = doc.querySelector(".dt-translation");
+    expect(block.dataset.engine).toBe("ai");
+  });
+
+  it("defaults to google when no engine is given", () => {
+    const doc = makeDoc(`<p>Hello world</p>`);
+    const el = doc.querySelector("p");
+    insertDualSpan(doc, el, "你好，世界");
+    expect(doc.querySelector(".dt-translation").dataset.engine).toBe("google");
+  });
+
+  it("keeps the block readable as plain text for both engines", () => {
+    const doc = makeDoc(`<p>Hello world</p>`);
+    const el = doc.querySelector("p");
+    insertDualSpan(doc, el, "你好，世界", "ai");
+    const block = doc.querySelector(".dt-translation");
+    expect(block.textContent).toBe("你好，世界");
+    expect(block.getAttribute("dir")).toBe("auto");
+  });
+});
+
+describe("collectTextBlocks against the measured reading pane", () => {
+  // Measured with a DT_PROBE=1 build on this host: the message document is ONE
+  // <table> (counts.tds = 25, headerId = false, headerRows = 0). Header cells and
+  // body share that table and carry no distinguishing id or class, so the text
+  // shape is the only rule available.
+  const pane = `
+    <table>
+      <tr><td>Subject: Elastic UI, CSS Siblings, and a Front-End Farm</td></tr>
+      <tr><td>From: CodePen &lt;support@codepen.io&gt;</td></tr>
+      <tr><td>To: seigwen@gmail.com</td></tr>
+      <tr><td>Date: 11/24/2026, 4:15 AM</td></tr>
+      <tr><td><pre>This week's CodePen community highlights include an elastic SVG drawer UI.</pre></td></tr>
+    </table>`;
+
+  it("does not collect reading-pane header cells", () => {
+    const doc = makeDoc(pane);
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts.some((t) => /^(Subject|From|To|Date)\s*:/.test(t))).toBe(false);
+  });
+
+  it("still collects the body paragraph that follows the header", () => {
+    const doc = makeDoc(pane);
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts.some((t) => t.includes("elastic SVG drawer UI"))).toBe(true);
+  });
+
+  it("keeps prose that merely mentions a header prefix mid-sentence", () => {
+    const doc = makeDoc(
+      `<div id="messageEditor"><p>The Subject: line of the mail was long.</p></div>`
+    );
+    const texts = collectTextBlocks(doc).map((b) => b.text);
+    expect(texts).toContain("The Subject: line of the mail was long.");
+  });
+});
+
+describe("translation block styling matches the browser extension", () => {
+  // The browser extension's newLine rendering is plain text in the engine colour:
+  // no left border, no label (src/lib/config.js: translatedColor / aiTranslatedColor).
+  it("carries the engine tag the colour rule keys off", () => {
+    const doc = makeDoc(`<p>Hello</p>`);
+    insertDualSpan(doc, doc.querySelector("p"), "你好", "ai");
+    expect(doc.querySelector(".dt-translation").dataset.engine).toBe("ai");
+  });
+
+  it("the injected stylesheet has no border and no ::before label", async () => {
+    const fs = await import("node:fs");
+    for (const file of ["../../src/messageDisplay/content.js", "../../src/compose/content.js"]) {
+      const src = fs.readFileSync(new URL(file, import.meta.url), "utf8");
+      expect(src).not.toContain("border-left");
+      expect(src).not.toContain("::before");
+      expect(src).toContain("var(--dt-google-color");
+      expect(src).toContain("var(--dt-ai-color");
+    }
+  });
+
+  it("colour defaults are the browser extension's values", async () => {
+    const { DEFAULT_SETTINGS } = await import("../../src/settings.js");
+    expect(DEFAULT_SETTINGS.translatedColor).toBe("#1d4ed8");
+    expect(DEFAULT_SETTINGS.aiTranslatedColor).toBe("#7c3aed");
+  });
+});

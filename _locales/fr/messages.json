@@ -82,12 +82,52 @@
     "message": "Stockée localement dans Thunderbird uniquement ; les requêtes sont envoyées directement à votre fournisseur."
   },
   "providerPlaceholder": {
-    "message": "Choisir un fournisseur"
+    "message": "Choisir un fournisseur",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Choisissez d'abord un fournisseur"
+    "message": "Choisissez d'abord un fournisseur",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Choisissez un fournisseur d'IA dans les paramètres avant de traduire."
+    "message": "Choisissez un fournisseur d'IA dans les paramètres avant de traduire.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Original",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Erreur de traduction : $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Aucune réponse du fournisseur AI. Veuillez vérifier votre clé API et le nom du modèle."
+  },
+  "errorTranslationTimeout": {
+    "message": "La demande de traduction a expiré"
+  },
+  "errorApiKeyNotFound": {
+    "message": "Clé API introuvable !"
+  },
+  "errorNoTranslatableText": {
+    "message": "Ce message ne contient aucun texte traduisible."
+  },
+  "optionAppearance": {
+    "message": "Apparence"
+  },
+  "optionGoogleColor": {
+    "message": "Couleur de traduction Google"
+  },
+  "optionAiColor": {
+    "message": "Couleur de traduction IA"
+  },
+  "optionSaveFailed": {
+    "message": "Impossible d’enregistrer les paramètres"
   }
 }

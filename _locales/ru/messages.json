@@ -82,12 +82,52 @@
     "message": "Хранится только локально в Thunderbird; запросы отправляются напрямую вашему провайдеру."
   },
   "providerPlaceholder": {
-    "message": "Выберите провайдера"
+    "message": "Выберите провайдера",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Сначала выберите провайдера"
+    "message": "Сначала выберите провайдера",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Перед переводом выберите провайдера ИИ в настройках."
+    "message": "Перед переводом выберите провайдера ИИ в настройках.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Оригинал",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Ошибка перевода: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Нет ответа от AI-провайдера. Проверьте свой API-ключ и название модели."
+  },
+  "errorTranslationTimeout": {
+    "message": "Время ожидания запроса на перевод истекло"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API-ключ не найден!"
+  },
+  "errorNoTranslatableText": {
+    "message": "В этом сообщении нет текста для перевода."
+  },
+  "optionAppearance": {
+    "message": "Внешний вид"
+  },
+  "optionGoogleColor": {
+    "message": "Цвет перевода Google"
+  },
+  "optionAiColor": {
+    "message": "Цвет перевода ИИ"
+  },
+  "optionSaveFailed": {
+    "message": "Не удалось сохранить настройки"
   }
 }

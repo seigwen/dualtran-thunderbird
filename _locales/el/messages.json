@@ -82,12 +82,52 @@
     "message": "Αποθηκεύεται τοπικά μόνο στο Thunderbird· τα αιτήματα πηγαίνουν απευθείας στον πάροχό σας."
   },
   "providerPlaceholder": {
-    "message": "Επιλέξτε πάροχο"
+    "message": "Επιλέξτε πάροχο",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Επιλέξτε πρώτα πάροχο"
+    "message": "Επιλέξτε πρώτα πάροχο",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Επιλέξτε πάροχο AI στις ρυθμίσεις πριν τη μετάφραση."
+    "message": "Επιλέξτε πάροχο AI στις ρυθμίσεις πριν τη μετάφραση.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Πρωτότυπο",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Σφάλμα μετάφρασης: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Καμία απάντηση από τον πάροχο AI. Επαληθεύστε το κλειδί API και το όνομα του μοντέλου σας."
+  },
+  "errorTranslationTimeout": {
+    "message": "Το αίτημα μετάφρασης έληξε"
+  },
+  "errorApiKeyNotFound": {
+    "message": "Το κλειδί API δεν βρέθηκε!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Αυτό το μήνυμα δεν περιέχει μεταφράσιμο κείμενο."
+  },
+  "optionAppearance": {
+    "message": "Εμφάνιση"
+  },
+  "optionGoogleColor": {
+    "message": "Χρώμα μετάφρασης Google"
+  },
+  "optionAiColor": {
+    "message": "Χρώμα μετάφρασης AI"
+  },
+  "optionSaveFailed": {
+    "message": "Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων"
   }
 }

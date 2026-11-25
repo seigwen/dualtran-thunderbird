@@ -82,12 +82,52 @@
     "message": "จัดเก็บไว้ในเครื่องนี้ใน Thunderbird เท่านั้น คำขอจะส่งตรงไปยังผู้ให้บริการของคุณ"
   },
   "providerPlaceholder": {
-    "message": "เลือกผู้ให้บริการ"
+    "message": "เลือกผู้ให้บริการ",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "เลือกผู้ให้บริการก่อน"
+    "message": "เลือกผู้ให้บริการก่อน",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "เลือกผู้ให้บริการ AI ในการตั้งค่าก่อนแปล"
+    "message": "เลือกผู้ให้บริการ AI ในการตั้งค่าก่อนแปล",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "ต้นฉบับ",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "ข้อผิดพลาดในการแปล: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "ไม่มีการตอบกลับจากผู้ให้บริการ AI โปรดตรวจสอบคีย์ API และชื่อโมเดลของคุณ"
+  },
+  "errorTranslationTimeout": {
+    "message": "คำขอแปลหมดเวลา"
+  },
+  "errorApiKeyNotFound": {
+    "message": "ไม่พบคีย์ API!"
+  },
+  "errorNoTranslatableText": {
+    "message": "ข้อความนี้ไม่มีข้อความที่สามารถแปลได้"
+  },
+  "optionAppearance": {
+    "message": "รูปลักษณ์"
+  },
+  "optionGoogleColor": {
+    "message": "สีการแปลของ Google"
+  },
+  "optionAiColor": {
+    "message": "สีการแปลของ AI"
+  },
+  "optionSaveFailed": {
+    "message": "ไม่สามารถบันทึกการตั้งค่าได้"
   }
 }

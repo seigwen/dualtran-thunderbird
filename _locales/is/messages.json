@@ -82,12 +82,52 @@
     "message": "Geymt staðbundið í Thunderbird eingöngu; beiðnir fara beint til þjónustuveitandans þíns."
   },
   "providerPlaceholder": {
-    "message": "Veldu þjónustuaðila"
+    "message": "Veldu þjónustuaðila",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Veldu fyrst þjónustuaðila"
+    "message": "Veldu fyrst þjónustuaðila",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Veldu AI-þjónustuaðila í stillingunum áður en þú þýðir."
+    "message": "Veldu AI-þjónustuaðila í stillingunum áður en þú þýðir.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Upprunalegt",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Þýðingarvilla: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Ekkert svar frá AI-veitanda. Vinsamlegast staðfestu API-lykilinn og heiti líkansins."
+  },
+  "errorTranslationTimeout": {
+    "message": "Tímamörk þýðingarbeiðni runnu út"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API-lykill fannst ekki!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Þessi skilaboð hafa engan texta sem hægt er að þýða."
+  },
+  "optionAppearance": {
+    "message": "Útlit"
+  },
+  "optionGoogleColor": {
+    "message": "Litur Google þýðingar"
+  },
+  "optionAiColor": {
+    "message": "Litur AI þýðingar"
+  },
+  "optionSaveFailed": {
+    "message": "Gat ekki vistað stillingarnar"
   }
 }

@@ -1,8 +1,8 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "__MSG_extName__",
   "description": "__MSG_extDescription__",
-  "version": "0.1.1",
+  "version": "0.3.11",
   "author": "seigwen",
   "default_locale": "en",
   "browser_specific_settings": {
@@ -12,20 +12,17 @@
     }
   },
   "permissions": [
-    "scripting",
     "compose",
     "messagesRead",
-    "storage"
-  ],
-  "host_permissions": [
-    "https://translate.googleapis.com/*",
-    "https://models.dev/*"
+    "messagesModify",
+    "storage",
+    "<all_urls>"
   ],
   "background": {
     "scripts": [
       "background.js"
     ],
-    "type": "module"
+    "persistent": true
   },
   "options_ui": {
     "page": "options/options.html",

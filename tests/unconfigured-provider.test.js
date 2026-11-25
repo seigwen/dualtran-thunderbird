@@ -158,16 +158,16 @@ describe("SPEC 2.1 — background: dt-translate short-circuits", () => {
 
   it("returns providerRequiredError as the result shape the content scripts read", async () => {
     const { captured, engine, messenger } = harness({ engine: "ai", ai: AI_EMPTY, targetLang: "en" });
-    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ engine: "ai", ai: AI_EMPTY, targetLang: "en" }) });
-    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"] });
+    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ ai: AI_EMPTY, targetLang: "en" }) });
+    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"], engine: "ai" });
     expect(out).toEqual({ error: SOURCE });
     expect(engine.translateBatch).not.toHaveBeenCalled();
   });
 
   it("uses the injected i18n facade, so the message is localized", async () => {
     const { captured, engine, messenger } = harness(null, { getMessage: (key) => (key === "providerRequiredError" ? "翻译前请先在设置中选择 AI 提供商。" : "") });
-    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ engine: "ai", ai: AI_EMPTY, targetLang: "en" }) });
-    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"] });
+    await registerBackground({ messenger, engine, getSettingsFn: async () => ({ ai: AI_EMPTY, targetLang: "en" }) });
+    const out = await captured.onMessage({ command: "dt-translate", texts: ["Hola"], engine: "ai" });
     expect(out.error).toBe("翻译前请先在设置中选择 AI 提供商。");
     expect(engine.translateBatch).not.toHaveBeenCalled();
   });
@@ -189,15 +189,17 @@ describe("SPEC 2.1 — background: dt-translate short-circuits", () => {
     expect(engine.translateBatch).toHaveBeenCalledTimes(1);
   });
 
-  it("dt-settings answers with the engine and provider only — never the API key", async () => {
+  it("dt-settings answers with the target language and provider only — never the API key", async () => {
+    // No engine in the reply: the floating group carries its own per click, so
+    // there is no stored default to report.
     const { captured, engine, messenger } = harness(null);
     await registerBackground({
       messenger,
       engine,
-      getSettingsFn: async () => ({ engine: "ai", targetLang: "en", ai: { provider: "", apiKey: "sk-secret", model: "m", baseURL: "" } }),
+      getSettingsFn: async () => ({ targetLang: "en", ai: { provider: "", apiKey: "sk-secret", model: "m", baseURL: "" } }),
     });
     const out = await captured.onMessage({ command: "dt-settings" });
-    expect(out).toEqual({ settings: { engine: "ai", targetLang: "en", ai: { provider: "" } } });
+    expect(out).toEqual({ settings: { targetLang: "en", ai: { provider: "" } } });
     expect(JSON.stringify(out)).not.toMatch(/sk-secret/);
   });
 });
@@ -210,8 +212,21 @@ describe("SPEC 2.1 — background: dt-translate short-circuits", () => {
 describe("SPEC 2.1 — translate button explains the missing provider", () => {
   const PROVIDER_REQUIRED_ZH = "翻译前请先在设置中选择 AI 提供商。";
 
-  function bootContent(script, { provider, messages }) {
-    const dom = new JSDOM("<!doctype html><html><body><div id=\"messageEditor\"><p>Hello world, this is prose.</p></div></body></html>", {
+  function bootContent(
+    script,
+    { provider, messages, staleGroup = false, preTranslated = false, translateReply, bodyHtml = null }
+  ) {
+    // A previous content script can leave its group behind after the add-on is
+    // reloaded; simulate that orphan so the recovery path is covered.
+    const orphan = staleGroup ? '<div id="dt-fab-group"><button data-engine="ai">AI</button></div>' : "";
+    // A finished translation marks the source nodes and adds sibling blocks;
+    // the collector skips marked nodes, so a second engine must clear first.
+    const body = bodyHtml
+      ? bodyHtml
+      : preTranslated
+        ? '<div id="messageEditor"><p data-dt-translated="1">Hello world, this is prose.</p><div class="dt-translation">你好世界</div></div>'
+        : '<div id="messageEditor"><p>Hello world, this is prose.</p></div>';
+    const dom = new JSDOM(`<!doctype html><html><body>${orphan}${body}</body></html>`, {
       url: "https://mail.test/message.html",
       runScripts: "outside-only",
       pretendToBeVisual: true,
@@ -227,6 +242,7 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
       runtime: { sendMessage: async (message) => {
         calls.push(message);
         if (message.command === "dt-settings") return { settings: provider };
+        if (message.command === "dt-translate") return translateReply;
         return undefined;
       } },
     };
@@ -239,17 +255,22 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
   async function settle(document) {
     for (let i = 0; i < 50; i += 1) {
       await new Promise((resolve) => setTimeout(resolve, 0));
-      if (document.getElementById("dt-fab")) break;
+      if (document.getElementById("dt-fab-group")) break;
     }
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
 
+  /** The AI button is the only one the provider guard can shut. */
+  const aiButton = (document) => document.querySelector('#dt-fab-group [data-engine="ai"]');
+
   const MESSAGES = {
+    btnOriginal: "Original",
     btnTranslate: "Translate",
     btnComposeTranslate: "Translate this email",
     btnTranslating: "Translating…",
     btnShowOriginal: "Show original",
-    errorTranslate: "Translation failed: $DETAIL$",
+    errorAiNoResponse: "No response from AI provider.",
+    errorNoTranslatableText: "Nothing to translate on this page.",
     providerRequiredError: SOURCE,
   };
 
@@ -257,19 +278,22 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
     it(`${label}: disabled + titled while the AI provider is empty, enabled when configured`, async () => {
       const empty = bootContent(script, { provider: { engine: "ai", ai: AI_EMPTY }, messages: MESSAGES });
       await settle(empty.document);
-      const fab = empty.document.getElementById("dt-fab");
+      const fab = aiButton(empty.document);
       expect(fab).toBeTruthy();
       expect(fab.disabled).toBe(true);
       expect(fab.getAttribute("title")).toBe(SOURCE);
-      // Clicking a disabled primary button must not send a translation request.
+      // Clicking a disabled AI button must not send a translation request.
       fab.dispatchEvent(new empty.window.Event("click", { bubbles: true }));
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(empty.calls.filter((call) => call.command === "dt-translate")).toEqual([]);
+      // Google needs no account or key, so it stays live.
+      const google = empty.document.querySelector('#dt-fab-group [data-engine="google"]');
+      expect(google.disabled).toBe(false);
       empty.window.close?.();
 
       const ready = bootContent(script, { provider: { engine: "ai", ai: AI_SET }, messages: MESSAGES });
       await settle(ready.document);
-      const live = ready.document.getElementById("dt-fab");
+      const live = aiButton(ready.document);
       expect(live.disabled).toBe(false);
       expect(live.getAttribute("title")).toBeFalsy();
       ready.window.close?.();
@@ -281,14 +305,114 @@ describe("SPEC 2.1 — translate button explains the missing provider", () => {
         messages: { ...MESSAGES, providerRequiredError: PROVIDER_REQUIRED_ZH },
       });
       await settle(ui.document);
-      expect(ui.document.getElementById("dt-fab").getAttribute("title")).toBe(PROVIDER_REQUIRED_ZH);
+      expect(aiButton(ui.document).getAttribute("title")).toBe(PROVIDER_REQUIRED_ZH);
+      ui.window.close?.();
+    });
+
+    it(`${label}: replaces an orphaned floating group and stays clickable`, async () => {
+      // Regression: the previous content script's group can outlive its
+      // extension context. Keeping that DOM left the module's own `group`
+      // null, so every click returned silently - the button looked broken.
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        staleGroup: true,
+      });
+      await settle(ui.document);
+      const groups = ui.document.querySelectorAll("#dt-fab-group");
+      expect(groups.length).toBe(1);
+      expect(groups[0].querySelectorAll("[data-engine]").length).toBe(3);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(ui.calls.some((call) => call.command === "dt-translate")).toBe(true);
+      ui.window.close?.();
+    });
+
+    it(`${label}: switching engine after a finished translation still requests`, async () => {
+      // Regression: the collector skips nodes marked data-dt-translated, so
+      // collecting before clearing made "Google then AI" a silent no-op.
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        preTranslated: true,
+      });
+      await settle(ui.document);
+      const ai = ui.document.querySelector('#dt-fab-group [data-engine="ai"]');
+      ai.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      const requests = ui.calls.filter((call) => call.command === "dt-translate");
+      expect(requests.length).toBe(1);
+      expect(requests[0].engine).toBe("ai");
+      // The old translation must be gone, not stacked on top of the new one.
+      expect(ui.document.querySelectorAll(".dt-translation").length).toBe(0);
+      ui.window.close?.();
+    });
+
+    // The silent-idle regressions (a click that ends with nothing on screen and no
+    // explanation) are the ones users reported twice. These three cases pin the
+    // rule: a reply that puts no block on the page must surface a reason.
+    it(`${label}: a reply with no translations reports why, never a silent idle`, async () => {
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        translateReply: { translations: [], engine: "google" },
+      });
+      await settle(ui.document);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      const error = ui.document.querySelector("#dt-fab-group .dt-fab-error");
+      expect(error).toBeTruthy();
+      expect(error.textContent).toBe(MESSAGES.errorNoTranslatableText);
+      expect(ui.document.querySelectorAll(".dt-translation").length).toBe(0);
+      ui.window.close?.();
+    });
+
+    it(`${label}: a page with nothing translatable says so instead of returning silently`, async () => {
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        // No p/li/td/pre and no text: collectTextBlocks returns an empty list.
+        bodyHtml: '<div id="messageEditor"><div class="dt-translation">stale</div></div>',
+      });
+      await settle(ui.document);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      // Nothing was collected, so the request must never be sent...
+      expect(ui.calls.filter((call) => call.command === "dt-translate")).toEqual([]);
+      // ...and the click still explains itself.
+      const error = ui.document.querySelector("#dt-fab-group .dt-fab-error");
+      expect(error).toBeTruthy();
+      expect(error.textContent).toBe(MESSAGES.errorNoTranslatableText);
+      ui.window.close?.();
+    });
+
+    it(`${label}: a successful reply inserts the block and shows no error`, async () => {
+      // Positive control: without it the two cases above would also pass on a
+      // group that reports an error for every click.
+      const ui = bootContent(script, {
+        provider: { engine: "google", ai: AI_SET },
+        messages: MESSAGES,
+        translateReply: { translations: ["你好，世界，这是一段文章。"], engine: "google" },
+      });
+      await settle(ui.document);
+      const google = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
+      google.dispatchEvent(new ui.window.Event("click", { bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      expect(ui.document.querySelectorAll(".dt-translation").length).toBe(1);
+      expect(ui.document.querySelector("#dt-fab-group .dt-fab-error")).toBeFalsy();
       ui.window.close?.();
     });
 
     it(`${label}: the Google engine is never blocked by an empty AI provider`, async () => {
       const ui = bootContent(script, { provider: { engine: "google", ai: AI_EMPTY }, messages: MESSAGES });
       await settle(ui.document);
-      const fab = ui.document.getElementById("dt-fab");
+      const fab = ui.document.querySelector('#dt-fab-group [data-engine="google"]');
       expect(fab.disabled).toBe(false);
       expect(fab.getAttribute("title")).toBeFalsy();
       ui.window.close?.();

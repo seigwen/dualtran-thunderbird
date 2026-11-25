@@ -82,12 +82,52 @@
     "message": "Зберігається лише локально в Thunderbird; запити надсилаються безпосередньо вашому постачальнику."
   },
   "providerPlaceholder": {
-    "message": "Виберіть постачальника"
+    "message": "Виберіть постачальника",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Спочатку виберіть постачальника"
+    "message": "Спочатку виберіть постачальника",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Перед перекладом виберіть постачальника ШІ в налаштуваннях."
+    "message": "Перед перекладом виберіть постачальника ШІ в налаштуваннях.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Оригінал",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Помилка перекладу: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "Немає відповіді від постачальника AI. Перевірте свій API-ключ і назву моделі."
+  },
+  "errorTranslationTimeout": {
+    "message": "Час очікування запиту на переклад вичерпано"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API-ключ не знайдено!"
+  },
+  "errorNoTranslatableText": {
+    "message": "У цьому повідомленні немає тексту для перекладу."
+  },
+  "optionAppearance": {
+    "message": "Вигляд"
+  },
+  "optionGoogleColor": {
+    "message": "Колір перекладу Google"
+  },
+  "optionAiColor": {
+    "message": "Колір перекладу ШІ"
+  },
+  "optionSaveFailed": {
+    "message": "Не вдалося зберегти налаштування"
   }
 }

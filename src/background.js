@@ -7,6 +7,106 @@
  */
 
 import { isProviderChosen, providerRequiredError } from "./engine.js";
+import { describeAiError } from "./shared/aiError.mjs";
+import { REQUEST_STORAGE_KEY, RESPONSE_STORAGE_KEY } from "./shared/requestChannel.mjs";
+
+/**
+ * English source strings for the classifier keys, used when a locale catalogue
+ * entry is missing (a fresh checkout, a test without i18n). The catalogue wins
+ * whenever it has the key — see `npm run i18n:check`.
+ */
+const ERROR_FALLBACKS = {
+  errorTranslationWithMessage: "Translation error: $ERROR_MESSAGE$",
+  errorAiNoResponse: "The AI provider returned no response. Check the API key and model name.",
+  errorTranslationTimeout: "Translation request timed out",
+  errorApiKeyNotFound: "API key not found!",
+};
+
+/**
+ * Snapshot a thrown value as JSON-safe data. `JSON.stringify(new Error(...))`
+ * is `{}`, and the AI SDK puts the useful parts (status, response body) on
+ * non-enumerable or nested fields, so walk them explicitly and cap the blobs.
+ */
+function serializeError(error) {
+  if (error == null) return { kind: String(error) };
+  if (typeof error === "string") return { kind: "string", value: error };
+  if (typeof error !== "object") return { kind: typeof error, value: String(error) };
+  const out = {
+    kind: (error.constructor && error.constructor.name) || "Object",
+    name: error.name,
+    message: error.message,
+  };
+  if (error.statusCode !== undefined) out.statusCode = error.statusCode;
+  if (error.status !== undefined) out.status = error.status;
+  for (const key of ["responseBody", "data"]) {
+    if (error[key] === undefined) continue;
+    try {
+      out[key] = JSON.stringify(error[key]).slice(0, 2000);
+    } catch (_) {
+      out[key] = "<unserializable>";
+    }
+  }
+  if (error.cause) out.cause = serializeError(error.cause);
+  return out;
+}
+
+/**
+ * Keep the last translation failure in `storage.local.dtLastError`. Diagnostics
+ * must never break a translation, so every step is best-effort and the caller
+ * does not await it.
+ */
+function recordFailure(messenger, error, failure) {
+  try {
+    const storage = messenger && messenger.storage && messenger.storage.local;
+    if (!storage || typeof storage.set !== "function") return;
+    const snapshot = {
+      at: new Date().toISOString(),
+      message: failure.error,
+      detail: failure.errorDetail,
+      error: serializeError(error),
+    };
+    // Stored as a JSON string: IndexedDB's structured clone is opaque to the
+    // diagnostic tooling, and a string round-trips exactly as written.
+    Promise.resolve(storage.set({ dtLastError: JSON.stringify(snapshot) })).catch(() => {});
+  } catch (_) {
+    /* diagnostics are best-effort */
+  }
+}
+
+/** A provider that literally says "null" must never become the banner text. */
+const NULLISH_DETAIL = /^(null|undefined|\[object object\])$/i;
+
+/**
+ * Turn a thrown value into `{ error, errorDetail }`: a localized sentence for
+ * the floating group plus the raw technical detail it keeps in the tooltip.
+ *
+ * The detail is handed to `i18n.getMessage` as its placeholder argument rather
+ * than string-patched afterwards: Thunderbird substitutes the placeholder with
+ * the literal "null" when no argument is supplied, which is how a network
+ * failure surfaced as `Translation error: null`.
+ */
+export function localizeTranslationError(error, i18n) {
+  const { key, detail } = describeAiError(error);
+  const cleanDetail = detail && !NULLISH_DETAIL.test(detail) ? detail : "";
+  const effectiveKey = cleanDetail ? key : "errorAiNoResponse";
+  const args = cleanDetail ? [cleanDetail] : [];
+
+  let localized = "";
+  if (i18n && typeof i18n.getMessage === "function") {
+    try {
+      localized = i18n.getMessage(effectiveKey, args) || "";
+    } catch (_) {
+      localized = "";
+    }
+  }
+
+  const template = localized || ERROR_FALLBACKS[effectiveKey] || ERROR_FALLBACKS.errorAiNoResponse;
+  const message =
+    cleanDetail && template.includes("$ERROR_MESSAGE$")
+      ? template.replace("$ERROR_MESSAGE$", cleanDetail)
+      : template;
+  return { error: message, errorDetail: cleanDetail };
+}
 
 export const DISPLAY_SCRIPTS = ["messageDisplay/content.js"];
 export const COMPOSE_SCRIPT = ["compose/content.js"];
@@ -20,7 +120,7 @@ export const COMPOSE_SCRIPT_ID = "dualtran-compose@seigwen.dev";
  * made and every content script can render one string.
  */
 function providerMissing(settings, message) {
-  const engineName = message.engine ?? (settings && settings.engine);
+  const engineName = message.engine ?? "google";
   const ai = settings ? settings.ai : undefined;
   return engineName === "ai" && !isProviderChosen(ai && ai.provider);
 }
@@ -63,7 +163,6 @@ export async function registerBackground({
         return {
           settings: settings
             ? {
-                engine: settings.engine,
                 targetLang: settings.targetLang,
                 ai: { provider: String((settings.ai && settings.ai.provider) || "") },
               }
@@ -76,45 +175,81 @@ export async function registerBackground({
     if (message.command !== "dt-translate") {
       return undefined;
     }
+    return handleTranslateMessage(message);
+  });
+
+  /**
+   * The single place a translation request is served, shared by the sendMessage
+   * listener and the storage channel below.
+   */
+  async function handleTranslateMessage(message) {
     try {
       const settings = getSettingsFn ? await getSettingsFn() : null;
       if (providerMissing(settings, message)) {
         return { error: providerRequiredError(i18n || messenger.i18n).message };
       }
       const result = await engine.translateBatch(message.texts || [], {
-        engine: message.engine ?? (settings && settings.engine),
+        engine: message.engine ?? "google",
         targetLang: message.targetLang ?? (settings && settings.targetLang),
         ai: settings ? settings.ai : undefined,
       });
       return { translations: result.translations, engine: result.engine, targetLang: result.targetLang };
     } catch (error) {
-      return { error: error && error.message ? error.message : String(error) };
+      const failure = localizeTranslationError(error, i18n || messenger.i18n);
+      recordFailure(messenger, error, failure);
+      return failure;
     }
-  });
+  }
 
-  // Reading pane: the MV3 way is scripting.messageDisplay.registerScripts
-  // (the legacy messageDisplayScripts.register only exists in MV2 contexts).
-  // Styles are injected by the content script itself.
+  // Thunderbird 160 does not deliver sendMessage to a stopped event page, so a
+  // click used to fail with "Receiving end does not exist". storage.onChanged
+  // IS a persisted wake event: the content script writes dtRequest, we answer
+  // through dtResponse.
+  if (messenger.storage && messenger.storage.onChanged) {
+    messenger.storage.onChanged.addListener(async (changes, area) => {
+      if (area !== "local" || !changes[REQUEST_STORAGE_KEY]) return;
+      const request = changes[REQUEST_STORAGE_KEY].newValue;
+      if (!request || !request.id) return;
+      let reply;
+      try {
+        reply = await handleTranslateMessage(request);
+      } catch (error) {
+        reply = { error: String((error && error.message) || error) };
+      }
+      try {
+        await messenger.storage.local.set({ [RESPONSE_STORAGE_KEY]: { id: request.id, ...reply } });
+      } catch (error) {
+        debugFn(`response publish failed: ${error}`);
+      }
+    });
+  }
+
+  // MV2 host: the whole `scripting.*` namespace does not exist here, so the
+  // legacy registration APIs are used instead. A persistent background page is
+  // evaluated exactly once per browser start, so registering here cannot
+  // accumulate duplicates.
   try {
-    await messenger.scripting.messageDisplay.registerScripts([
-      { id: DISPLAY_SCRIPT_ID, js: [...DISPLAY_SCRIPTS] },
-    ]);
+    await messenger.messageDisplayScripts.register({
+      js: DISPLAY_SCRIPTS.map((file) => ({ file })),
+    });
+    debugFn("display scripts registered");
   } catch (error) {
     debugFn(`message display script registration: ${error}`);
   }
 
   // Compose windows: full DOM access to the editor from the compose script.
   try {
-    await messenger.scripting.compose.registerScripts([
-      { id: COMPOSE_SCRIPT_ID, js: [...COMPOSE_SCRIPT] },
-    ]);
+    await messenger.composeScripts.register({
+      js: COMPOSE_SCRIPT.map((file) => ({ file })),
+    });
   } catch (error) {
     debugFn(`compose script registration: ${error}`);
   }
 
-  // Inject into message tabs that were already open before (re)start - and
-  // retry briefly, because on a cold start the background may wake up before
-  // Thunderbird has finished restoring or opening message windows.
+  // Registration only covers documents opened afterwards, so message tabs that
+  // already exist at (re)start get an explicit injection. Retried briefly on a
+  // cold start, when the background may run before Thunderbird finishes
+  // restoring windows.
   // Thunderbird tab types: "mail" (3-pane mail tab) and "messageDisplay"
   // (standalone message window/tab) - see the official hello-world example.
   const scanAndInject = async () => {
@@ -128,23 +263,9 @@ export async function registerBackground({
             const displayed = await messenger.messageDisplay.getDisplayedMessages(tab.id);
             if (!displayed || displayed.length !== 1) continue;
           }
-          await messenger.scripting.executeScript({ target: { tabId: tab.id }, files: [...DISPLAY_SCRIPTS] });
+          await messenger.tabs.executeScript(tab.id, { file: DISPLAY_SCRIPTS[0] });
           injected += 1;
-          try {
-            const probe = await messenger.scripting.executeScript({
-              target: { tabId: tab.id },
-              func: () => ({
-                helper: typeof window.__dtDualSpan,
-                fab: !!document.getElementById("dt-fab"),
-                ready: document.readyState,
-                url: String(location.href).slice(0, 90),
-              }),
-            });
-            const value = Array.isArray(probe) ? probe[0] && probe[0].result : probe;
-            debugFn(`probe tab ${tab.id}: ${JSON.stringify(value)}`);
-          } catch (error) {
-            debugFn(`probe tab ${tab.id} failed: ${error}`);
-          }
+          debugFn(`injected into ${tab.id}`);
         } catch (error) {
           debugFn(`inject into tab ${tab.id} failed: ${error}`);
         }

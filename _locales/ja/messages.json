@@ -82,12 +82,52 @@
     "message": "Thunderbird内にのみローカル保存され、リクエストはプロバイダーへ直接送信されます"
   },
   "providerPlaceholder": {
-    "message": "プロバイダーを選択"
+    "message": "プロバイダーを選択",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "先にプロバイダーを選択"
+    "message": "先にプロバイダーを選択",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "翻訳する前に設定で AI プロバイダーを選択してください。"
+    "message": "翻訳する前に設定で AI プロバイダーを選択してください。",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "原文",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "翻訳エラー：$ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "AI プロバイダーから応答がありません。API キーとモデル名を確認してください。"
+  },
+  "errorTranslationTimeout": {
+    "message": "翻訳リクエストがタイムアウトしました"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API キーが見つかりません！"
+  },
+  "errorNoTranslatableText": {
+    "message": "このメッセージには翻訳可能なテキストがありません"
+  },
+  "optionAppearance": {
+    "message": "外観"
+  },
+  "optionGoogleColor": {
+    "message": "Google翻訳の色"
+  },
+  "optionAiColor": {
+    "message": "AI翻訳の色"
+  },
+  "optionSaveFailed": {
+    "message": "設定を保存できませんでした"
   }
 }

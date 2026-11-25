@@ -82,12 +82,52 @@
     "message": "فقط به‌صورت محلی در Thunderbird ذخیره می‌شود؛ درخواست‌ها مستقیماً به ارائه‌دهنده شما ارسال می‌شوند."
   },
   "providerPlaceholder": {
-    "message": "یک ارائه‌دهنده انتخاب کنید"
+    "message": "یک ارائه‌دهنده انتخاب کنید",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "ابتدا یک ارائه‌دهنده انتخاب کنید"
+    "message": "ابتدا یک ارائه‌دهنده انتخاب کنید",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "پیش از ترجمه، یک ارائه‌دهنده هوش مصنوعی در تنظیمات انتخاب کنید."
+    "message": "پیش از ترجمه، یک ارائه‌دهنده هوش مصنوعی در تنظیمات انتخاب کنید.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "اصلی",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "خطای ترجمه: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "پاسخی از ارائه‌دهنده‌ی AI دریافت نشد. لطفاً کلید API و نام مدل خود را بررسی کنید."
+  },
+  "errorTranslationTimeout": {
+    "message": "زمان درخواست ترجمه به پایان رسید"
+  },
+  "errorApiKeyNotFound": {
+    "message": "کلید API پیدا نشد!"
+  },
+  "errorNoTranslatableText": {
+    "message": "این پیام متن قابل ترجمه‌ای ندارد"
+  },
+  "optionAppearance": {
+    "message": "ظاهر"
+  },
+  "optionGoogleColor": {
+    "message": "رنگ ترجمه Google"
+  },
+  "optionAiColor": {
+    "message": "رنگ ترجمه هوش مصنوعی"
+  },
+  "optionSaveFailed": {
+    "message": "ذخیره تنظیمات ممکن نشد"
   }
 }

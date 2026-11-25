@@ -41,6 +41,49 @@ export function isProviderChosen(provider) {
   return typeof provider === "string" && provider.trim() !== "";
 }
 
+/**
+ * Sentences a model emits when it mistakes the task for a conversation window.
+ * `buildTranslationMessages` supplies an assistant prefill ending in
+ * "Please give me the text.", and some providers echo it - in English or in the
+ * target language - instead of translating. Such a reply must never reach the
+ * page: it reads as a broken translation.
+ *
+ * Deliberately narrow: only a short reply that *starts* with one of these
+ * shapes is dropped, so a real translation that happens to contain the words
+ * later in the sentence survives.
+ */
+const META_REPLY_RE =
+  /^(?:i understand\b|please (?:provide|give)\b|i'?m ready\b|send me the\b|我明白了|好的[，,]?\s*请|请(?:提供|把|给我|发送)|收到[，,]?\s*请|明白了[，,]?\s*请)/i;
+
+export function isMetaReply(text) {
+  const t = String(text || "").trim();
+  if (!t) return false;
+  // A long paragraph is prose, not a one-line acknowledgement.
+  if (t.length > 120) return false;
+  return META_REPLY_RE.test(t);
+}
+
+/**
+ * The core prompt talks about `<译泽>` tags while engine.js sends plain text, so
+ * some models invent that wrapper and return `<译译>译文</译译>`. Nothing else strips
+ * it, and the tags used to reach the page verbatim.
+ *
+ * Only a wrapper that spans the *whole* reply is removed, so prose that happens to
+ * contain angle brackets (`在 HTML 里 <br> 表示换行`) is left alone. Peeling repeats
+ * a few times for nested answers.
+ */
+const TRANSLATION_WRAPPER_RE = /^<译[译泽]>\s*([\s\S]*?)\s*<\/译[译泽]>$/;
+
+export function stripTranslationWrapper(text) {
+  let out = String(text || "").trim();
+  for (let i = 0; i < 3; i += 1) {
+    const match = out.match(TRANSLATION_WRAPPER_RE);
+    if (!match) break;
+    out = match[1].trim();
+  }
+  return out;
+}
+
 export function createEngine({ core, config, fetchImpl = null }) {
   async function translateAi(texts, targetLang, aiSettings) {
     const { provider, apiKey, model, baseURL, reasoning } = aiSettings ?? config.ai;
@@ -60,9 +103,12 @@ export function createEngine({ core, config, fetchImpl = null }) {
       const targetLanguageName =
         (core.codeToLanguageNameInEnglish && core.codeToLanguageNameInEnglish(targetLang)) || targetLang;
       const prompt = core.buildTranslationMessages({ content, targetLanguageName });
+      // Only the system prompt and the block itself. The core ships an
+      // assistant prefill ("I understand. Please give me the text."); resending it
+      // as a *user* turn made the model answer that sentence (or its Chinese twin
+      // "我明白了。请把文本给我。") instead of translating.
       const messages = [
         { role: "system", content: prompt.system },
-        { role: "user", content: "I understand. Please give me the text." },
         { role: "user", content },
       ];
       let text = "";
@@ -79,12 +125,22 @@ export function createEngine({ core, config, fetchImpl = null }) {
         },
       });
       if (streamError) {
-        throw new Error(core.formatAiError(streamError).message);
+        // Keep the provider's status/body on the error we throw: the message
+        // alone is often a stringified null and cannot be classified later.
+        const formatted = core.formatAiError(streamError);
+        const error = new Error(formatted.message);
+        error.cause = streamError;
+        const status = streamError && (streamError.statusCode || streamError.status);
+        if (status) error.statusCode = status;
+        if (streamError && streamError.responseBody) error.responseBody = streamError.responseBody;
+        if (streamError && streamError.data) error.data = streamError.data;
+        throw error;
       }
       if (totalChunks === 0) {
         throw new Error("No response from AI provider");
       }
-      results.push(text);
+      const cleaned = stripTranslationWrapper(text);
+      results.push(isMetaReply(cleaned) ? "" : cleaned);
     }
     return results;
   }

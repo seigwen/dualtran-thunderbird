@@ -89,5 +89,41 @@
   },
   "providerRequiredError": {
     "message": "翻譯前請先在設定中選擇 AI 提供商。"
+  },
+  "btnOriginal": {
+    "message": "原文"
+  },
+  "errorTranslationWithMessage": {
+    "message": "翻譯錯誤：$ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "AI 服務未傳回回應，請檢查 API Key 和模型名稱是否正確。"
+  },
+  "errorTranslationTimeout": {
+    "message": "翻譯請求逾時"
+  },
+  "errorApiKeyNotFound": {
+    "message": "找不到 API 金鑰！"
+  },
+  "errorNoTranslatableText": {
+    "message": "這封郵件沒有可翻譯的正文。"
+  },
+  "optionAppearance": {
+    "message": "外觀"
+  },
+  "optionGoogleColor": {
+    "message": "Google 譯文顏色"
+  },
+  "optionAiColor": {
+    "message": "AI 譯文顏色"
+  },
+  "optionSaveFailed": {
+    "message": "設定儲存失敗"
   }
 }

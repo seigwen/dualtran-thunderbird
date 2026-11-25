@@ -6,3 +6,8 @@
 e2e-artifacts/
 .cache/
 .vscode-test/
+
+# Local debugging evidence and throwaway probes
+.hermes/
+aiprobe.mjs
+ui-test/

@@ -594,10 +594,36 @@ describe("options page conformance", () => {
     ui.window.close?.();
   });
 
-  it("SPEC 2.1 — an unconfigured AI page keeps the engine on AI and never invents OpenAI", async () => {
+  it("the options page never pins html/body to height:100%", () => {
+    // In the embedded side-by-side view Thunderbird can hand the options frame an
+    // auto/zero height; `height: 100%` then resolves to 0 and the whole form
+    // collapses into an apparently empty panel. Scroll belongs on `html`, and the
+    // box height must be a minimum, not a fixed value.
+    const html = fs.readFileSync(path.join(OPTIONS_DIR, "options.html"), "utf8");
+    const style = html.slice(html.indexOf("<style>"), html.indexOf("</style>"));
+    expect(style).not.toMatch(/html\s*,\s*body\s*\{[^}]*height:\s*100%/);
+    expect(style).not.toMatch(/body\s*\{[^}]*[^-]height:\s*100%/);
+    expect(style).toMatch(/min-height:\s*100vh/);
+    expect(style).toMatch(/overflow-y:\s*auto/);
+  });
+
+  it("the API key field is masked but still round-trips its value", async () => {
+    // This node screenshots the Options page during installs, so a plain text field
+    // leaked the operator's real BYOK key into the captures. Masking is deliberate
+    // and diverges from the Chrome build, which still shows it in the clear.
+    const ui = await bootOptions({ settings: { ai: { provider: "openai", apiKey: "sk-live-secret" } } });
+    const field = ui.$("apiKey");
+    expect(field.type).toBe("password");
+    expect(field.getAttribute("autocomplete")).toBe("off");
+    // Masked, not emptied: the save path reads .value and must keep working.
+    expect(field.value).toBe("sk-live-secret");
+  });
+
+  it("SPEC 2.1 — the AI fields are always present and never invent OpenAI", async () => {
     const ui = await bootOptions();
-    ui.$("engine").value = "ai";
-    ui.change(ui.$("engine"));
+    // No engine picker: the floating group chooses per click, so the AI fields
+    // must be reachable without switching a dropdown first.
+    expect(ui.$("engine")).toBeNull();
     expect(ui.$("ai-fields").hidden).toBe(false);
     // Nothing OpenAI-flavoured may sit in the page a fresh install shows.
     const html = ui.$("ai-fields").outerHTML;
@@ -651,8 +677,9 @@ describe("options page conformance", () => {
 
   it("SPEC 2.1 — saving an unconfigured page stores an empty provider, not openai", async () => {
     const ui = await bootOptions();
-    ui.$("engine").value = "ai";
-    ui.$("save").click();
+    // No Save button any more: every control persists on change.
+    ui.$("targetLang").value = "zh-CN";
+    ui.change(ui.$("targetLang"));
     await tick();
     const saved = ui.calls.sent.find((message) => message.command === "dt-save-settings");
     expect(saved).toBeTruthy();

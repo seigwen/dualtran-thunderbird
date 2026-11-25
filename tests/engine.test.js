@@ -47,6 +47,16 @@ describe("createEngine", () => {
     expect(res.engine).toBe("ai");
   });
 
+  it("keeps the provider's HTTP status on the thrown error", async () => {
+    // The classification layer needs the status to say "HTTP 401 — check your
+    // API key" instead of echoing the SDK's null-ish message.
+    const core = stubCore({
+      streamChat: async () => ({ totalChunks: 0, streamError: { statusCode: 401, message: "null" } }),
+    });
+    const engine = createEngine({ core, config: { ...baseConfig, defaultEngine: "ai" } });
+    await expect(engine.translateBatch(["Hola"])).rejects.toMatchObject({ statusCode: 401 });
+  });
+
   it("throws a helpful error when the AI engine has no key", async () => {
     const engine = createEngine({
       core: stubCore(),
@@ -117,5 +127,116 @@ describe("createEngine — reasoning depth", () => {
     const engine2 = createEngine({ core, config: { ...baseConfig, ai: { ...baseConfig.ai, reasoning: "default" } } });
     await engine2.translateBatch(["hola"], { engine: "ai" });
     expect(seen[1]).toBe("");
+  });
+});
+
+describe("AI request shape (no stray prompt)", () => {
+  // The core ships an assistant prefill "I understand. Please give me the text."
+  // engine.js used to resend it as a *user* message, so the model sometimes
+  // answered "I understand. Please give me the text." (or its Chinese twin
+  // "我明白了。请把文本给我。") instead of translating.
+  it("sends only the system prompt and the block to translate", async () => {
+    const seen = [];
+    const core = {
+      buildTranslationMessages: () => ({ system: "sys", assistant: "I understand. Please give me the text." }),
+      streamChat: async ({ messages, onChunk }) => {
+        seen.push(messages);
+        onChunk("<译泽>你好</译泽>");
+        return { totalChunks: 1 };
+      },
+      formatAiError: (e) => ({ message: String(e) }),
+      codeToLanguageNameInEnglish: () => "Chinese",
+    };
+    const engine = createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        defaultEngine: "ai",
+        ai: { provider: "ollama-cloud", apiKey: "k", model: "m", reasoning: "lowest", baseURL: "" },
+      },
+    });
+    await engine.translateBatch(["Hello world"], { engine: "ai", targetLang: "zh-CN" });
+    expect(seen).toHaveLength(1);
+    const roles = seen[0].map((m) => m.role);
+    expect(roles).toEqual(["system", "user"]);
+    expect(seen[0][1].content).toBe("Hello world");
+  });
+
+  it("discards a reply that is the model talking about the task", async () => {
+    const core = {
+      buildTranslationMessages: () => ({ system: "sys", assistant: "I understand. Please give me the text." }),
+      streamChat: async ({ onChunk }) => {
+        onChunk("我明白了。请把文本给我。");
+        return { totalChunks: 1 };
+      },
+      formatAiError: (e) => ({ message: String(e) }),
+      codeToLanguageNameInEnglish: () => "Chinese",
+    };
+    const engine = createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        defaultEngine: "ai",
+        ai: { provider: "ollama-cloud", apiKey: "k", model: "m", reasoning: "lowest", baseURL: "" },
+      },
+    });
+    const out = await engine.translateBatch(["Hello world"], { engine: "ai", targetLang: "zh-CN" });
+    // An empty result makes the content script show "no translatable text"
+    // rather than pasting the model's meta-reply into the message.
+    expect(out.translations).toEqual([""]);
+  });
+});
+
+describe("AI reply unwrapping", () => {
+  // The core prompt talks about "<译泽>" tags while engine.js sends plain text, so
+  // some models answer with their own wrapper. It must never reach the page.
+  function engineReturning(chunks) {
+    const core = {
+      buildTranslationMessages: () => ({ system: "sys", assistant: "ok" }),
+      streamChat: async ({ onChunk }) => {
+        for (const c of chunks) onChunk(c);
+        return { totalChunks: chunks.length };
+      },
+      formatAiError: (e) => ({ message: String(e) }),
+      codeToLanguageNameInEnglish: () => "Chinese",
+    };
+    return createEngine({
+      core,
+      config: {
+        ...baseConfig,
+        defaultEngine: "ai",
+        ai: { provider: "ollama-cloud", apiKey: "k", model: "m", reasoning: "lowest", baseURL: "" },
+      },
+    });
+  }
+
+  it("strips the <译译> wrapper the model invents", async () => {
+    const engine = engineReturning(["<译译>", "你好世界", "</译译>"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("strips the <译泽> spelling from the prompt as well", async () => {
+    const engine = engineReturning(["<译泽>你好世界</译泽>"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("strips a wrapper split across whitespace and newlines", async () => {
+    const engine = engineReturning(["<译译>\n  你好世界\n</译译>"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("leaves a plain reply untouched", async () => {
+    const engine = engineReturning(["你好世界"]);
+    const out = await engine.translateBatch(["Hello world"]);
+    expect(out.translations).toEqual(["你好世界"]);
+  });
+
+  it("keeps angle brackets that belong to the prose", async () => {
+    const engine = engineReturning(["在 HTML 里 <br> 表示换行"]);
+    const out = await engine.translateBatch(["In HTML <br> means a line break"]);
+    expect(out.translations).toEqual(["在 HTML 里 <br> 表示换行"]);
   });
 });

@@ -13,8 +13,17 @@ const api = globalThis.messenger ?? globalThis.browser;
 const uiLang = api.i18n && api.i18n.getUILanguage ? api.i18n.getUILanguage() : "en";
 
 const debugFn = (text) => {
+  const line = `[dualtran] ${text}`;
+  // console.log reaches the Browser Console even when dump is disabled in
+  // release builds, which is the only way to tell "never evaluated" from
+  // "evaluated and threw".
   try {
-    if (globalThis.dump) globalThis.dump(`[dualtran] ${text}\n`);
+    console.log(line);
+  } catch (_) {
+    /* no console */
+  }
+  try {
+    if (globalThis.dump) globalThis.dump(`${line}\n`);
   } catch (_) {
     /* dump unavailable */
   }

@@ -82,12 +82,52 @@
     "message": "يُخزَّن محليًا في Thunderbird فقط؛ تُرسَل الطلبات مباشرةً إلى مزوّدك."
   },
   "providerPlaceholder": {
-    "message": "اختر مزوّدًا"
+    "message": "اختر مزوّدًا",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "اختر مزوّدًا أولًا"
+    "message": "اختر مزوّدًا أولًا",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "اختر مزوّد ذكاء اصطناعي في الإعدادات قبل الترجمة."
+    "message": "اختر مزوّد ذكاء اصطناعي في الإعدادات قبل الترجمة.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "الأصل",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "خطأ في الترجمة: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "لا يوجد رد من مزوّد AI. يرجى التحقق من مفتاح API واسم النموذج."
+  },
+  "errorTranslationTimeout": {
+    "message": "انتهت مهلة طلب الترجمة"
+  },
+  "errorApiKeyNotFound": {
+    "message": "لم يتم العثور على مفتاح API!"
+  },
+  "errorNoTranslatableText": {
+    "message": "لا يحتوي هذا النص على نص قابل للترجمة."
+  },
+  "optionAppearance": {
+    "message": "المظهر"
+  },
+  "optionGoogleColor": {
+    "message": "لون ترجمة Google"
+  },
+  "optionAiColor": {
+    "message": "لون ترجمة الذكاء الاصطناعي"
+  },
+  "optionSaveFailed": {
+    "message": "تعذر حفظ الإعدادات"
   }
 }

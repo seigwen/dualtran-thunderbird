@@ -82,12 +82,52 @@
     "message": "Yalnızca Thunderbird içinde yerel olarak saklanır; istekler doğrudan sağlayıcınıza gider."
   },
   "providerPlaceholder": {
-    "message": "Bir sağlayıcı seçin"
+    "message": "Bir sağlayıcı seçin",
+    "description": "Disabled first row of the AI provider dropdown until the user picks a provider."
   },
   "providerRequiredForModel": {
-    "message": "Önce bir sağlayıcı seçin"
+    "message": "Önce bir sağlayıcı seçin",
+    "description": "Model dropdown placeholder while no AI provider has been chosen."
   },
   "providerRequiredError": {
-    "message": "Çeviri yapmadan önce ayarlardan bir yapay zekâ sağlayıcısı seçin."
+    "message": "Çeviri yapmadan önce ayarlardan bir yapay zekâ sağlayıcısı seçin.",
+    "description": "Returned instead of a translation when the AI engine has no provider selected."
+  },
+  "btnOriginal": {
+    "message": "Orijinal",
+    "description": "Floating + block button group: the 'show original' engine button label"
+  },
+  "errorTranslationWithMessage": {
+    "message": "Çeviri hatası: $ERROR_MESSAGE$",
+    "placeholders": {
+      "ERROR_MESSAGE": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorAiNoResponse": {
+    "message": "AI sağlayıcısından yanıt alınamadı. Lütfen API anahtarınızı ve model adınızı doğrulayın."
+  },
+  "errorTranslationTimeout": {
+    "message": "Çeviri isteği zaman aşımına uğradı"
+  },
+  "errorApiKeyNotFound": {
+    "message": "API anahtarı bulunamadı!"
+  },
+  "errorNoTranslatableText": {
+    "message": "Bu mesajda çevrilebilir metin yok."
+  },
+  "optionAppearance": {
+    "message": "Görünüm"
+  },
+  "optionGoogleColor": {
+    "message": "Google çeviri rengi"
+  },
+  "optionAiColor": {
+    "message": "AI çeviri rengi"
+  },
+  "optionSaveFailed": {
+    "message": "Ayarlar kaydedilemedi"
   }
 }
