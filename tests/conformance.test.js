@@ -594,6 +594,18 @@ describe("options page conformance", () => {
     ui.window.close?.();
   });
 
+  it("the API key field is masked but still round-trips its value", async () => {
+    // This node screenshots the Options page during installs, so a plain text field
+    // leaked the operator's real BYOK key into the captures. Masking is deliberate
+    // and diverges from the Chrome build, which still shows it in the clear.
+    const ui = await bootOptions({ settings: { ai: { provider: "openai", apiKey: "sk-live-secret" } } });
+    const field = ui.$("apiKey");
+    expect(field.type).toBe("password");
+    expect(field.getAttribute("autocomplete")).toBe("off");
+    // Masked, not emptied: the save path reads .value and must keep working.
+    expect(field.value).toBe("sk-live-secret");
+  });
+
   it("SPEC 2.1 — the AI fields are always present and never invent OpenAI", async () => {
     const ui = await bootOptions();
     // No engine picker: the floating group chooses per click, so the AI fields

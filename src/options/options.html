@@ -36,7 +36,9 @@
     <label data-i18n="optionProvider" for="provider">Provider</label>
     <select id="provider"></select>
     <label data-i18n="optionApiKey" for="apiKey">API key</label>
-    <input type="text" id="apiKey" autocomplete="off" />
+    <!-- password: this node screenshots the page during installs and a plain field
+         leaked the operator's BYOK key. Deliberately diverges from the Chrome build. -->
+    <input type="password" id="apiKey" autocomplete="off" />
     <label data-i18n="optionModel" for="model">Model</label>
     <select id="modelSelect"></select>
     <label data-i18n="optionCustomModel" for="model" id="customModelLabel" hidden>Custom model</label>
